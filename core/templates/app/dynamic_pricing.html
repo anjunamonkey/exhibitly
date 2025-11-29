@@ -1,0 +1,611 @@
+{% extends 'app/base_app.html' %}
+{% load static %}
+
+{% block title %}Dynamic Pricing – A/Bite{% endblock %}
+
+{% block page_content %}
+<div class="flex items-center justify-between mb-8">
+    <div>
+        <h1 class="text-4xl font-bold mb-2">Dynamic Pricing</h1>
+        <p class="text-gray-600">AI-powered real-time price optimization based on demand signals</p>
+    </div>
+    <div class="flex items-center gap-3">
+        <div class="text-right">
+            <div class="text-sm text-gray-600">Dynamic Pricing</div>
+            <div class="text-lg font-bold">Active</div>
+        </div>
+        <label class="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" checked class="sr-only peer">
+            <div class="w-14 h-8 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-green-600"></div>
+        </label>
+    </div>
+</div>
+
+<!-- Pricing Mode Toggle -->
+<div class="bg-white rounded-2xl p-2 shadow-sm mb-8 inline-flex gap-2">
+    <button id="menuWideBtn" class="px-6 py-3 bg-primary text-white rounded-xl font-semibold transition-all">
+        <i class="fas fa-percentage mr-2"></i>Menu-Wide Pricing
+    </button>
+    <button id="itemLevelBtn" class="px-6 py-3 bg-white text-gray-700 rounded-xl font-semibold hover:bg-gray-50 transition-all">
+        <i class="fas fa-list mr-2"></i>Item-Level Pricing
+    </button>
+</div>
+
+<!-- Menu-Wide Pricing Dashboard -->
+<div id="menuWideView">
+    <!-- Menu-Wide Stats -->
+    <div class="grid lg:grid-cols-3 gap-6 mb-8">
+        <div class="bg-white rounded-2xl p-6 shadow-sm">
+            <div class="flex items-center gap-3 mb-4">
+                <i class="fas fa-percentage text-3xl text-primary"></i>
+                <h3 class="font-bold text-lg">Current Multiplier</h3>
+            </div>
+            <div class="text-4xl font-bold mb-2">1.15x</div>
+            <p class="text-sm text-gray-600">All menu items -15%</p>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 shadow-sm">
+            <div class="flex items-center gap-3 mb-4">
+                <i class="fas fa-pound-sign text-3xl text-green-600"></i>
+                <h3 class="font-bold text-lg">Revenue Impact</h3>
+            </div>
+            <div class="text-4xl font-bold text-green-600 mb-2">+£2,847</div>
+            <p class="text-sm text-gray-600">Additional revenue today</p>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 shadow-sm">
+            <div class="flex items-center gap-3 mb-4">
+                <i class="fas fa-users text-3xl text-posthog-blue"></i>
+                <h3 class="font-bold text-lg">Order Volume</h3>
+            </div>
+            <div class="text-4xl font-bold text-posthog-blue mb-2">187</div>
+            <p class="text-sm text-gray-600">Orders with adjusted pricing</p>
+        </div>
+    </div>
+
+    <!-- Current Menu-Wide Adjustment -->
+    <div class="bg-white rounded-2xl p-6 shadow-sm mb-8">
+        <h3 class="text-xl font-bold mb-6">Current Menu-Wide Adjustment</h3>
+        
+        <div class="p-6 border-2 border-red-200 rounded-xl bg-red-50 mb-6">
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-4">
+                    <i class="fas fa-utensils text-4xl text-red-600"></i>
+                    <div>
+                        <h4 class="font-bold text-2xl">All Menu Items</h4>
+                        <p class="text-gray-600">High demand period • Multiple demand signals active</p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <div class="text-4xl font-bold text-red-600">-15%</div>
+                    <div class="text-sm text-gray-600 mt-1">Applied 23 mins ago</div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-4 gap-4 mb-4">
+                <div class="bg-white p-4 rounded-lg">
+                    <div class="text-xs text-gray-600">Base Multiplier</div>
+                    <div class="text-2xl font-bold">1.15x</div>
+                </div>
+                <div class="bg-white p-4 rounded-lg">
+                    <div class="text-xs text-gray-600">Orders Since Change</div>
+                    <div class="text-2xl font-bold">187</div>
+                </div>
+                <div class="bg-white p-4 rounded-lg">
+                    <div class="text-xs text-gray-600">Extra Revenue</div>
+                    <div class="text-2xl font-bold text-green-600">+£2,847</div>
+                </div>
+                <div class="bg-white p-4 rounded-lg">
+                    <div class="text-xs text-gray-600">Acceptance Rate</div>
+                    <div class="text-2xl font-bold">91%</div>
+                </div>
+            </div>
+
+            <div class="flex gap-2">
+                <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1">
+                    <i class="fas fa-sun"></i> Weather Boost
+                </span>
+                <span class="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1">
+                    <i class="fas fa-fire"></i> Peak Hours
+                </span>
+                <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1">
+                    <i class="fas fa-football-ball"></i> Local Event
+                </span>
+            </div>
+        </div>
+
+        <!-- Price History Chart -->
+        <div class="bg-gray-50 rounded-xl p-6">
+            <h4 class="font-bold mb-4">24-Hour Multiplier History</h4>
+            <div class="h-64">
+                <canvas id="menuWideHistoryChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Multiplier Thresholds -->
+    <div class="bg-white rounded-2xl p-6 shadow-sm">
+        <h3 class="text-xl font-bold mb-6">Multiplier Thresholds</h3>
+        <div class="space-y-4">
+            <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                <div>
+                    <div class="font-semibold">Maximum Increase</div>
+                    <div class="text-sm text-gray-600">Prevent prices from going too high</div>
+                </div>
+                <div class="text-2xl font-bold text-red-600">+25%</div>
+            </div>
+            <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                <div>
+                    <div class="font-semibold">Maximum Decrease</div>
+                    <div class="text-sm text-gray-600">Prevent prices from going too low</div>
+                </div>
+                <div class="text-2xl font-bold text-blue-600">-20%</div>
+            </div>
+            <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                <div>
+                    <div class="font-semibold">Update Frequency</div>
+                    <div class="text-sm text-gray-600">How often to recalculate prices</div>
+                </div>
+                <div class="text-2xl font-bold">15 min</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Item-Level Pricing Dashboard -->
+<div id="itemLevelView" class="hidden">
+    <!-- Real-Time Price Adjustments -->
+    <div class="grid lg:grid-cols-3 gap-6 mb-8">
+        <div class="bg-white rounded-2xl p-6 shadow-sm">
+            <div class="flex items-center gap-3 mb-4">
+                <i class="fas fa-clock text-3xl text-primary"></i>
+                <h3 class="font-bold text-lg">Active Adjustments</h3>
+            </div>
+            <div class="text-4xl font-bold mb-2">14</div>
+            <p class="text-sm text-gray-600">Items with live price changes</p>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 shadow-sm">
+            <div class="flex items-center gap-3 mb-4">
+                <i class="fas fa-pound-sign text-3xl text-green-600"></i>
+                <h3 class="font-bold text-lg">Revenue Impact</h3>
+            </div>
+            <div class="text-4xl font-bold text-green-600 mb-2">+£1,283</div>
+            <p class="text-sm text-gray-600">Additional revenue today</p>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 shadow-sm">
+            <div class="flex items-center gap-3 mb-4">
+                <i class="fas fa-chart-line text-3xl text-posthog-blue"></i>
+                <h3 class="font-bold text-lg">Demand Score</h3>
+            </div>
+            <div class="text-4xl font-bold text-posthog-blue mb-2">8.2/10</div>
+            <p class="text-sm text-gray-600">Currently high demand</p>
+        </div>
+    </div>
+
+    <!-- Live Pricing Dashboard -->
+    <div class="bg-white rounded-2xl p-6 shadow-sm mb-8">
+        <div class="flex items-center justify-between mb-6">
+            <h3 class="text-xl font-bold">Live Pricing Dashboard</h3>
+            <div class="flex gap-2">
+                <button class="px-4 py-2 bg-gray-100 rounded-xl text-sm font-semibold">All Items</button>
+                <button class="px-4 py-2 bg-white border border-gray-300 rounded-xl text-sm hover:bg-gray-50">Active Only</button>
+                <button class="px-4 py-2 bg-white border border-gray-300 rounded-xl text-sm hover:bg-gray-50">Paused</button>
+            </div>
+        </div>
+
+        <div class="space-y-4">
+            <!-- Item 1 - Price Increased -->
+            <div class="p-5 border-2 border-red-200 rounded-xl bg-red-50">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="flex items-center gap-4">
+                        <div class="text-4xl">🍕</div>
+                        <div>
+                            <h4 class="font-bold text-lg">Margherita Pizza</h4>
+                            <p class="text-sm text-gray-600">High demand • Sunny weather • Friday evening</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <div class="flex items-center gap-2">
+                            <span class="text-gray-500 line-through text-lg">£12.00</span>
+                            <span class="text-2xl font-bold text-red-600">£13.50</span>
+                            <span class="bg-red-600 text-white px-2 py-1 rounded text-xs font-bold">+12.5%</span>
+                        </div>
+                        <div class="text-sm text-gray-600 mt-1">Updated 18 mins ago</div>
+                    </div>
+                </div>
+                <div class="grid grid-cols-4 gap-4 mb-4">
+                    <div class="bg-white p-3 rounded-lg">
+                        <div class="text-xs text-gray-600">Demand</div>
+                        <div class="text-lg font-bold text-red-600">↑ High</div>
+                    </div>
+                    <div class="bg-white p-3 rounded-lg">
+                        <div class="text-xs text-gray-600">Orders/hr</div>
+                        <div class="text-lg font-bold">23</div>
+                    </div>
+                    <div class="bg-white p-3 rounded-lg">
+                        <div class="text-xs text-gray-600">Extra Revenue</div>
+                        <div class="text-lg font-bold text-green-600">+£298</div>
+                    </div>
+                    <div class="bg-white p-3 rounded-lg">
+                        <div class="text-xs text-gray-600">Acceptance</div>
+                        <div class="text-lg font-bold">94%</div>
+                    </div>
+                </div>
+                <div class="flex gap-2">
+                    <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1">
+                        <i class="fas fa-sun"></i> Weather Boost
+                    </span>
+                    <span class="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1">
+                        <i class="fas fa-fire"></i> Peak Hours
+                    </span>
+                    <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1">
+                        <i class="fas fa-chart-line"></i> High Conversion
+                    </span>
+                </div>
+            </div>
+
+            <!-- Item 2 - Price Decreased -->
+            <div class="p-5 border-2 border-blue-200 rounded-xl bg-blue-50">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="flex items-center gap-4">
+                        <div class="text-4xl">🥗</div>
+                        <div>
+                            <h4 class="font-bold text-lg">Caesar Salad</h4>
+                            <p class="text-sm text-gray-600">Low demand • Ingredient expiring soon</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <div class="flex items-center gap-2">
+                            <span class="text-gray-500 line-through text-lg">£9.00</span>
+                            <span class="text-2xl font-bold text-blue-600">£7.50</span>
+                            <span class="bg-blue-600 text-white px-2 py-1 rounded text-xs font-bold">-17%</span>
+                        </div>
+                        <div class="text-sm text-gray-600 mt-1">Updated 2 hours ago</div>
+                    </div>
+                </div>
+                <div class="grid grid-cols-4 gap-4 mb-4">
+                    <div class="bg-white p-3 rounded-lg">
+                        <div class="text-xs text-gray-600">Demand</div>
+                        <div class="text-lg font-bold text-blue-600">↓ Low</div>
+                    </div>
+                    <div class="bg-white p-3 rounded-lg">
+                        <div class="text-xs text-gray-600">Orders/hr</div>
+                        <div class="text-lg font-bold">4</div>
+                    </div>
+                    <div class="bg-white p-3 rounded-lg">
+                        <div class="text-xs text-gray-600">Waste Prevented</div>
+                        <div class="text-lg font-bold text-green-600">£67</div>
+                    </div>
+                    <div class="bg-white p-3 rounded-lg">
+                        <div class="text-xs text-gray-600">Stock Level</div>
+                        <div class="text-lg font-bold text-red-600">Low</div>
+                    </div>
+                </div>
+                <div class="flex gap-2">
+                    <span class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1">
+                        <i class="fas fa-exclamation-triangle"></i> Expiring Soon
+                    </span>
+                    <span class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1">
+                        <i class="fas fa-clock"></i> Off-Peak
+                    </span>
+                </div>
+            </div>
+
+            <!-- Item 3 - Stable Price -->
+            <div class="p-5 border-2 border-gray-200 rounded-xl bg-white">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="flex items-center gap-4">
+                        <div class="text-4xl">🍔</div>
+                        <div>
+                            <h4 class="font-bold text-lg">Classic Burger</h4>
+                            <p class="text-sm text-gray-600">Stable demand • Optimal pricing</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <div class="flex items-center gap-2">
+                            <span class="text-2xl font-bold">£13.00</span>
+                            <span class="bg-gray-200 text-gray-700 px-2 py-1 rounded text-xs font-bold">No change</span>
+                        </div>
+                        <div class="text-sm text-gray-600 mt-1">Last checked 5 mins ago</div>
+                    </div>
+                </div>
+                <div class="grid grid-cols-4 gap-4 mb-4">
+                    <div class="bg-gray-50 p-3 rounded-lg">
+                        <div class="text-xs text-gray-600">Demand</div>
+                        <div class="text-lg font-bold">→ Stable</div>
+                    </div>
+                    <div class="bg-gray-50 p-3 rounded-lg">
+                        <div class="text-xs text-gray-600">Orders/hr</div>
+                        <div class="text-lg font-bold">12</div>
+                    </div>
+                    <div class="bg-gray-50 p-3 rounded-lg">
+                        <div class="text-xs text-gray-600">Price Score</div>
+                        <div class="text-lg font-bold text-green-600">9.2/10</div>
+                    </div>
+                    <div class="bg-gray-50 p-3 rounded-lg">
+                        <div class="text-xs text-gray-600">Margin</div>
+                        <div class="text-lg font-bold">58%</div>
+                    </div>
+                </div>
+                <div class="flex gap-2">
+                    <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1">
+                        <i class="fas fa-check"></i> Optimally Priced
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Demand Signals -->
+<div class="grid lg:grid-cols-2 gap-8 mb-8">
+    <div class="bg-white rounded-2xl p-6 shadow-sm">
+        <h3 class="text-xl font-bold mb-6">Active Demand Signals</h3>
+        <div class="space-y-4">
+            <div class="flex items-center justify-between p-4 bg-yellow-50 rounded-xl border border-yellow-200">
+                <div class="flex items-center gap-3">
+                    <i class="fas fa-sun text-2xl text-yellow-500"></i>
+                    <div>
+                        <div class="font-semibold">Sunny Weather</div>
+                        <div class="text-sm text-gray-600">22°C • Low humidity</div>
+                    </div>
+                </div>
+                <span class="bg-yellow-500 text-white px-3 py-1 rounded-full text-xs font-bold">-15% prices</span>
+            </div>
+
+            <div class="flex items-center justify-between p-4 bg-purple-50 rounded-xl border border-purple-200">
+                <div class="flex items-center gap-3">
+                    <i class="fas fa-clock text-2xl text-purple-500"></i>
+                    <div>
+                        <div class="font-semibold">Peak Hours</div>
+                        <div class="text-sm text-gray-600">Friday 7:30 PM</div>
+                    </div>
+                </div>
+                <span class="bg-purple-500 text-white px-3 py-1 rounded-full text-xs font-bold">+10% prices</span>
+            </div>
+
+            <div class="flex items-center justify-between p-4 bg-blue-50 rounded-xl border border-blue-200">
+                <div class="flex items-center gap-3">
+                    <i class="fas fa-football-ball text-2xl text-blue-500"></i>
+                    <div>
+                        <div class="font-semibold">Local Event</div>
+                        <div class="text-sm text-gray-600">Football match nearby</div>
+                    </div>
+                </div>
+                <span class="bg-blue-500 text-white px-3 py-1 rounded-full text-xs font-bold">+8% prices</span>
+            </div>
+
+            <div class="flex items-center justify-between p-4 bg-red-50 rounded-xl border border-red-200">
+                <div class="flex items-center gap-3">
+                    <i class="fas fa-box text-2xl text-red-500"></i>
+                    <div>
+                        <div class="font-semibold">Low Inventory</div>
+                        <div class="text-sm text-gray-600">3 items running low</div>
+                    </div>
+                </div>
+                <span class="bg-red-500 text-white px-3 py-1 rounded-full text-xs font-bold" id="inventorySignal">-20% prices</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-2xl p-6 shadow-sm">
+        <h3 class="text-xl font-bold mb-6">Price Change History</h3>
+        <div class="h-64">
+            <canvas id="priceHistoryChart"></canvas>
+        </div>
+        <div class="mt-4 text-center">
+            <div class="text-2xl font-bold" id="adjustmentCount">127</div>
+            <div class="text-sm text-gray-600" id="adjustmentLabel">Price adjustments in last 7 days</div>
+        </div>
+    </div>
+</div>
+
+<!-- Pricing Rules -->
+<div class="bg-white rounded-2xl p-6 shadow-sm">
+    <div class="flex items-center justify-between mb-6">
+        <h3 class="text-xl font-bold">Pricing Rules Configuration</h3>
+        <button class="bg-primary text-white px-4 py-2 rounded-xl text-sm font-semibold hover:scale-105 transition">
+            <i class="fas fa-plus mr-2"></i>Add Rule
+        </button>
+    </div>
+
+    <div class="space-y-3">
+        <div class="p-4 bg-gray-50 rounded-xl border-2 border-gray-200">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" checked class="sr-only peer">
+                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
+                    </label>
+                    <div>
+                        <div class="font-semibold">Weather-Based Pricing</div>
+                        <div class="text-sm text-gray-600">Adjust based on temperature and conditions</div>
+                    </div>
+                </div>
+                <button class="text-gray-600 hover:text-gray-800">
+                    <i class="fas fa-cog"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="p-4 bg-gray-50 rounded-xl border-2 border-gray-200">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" checked class="sr-only peer">
+                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
+                    </label>
+                    <div>
+                        <div class="font-semibold">Time-of-Day Optimization</div>
+                        <div class="text-sm text-gray-600">Peak/off-peak hour adjustments</div>
+                    </div>
+                </div>
+                <button class="text-gray-600 hover:text-gray-800">
+                    <i class="fas fa-cog"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="p-4 bg-gray-50 rounded-xl border-2 border-gray-200">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" checked class="sr-only peer">
+                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
+                    </label>
+                    <div>
+                        <div class="font-semibold">Inventory-Driven Discounts</div>
+                        <div class="text-sm text-gray-600">Reduce prices to clear expiring stock</div>
+                    </div>
+                </div>
+                <button class="text-gray-600 hover:text-gray-800">
+                    <i class="fas fa-cog"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="p-4 bg-gray-50 rounded-xl border-2 border-gray-200 opacity-50">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" class="sr-only peer">
+                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
+                    </label>
+                    <div>
+                        <div class="font-semibold">Competitor Price Matching</div>
+                        <div class="text-sm text-gray-600">Stay competitive with nearby restaurants</div>
+                    </div>
+                </div>
+                <button class="text-gray-600 hover:text-gray-800">
+                    <i class="fas fa-cog"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const menuWideBtn = document.getElementById('menuWideBtn');
+    const itemLevelBtn = document.getElementById('itemLevelBtn');
+    const menuWideView = document.getElementById('menuWideView');
+    const itemLevelView = document.getElementById('itemLevelView');
+    const inventorySignal = document.getElementById('inventorySignal');
+    const adjustmentCount = document.getElementById('adjustmentCount');
+    const adjustmentLabel = document.getElementById('adjustmentLabel');
+
+    // Toggle between views
+    menuWideBtn.addEventListener('click', function() {
+        menuWideView.classList.remove('hidden');
+        itemLevelView.classList.add('hidden');
+        menuWideBtn.classList.add('bg-primary', 'text-white');
+        menuWideBtn.classList.remove('bg-white', 'text-gray-700');
+        itemLevelBtn.classList.remove('bg-primary', 'text-white');
+        itemLevelBtn.classList.add('bg-white', 'text-gray-700');
+        
+        // Update inventory signal for menu-wide mode
+        inventorySignal.textContent = 'No impact';
+        inventorySignal.classList.remove('bg-red-500');
+        inventorySignal.classList.add('bg-gray-400');
+        
+        // Update adjustment count
+        adjustmentCount.textContent = '43';
+        adjustmentLabel.textContent = 'Menu-wide adjustments in last 7 days';
+    });
+
+    itemLevelBtn.addEventListener('click', function() {
+        itemLevelView.classList.remove('hidden');
+        menuWideView.classList.add('hidden');
+        itemLevelBtn.classList.add('bg-primary', 'text-white');
+        itemLevelBtn.classList.remove('bg-white', 'text-gray-700');
+        menuWideBtn.classList.remove('bg-primary', 'text-white');
+        menuWideBtn.classList.add('bg-white', 'text-gray-700');
+        
+        // Restore inventory signal for item-level mode
+        inventorySignal.textContent = '-20% prices';
+        inventorySignal.classList.add('bg-red-500');
+        inventorySignal.classList.remove('bg-gray-400');
+        
+        // Update adjustment count
+        adjustmentCount.textContent = '127';
+        adjustmentLabel.textContent = 'Price adjustments in last 7 days';
+    });
+
+    // Menu-wide history chart
+    const menuWideCtx = document.getElementById('menuWideHistoryChart');
+    if (menuWideCtx) {
+        new Chart(menuWideCtx, {
+            type: 'line',
+            data: {
+                labels: ['00:00', '03:00', '06:00', '09:00', '12:00', '15:00', '18:00', '21:00', '23:59'],
+                datasets: [{
+                    label: 'Price Multiplier',
+                    data: [1.0, 0.95, 0.92, 1.05, 1.08, 1.12, 1.20, 1.15, 1.05],
+                    borderColor: '#EA4949',
+                    backgroundColor: 'rgba(234,73,73,0.1)',
+                    fill: true,
+                    tension: 0.4,
+                    borderWidth: 3
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        min: 0.8,
+                        max: 1.3,
+                        ticks: {
+                            callback: function(value) {
+                                return value + 'x';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // Item-level history chart
+    const ctx = document.getElementById('priceHistoryChart');
+    if (ctx) {
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                datasets: [{
+                    label: 'Avg Price Multiplier',
+                    data: [1.0, 0.98, 1.05, 1.02, 1.12, 1.18, 1.08],
+                    borderColor: '#EA4949',
+                    backgroundColor: 'rgba(234,73,73,0.1)',
+                    fill: true,
+                    tension: 0.4,
+                    borderWidth: 3
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        min: 0.9,
+                        max: 1.3,
+                        ticks: {
+                            callback: function(value) {
+                                return value + 'x';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

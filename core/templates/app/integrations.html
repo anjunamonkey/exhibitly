@@ -1,0 +1,364 @@
+{% extends 'app/base_app.html' %}
+{% load static %}
+
+{% block title %}Integrations – A/Bite{% endblock %}
+
+{% block page_content %}
+<div class="mb-8">
+    <h1 class="text-4xl font-bold mb-2">Integrations</h1>
+    <p class="text-gray-600">Connect your POS systems and third-party services</p>
+</div>
+
+<!-- Integration Status -->
+<div class="grid lg:grid-cols-3 gap-6 mb-8">
+    <div class="bg-gradient-to-br from-green-500 to-green-600 text-white rounded-2xl p-6 shadow-lg">
+        <div class="flex items-center gap-3 mb-4">
+            <i class="fas fa-check-circle text-3xl"></i>
+            <h3 class="font-bold text-lg">Connected</h3>
+        </div>
+        <div class="text-4xl font-bold mb-2">4</div>
+        <p class="text-sm opacity-90">Active integrations</p>
+    </div>
+
+    <div class="bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-2xl p-6 shadow-lg">
+        <div class="flex items-center gap-3 mb-4">
+            <i class="fas fa-sync text-3xl"></i>
+            <h3 class="font-bold text-lg">Last Sync</h3>
+        </div>
+        <div class="text-4xl font-bold mb-2">2 min</div>
+        <p class="text-sm opacity-90">ago (All systems)</p>
+    </div>
+
+    <div class="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-2xl p-6 shadow-lg">
+        <div class="flex items-center gap-3 mb-4">
+            <i class="fas fa-exchange-alt text-3xl"></i>
+            <h3 class="font-bold text-lg">API Requests</h3>
+        </div>
+        <div class="text-4xl font-bold mb-2">12.4K</div>
+        <p class="text-sm opacity-90">This month</p>
+    </div>
+</div>
+
+<!-- POS Systems -->
+<div class="mb-8">
+    <h2 class="text-2xl font-bold mb-4">Point of Sale (POS) Systems</h2>
+    <div class="grid lg:grid-cols-2 gap-6">
+        <!-- Square -->
+        <div class="bg-white rounded-2xl p-6 shadow-sm border-l-4 border-green-500">
+            <div class="flex items-start justify-between mb-4">
+                <div class="flex items-center gap-4">
+                    <div class="w-16 h-16 bg-black rounded-xl flex items-center justify-center">
+                        <span class="text-white font-bold text-xl">Sq</span>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold">Square POS</h3>
+                        <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold">CONNECTED</span>
+                    </div>
+                </div>
+                <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" checked class="sr-only peer">
+                    <div class="w-14 h-8 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-white after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-green-600"></div>
+                </label>
+            </div>
+
+            <div class="space-y-3 mb-4">
+                <div class="flex items-center justify-between">
+                    <span class="text-sm text-gray-600">Last Sync</span>
+                    <span class="text-sm font-semibold">2 minutes ago</span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <span class="text-sm text-gray-600">Menu Items Synced</span>
+                    <span class="text-sm font-semibold">48 / 48</span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <span class="text-sm text-gray-600">Orders Today</span>
+                    <span class="text-sm font-semibold text-green-600">127</span>
+                </div>
+            </div>
+
+            <div class="p-4 bg-green-50 rounded-xl mb-4">
+                <div class="flex items-center gap-2 mb-2">
+                    <i class="fas fa-check-circle text-green-600"></i>
+                    <span class="font-semibold text-sm">Sync Status: Healthy</span>
+                </div>
+                <p class="text-xs text-gray-600">Real-time menu and order synchronization active</p>
+            </div>
+
+            <div class="flex gap-2">
+                <button class="flex-1 px-4 py-2 bg-gray-100 rounded-xl hover:bg-gray-200 transition text-sm font-semibold">
+                    <i class="fas fa-cog mr-2"></i>Configure
+                </button>
+                <button class="flex-1 px-4 py-2 border border-gray-300 rounded-xl hover:bg-gray-50 transition text-sm font-semibold">
+                    <i class="fas fa-sync mr-2"></i>Force Sync
+                </button>
+            </div>
+        </div>
+
+        <!-- Toast -->
+        <div class="bg-white rounded-2xl p-6 shadow-sm border-l-4 border-green-500">
+            <div class="flex items-start justify-between mb-4">
+                <div class="flex items-center gap-4">
+                    <div class="w-16 h-16 bg-red-600 rounded-xl flex items-center justify-center">
+                        <span class="text-white font-bold text-xl">T</span>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold">Toast POS</h3>
+                        <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold">CONNECTED</span>
+                    </div>
+                </div>
+                <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" checked class="sr-only peer">
+                    <div class="w-14 h-8 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-white after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-green-600"></div>
+                </label>
+            </div>
+
+            <div class="space-y-3 mb-4">
+                <div class="flex items-center justify-between">
+                    <span class="text-sm text-gray-600">Last Sync</span>
+                    <span class="text-sm font-semibold">5 minutes ago</span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <span class="text-sm text-gray-600">Menu Items Synced</span>
+                    <span class="text-sm font-semibold">48 / 48</span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <span class="text-sm text-gray-600">Orders Today</span>
+                    <span class="text-sm font-semibold text-green-600">89</span>
+                </div>
+            </div>
+
+            <div class="p-4 bg-green-50 rounded-xl mb-4">
+                <div class="flex items-center gap-2 mb-2">
+                    <i class="fas fa-check-circle text-green-600"></i>
+                    <span class="font-semibold text-sm">Sync Status: Healthy</span>
+                </div>
+                <p class="text-xs text-gray-600">Inventory and pricing updates syncing correctly</p>
+            </div>
+
+            <div class="flex gap-2">
+                <button class="flex-1 px-4 py-2 bg-gray-100 rounded-xl hover:bg-gray-200 transition text-sm font-semibold">
+                    <i class="fas fa-cog mr-2"></i>Configure
+                </button>
+                <button class="flex-1 px-4 py-2 border border-gray-300 rounded-xl hover:bg-gray-50 transition text-sm font-semibold">
+                    <i class="fas fa-sync mr-2"></i>Force Sync
+                </button>
+            </div>
+        </div>
+
+        <!-- Lightspeed -->
+        <div class="bg-white rounded-2xl p-6 shadow-sm border-l-4 border-gray-300 opacity-75">
+            <div class="flex items-start justify-between mb-4">
+                <div class="flex items-center gap-4">
+                    <div class="w-16 h-16 bg-blue-600 rounded-xl flex items-center justify-center">
+                        <span class="text-white font-bold text-xl">L</span>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold">Lightspeed</h3>
+                        <span class="bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-xs font-bold">AVAILABLE</span>
+                    </div>
+                </div>
+            </div>
+
+            <p class="text-sm text-gray-600 mb-4">Connect your Lightspeed POS for seamless menu and order synchronization.</p>
+
+            <div class="p-4 bg-blue-50 rounded-xl mb-4">
+                <div class="font-semibold text-sm mb-2">Benefits:</div>
+                <ul class="space-y-1 text-xs text-gray-700">
+                    <li>• Real-time menu updates</li>
+                    <li>• Automatic inventory sync</li>
+                    <li>• Order analytics integration</li>
+                </ul>
+            </div>
+
+            <button class="w-full px-4 py-2 bg-primary text-white rounded-xl hover:scale-105 transition text-sm font-semibold">
+                <i class="fas fa-plus mr-2"></i>Connect Lightspeed
+            </button>
+        </div>
+
+        <!-- Clover -->
+        <div class="bg-white rounded-2xl p-6 shadow-sm border-l-4 border-gray-300 opacity-75">
+            <div class="flex items-start justify-between mb-4">
+                <div class="flex items-center gap-4">
+                    <div class="w-16 h-16 bg-green-700 rounded-xl flex items-center justify-center">
+                        <span class="text-white font-bold text-xl">C</span>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold">Clover POS</h3>
+                        <span class="bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-xs font-bold">AVAILABLE</span>
+                    </div>
+                </div>
+            </div>
+
+            <p class="text-sm text-gray-600 mb-4">Integrate with Clover to manage your entire restaurant operation.</p>
+
+            <div class="p-4 bg-green-50 rounded-xl mb-4">
+                <div class="font-semibold text-sm mb-2">Benefits:</div>
+                <ul class="space-y-1 text-xs text-gray-700">
+                    <li>• Payment processing integration</li>
+                    <li>• Customer data sync</li>
+                    <li>• Staff management tools</li>
+                </ul>
+            </div>
+
+            <button class="w-full px-4 py-2 bg-primary text-white rounded-xl hover:scale-105 transition text-sm font-semibold">
+                <i class="fas fa-plus mr-2"></i>Connect Clover
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Third-Party Services -->
+<div class="mb-8">
+    <h2 class="text-2xl font-bold mb-4">Third-Party Services</h2>
+    <div class="grid lg:grid-cols-2 gap-6">
+        <!-- Deliveroo -->
+        <div class="bg-white rounded-2xl p-6 shadow-sm border-l-4 border-teal-500">
+            <div class="flex items-start justify-between mb-4">
+                <div class="flex items-center gap-4">
+                    <div class="w-16 h-16 bg-teal-500 rounded-xl flex items-center justify-center">
+                        <span class="text-white font-bold text-xl">D</span>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold">Deliveroo</h3>
+                        <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold">CONNECTED</span>
+                    </div>
+                </div>
+                <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" checked class="sr-only peer">
+                    <div class="w-14 h-8 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-white after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-green-600"></div>
+                </label>
+            </div>
+
+            <div class="space-y-3 mb-4">
+                <div class="flex items-center justify-between">
+                    <span class="text-sm text-gray-600">Orders Today</span>
+                    <span class="text-sm font-semibold text-green-600">54</span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <span class="text-sm text-gray-600">Revenue Today</span>
+                    <span class="text-sm font-semibold text-green-600">£682</span>
+                </div>
+            </div>
+
+            <button class="w-full px-4 py-2 bg-gray-100 rounded-xl hover:bg-gray-200 transition text-sm font-semibold">
+                <i class="fas fa-cog mr-2"></i>Manage Integration
+            </button>
+        </div>
+
+        <!-- Uber Eats -->
+        <div class="bg-white rounded-2xl p-6 shadow-sm border-l-4 border-green-500">
+            <div class="flex items-start justify-between mb-4">
+                <div class="flex items-center gap-4">
+                    <div class="w-16 h-16 bg-black rounded-xl flex items-center justify-center">
+                        <span class="text-white font-bold text-xl">UE</span>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold">Uber Eats</h3>
+                        <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold">CONNECTED</span>
+                    </div>
+                </div>
+                <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" checked class="sr-only peer">
+                    <div class="w-14 h-8 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-white after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-green-600"></div>
+                </label>
+            </div>
+
+            <div class="space-y-3 mb-4">
+                <div class="flex items-center justify-between">
+                    <span class="text-sm text-gray-600">Orders Today</span>
+                    <span class="text-sm font-semibold text-green-600">38</span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <span class="text-sm text-gray-600">Revenue Today</span>
+                    <span class="text-sm font-semibold text-green-600">£467</span>
+                </div>
+            </div>
+
+            <button class="w-full px-4 py-2 bg-gray-100 rounded-xl hover:bg-gray-200 transition text-sm font-semibold">
+                <i class="fas fa-cog mr-2"></i>Manage Integration
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Webhooks & API -->
+<div class="bg-white rounded-2xl p-6 shadow-sm mb-8">
+    <h3 class="text-xl font-bold mb-6">Webhooks & API Access</h3>
+    
+    <div class="grid lg:grid-cols-2 gap-6 mb-6">
+        <div class="p-4 bg-gray-50 rounded-xl">
+            <div class="flex items-center justify-between mb-3">
+                <h4 class="font-semibold">API Key</h4>
+                <button class="text-posthog-blue text-sm hover:underline">Regenerate</button>
+            </div>
+            <div class="flex items-center gap-2 p-3 bg-white rounded-lg border border-gray-200 font-mono text-sm">
+                <code class="flex-1 truncate">abite_live_sk_f8a9d2b4c6e1...</code>
+                <button class="text-gray-600 hover:text-gray-800">
+                    <i class="fas fa-copy"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="p-4 bg-gray-50 rounded-xl">
+            <div class="flex items-center justify-between mb-3">
+                <h4 class="font-semibold">Webhook URL</h4>
+                <button class="text-posthog-blue text-sm hover:underline">Edit</button>
+            </div>
+            <div class="flex items-center gap-2 p-3 bg-white rounded-lg border border-gray-200 font-mono text-sm">
+                <code class="flex-1 truncate">https://api.yoursite.com/webhook</code>
+                <button class="text-gray-600 hover:text-gray-800">
+                    <i class="fas fa-copy"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="p-4 bg-blue-50 rounded-xl border border-blue-200">
+        <div class="flex items-start gap-3">
+            <i class="fas fa-info-circle text-blue-600 mt-1"></i>
+            <div>
+                <div class="font-semibold text-sm mb-1">Developer Documentation</div>
+                <p class="text-xs text-gray-700 mb-2">View our comprehensive API docs for custom integrations and advanced features.</p>
+                <a href="#" class="text-posthog-blue text-xs font-semibold hover:underline">View API Docs →</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Integration Health -->
+<div class="bg-white rounded-2xl p-6 shadow-sm">
+    <h3 class="text-xl font-bold mb-6">Integration Health Monitor</h3>
+    <div class="space-y-4">
+        <div class="flex items-center justify-between p-4 bg-green-50 rounded-xl border border-green-200">
+            <div class="flex items-center gap-3">
+                <i class="fas fa-check-circle text-2xl text-green-600"></i>
+                <div>
+                    <div class="font-semibold">All Systems Operational</div>
+                    <div class="text-sm text-gray-600">Last checked: 30 seconds ago</div>
+                </div>
+            </div>
+            <span class="text-green-600 font-bold">100%</span>
+        </div>
+
+        <div class="grid grid-cols-4 gap-4">
+            <div class="text-center p-4 bg-gray-50 rounded-xl">
+                <div class="text-2xl font-bold mb-1">99.8%</div>
+                <div class="text-xs text-gray-600">Uptime (30d)</div>
+            </div>
+            <div class="text-center p-4 bg-gray-50 rounded-xl">
+                <div class="text-2xl font-bold mb-1">147ms</div>
+                <div class="text-xs text-gray-600">Avg Response</div>
+            </div>
+            <div class="text-center p-4 bg-gray-50 rounded-xl">
+                <div class="text-2xl font-bold mb-1">12.4K</div>
+                <div class="text-xs text-gray-600">API Calls</div>
+            </div>
+            <div class="text-center p-4 bg-gray-50 rounded-xl">
+                <div class="text-2xl font-bold text-green-600 mb-1">0</div>
+                <div class="text-xs text-gray-600">Errors</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

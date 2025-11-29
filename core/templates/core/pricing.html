@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pricing – A/Bite</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: '#EA4949',
+                        customgray: '#ECECEC',
+                        lightgray: '#F7F7F7',
+                        darkgray: '#1A1A1A',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-white text-gray-900">
+    {% include 'core/header.html' %}
+
+    <!-- Hero Section -->
+    <section class="pt-32 pb-16 bg-gradient-to-br from-darkgray to-gray-800 px-4">
+        <div class="max-w-5xl mx-auto text-center">
+            <h1 class="text-5xl md:text-6xl font-bold mb-6 text-white">Find Your Perfect Solution</h1>
+            <p class="text-xl md:text-2xl text-gray-200 max-w-3xl mx-auto">
+                Answer three quick questions to see pricing and features tailored to your business
+            </p>
+        </div>
+    </section>
+
+    <!-- Journey Selection Flow -->
+    <section class="py-20 px-4 bg-white">
+        <div class="max-w-4xl mx-auto">
+            
+            <!-- Question 1: Venue Type -->
+            <div class="mb-16">
+                <div class="text-center mb-8">
+                    <div class="inline-block bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-bold mb-4">
+                        QUESTION 1 OF 3
+                    </div>
+                    <h2 class="text-3xl md:text-4xl font-bold mb-4">Where do customers order from?</h2>
+                    <p class="text-lg text-gray-600">This helps us recommend the right integration</p>
+                </div>
+                
+                <div class="flex justify-center gap-4 flex-wrap">
+                    <button onclick="selectVenueType('inperson')" id="venue-inperson" class="px-8 py-4 rounded-2xl text-lg font-semibold border-2 transition-all hover:scale-105">
+                        🏪 In-Person (Venue/QR Code)
+                    </button>
+                    <button onclick="selectVenueType('online')" id="venue-online" class="px-8 py-4 rounded-2xl text-lg font-semibold border-2 transition-all hover:scale-105">
+                        🌐 Online Ordering
+                    </button>
+                </div>
+            </div>
+
+            <!-- Question 2: Menu Type (hidden until Q1 answered) -->
+            <div id="question-2" class="mb-16 hidden">
+                <div class="text-center mb-8">
+                    <div class="inline-block bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-bold mb-4">
+                        QUESTION 2 OF 3
+                    </div>
+                    <h2 class="text-3xl md:text-4xl font-bold mb-4">What does your current menu look like?</h2>
+                    <p class="text-lg text-gray-600">We'll show you the best way to integrate</p>
+                </div>
+                
+                <div class="flex justify-center gap-4 flex-wrap">
+                    <button onclick="selectMenuType('physical')" id="menu-physical" class="px-8 py-4 rounded-2xl text-lg font-semibold border-2 transition-all hover:scale-105">
+                        📄 Physical/PDF Menu
+                    </button>
+                    <button onclick="selectMenuType('web')" id="menu-web" class="px-8 py-4 rounded-2xl text-lg font-semibold border-2 transition-all hover:scale-105">
+                        💻 Online/Web-Based Menu
+                    </button>
+                </div>
+            </div>
+
+            <!-- Question 3: Payment Type (hidden until Q2 answered) -->
+            <div id="question-3" class="mb-16 hidden">
+                <div class="text-center mb-8">
+                    <div class="inline-block bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-bold mb-4">
+                        QUESTION 3 OF 3
+                    </div>
+                    <h2 class="text-3xl md:text-4xl font-bold mb-4">How do you process payments?</h2>
+                    <p class="text-lg text-gray-600">This determines your integration options</p>
+                </div>
+                
+                <div class="flex justify-center gap-4 flex-wrap">
+                    <button onclick="selectPaymentType('pos')" id="payment-pos" class="px-8 py-4 rounded-2xl text-lg font-semibold border-2 transition-all hover:scale-105">
+                        🖥️ POS System (Square, Toast, etc.)
+                    </button>
+                    <button onclick="selectPaymentType('digital')" id="payment-digital" class="px-8 py-4 rounded-2xl text-lg font-semibold border-2 transition-all hover:scale-105">
+                        💳 Online/Digital Payment System
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Results Section (hidden until all questions answered) -->
+    <section id="results-section" class="py-20 px-4 bg-gradient-to-br from-lightgray to-gray-100 hidden">
+        <div class="max-w-6xl mx-auto">
+            
+            <!-- Summary -->
+            <div class="text-center mb-12">
+                <div class="inline-block bg-green-100 text-green-800 px-4 py-2 rounded-full text-sm font-bold mb-4">
+                    ✓ YOUR PERSONALIZED SOLUTION
+                </div>
+                <h2 class="text-3xl md:text-4xl font-bold mb-4">Here's What We Recommend</h2>
+                <div id="solution-summary" class="text-lg text-gray-700 max-w-3xl mx-auto"></div>
+            </div>
+
+            <!-- Recommended Integration -->
+            <div id="recommended-integration" class="mb-16">
+                <!-- Dynamic content populated by JS -->
+            </div>
+
+            <!-- Pricing Options -->
+            <div id="pricing-options">
+                <div class="text-center mb-10">
+                    <h3 class="text-3xl font-bold mb-3">Choose Your Plan</h3>
+                    <p class="text-gray-600">All plans include a 14-day free trial</p>
+                </div>
+                <!-- Dynamic pricing populated by JS -->
+            </div>
+
+            <!-- Reset Button -->
+            <div class="text-center mt-12">
+                <button onclick="resetJourney()" class="text-gray-600 hover:text-primary font-semibold underline">
+                    ← Start Over
+                </button>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="py-20 px-4 bg-white">
+        <div class="max-w-4xl mx-auto">
+            <h2 class="text-4xl font-bold text-center mb-12">Frequently Asked Questions</h2>
+            <div class="space-y-6">
+                <div class="bg-lightgray rounded-2xl p-6">
+                    <h4 class="font-bold text-lg mb-2">Do I need to replace my existing menu?</h4>
+                    <p class="text-gray-700">No! A/Bite works with your current setup. We integrate seamlessly whether you have a physical menu, PDF, or existing digital menu.</p>
+                </div>
+                <div class="bg-lightgray rounded-2xl p-6">
+                    <h4 class="font-bold text-lg mb-2">Will this disrupt my operations?</h4>
+                    <p class="text-gray-700">Not at all. Our integrations are read-only and non-invasive. Your existing workflow remains unchanged.</p>
+                </div>
+                <div class="bg-lightgray rounded-2xl p-6">
+                    <h4 class="font-bold text-lg mb-2">Can I use my existing payment processor?</h4>
+                    <p class="text-gray-700">Yes! We integrate with Square, Toast, Lightspeed, and any POS with webhooks. You keep your current rates.</p>
+                </div>
+                <div class="bg-lightgray rounded-2xl p-6">
+                    <h4 class="font-bold text-lg mb-2">How long does setup take?</h4>
+                    <p class="text-gray-700">Most restaurants are up and running in under 15 minutes.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Final CTA -->
+    <section class="py-24 px-4 bg-gradient-to-r from-primary via-red-500 to-orange-500 text-white">
+        <div class="max-w-4xl mx-auto text-center">
+            <h2 class="text-4xl md:text-5xl font-bold mb-6">Ready to Get Started?</h2>
+            <p class="text-xl mb-8 opacity-95">
+                Start your 14-day free trial today — no credit card required
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <button class="bg-white text-primary px-10 py-4 rounded-xl text-lg font-bold hover:bg-gray-100 transition shadow-xl transform hover:scale-105">
+                    Start Free Trial
+                </button>
+                <button class="bg-transparent border-2 border-white text-white px-10 py-4 rounded-xl text-lg font-bold hover:bg-white/10 transition">
+                    Schedule Demo
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        let selections = {
+            venueType: null,
+            menuType: null,
+            paymentType: null
+        };
+
+        function selectVenueType(type) {
+            selections.venueType = type;
+            updateButtonState('venue', type);
+            document.getElementById('question-2').classList.remove('hidden');
+            document.getElementById('question-2').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        function selectMenuType(type) {
+            selections.menuType = type;
+            updateButtonState('menu', type);
+            document.getElementById('question-3').classList.remove('hidden');
+            document.getElementById('question-3').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        function selectPaymentType(type) {
+            selections.paymentType = type;
+            updateButtonState('payment', type);
+            showResults();
+        }
+
+        function updateButtonState(category, selected) {
+            // Reset all buttons in category
+            document.querySelectorAll(`[id^="${category}-"]`).forEach(btn => {
+                btn.classList.remove('bg-primary', 'text-white', 'border-primary');
+                btn.classList.add('bg-white', 'text-gray-700', 'border-gray-300');
+            });
+            
+            // Highlight selected
+            const selectedBtn = document.getElementById(`${category}-${selected}`);
+            selectedBtn.classList.remove('bg-white', 'text-gray-700', 'border-gray-300');
+            selectedBtn.classList.add('bg-primary', 'text-white', 'border-primary');
+        }
+
+        function showResults() {
+            const resultsSection = document.getElementById('results-section');
+            resultsSection.classList.remove('hidden');
+            
+            // Generate summary
+            const summary = generateSummary();
+            document.getElementById('solution-summary').innerHTML = summary;
+            
+            // Generate integration recommendation
+            const integration = generateIntegration();
+            document.getElementById('recommended-integration').innerHTML = integration;
+            
+            // Generate pricing
+            const pricing = generatePricing();
+            document.getElementById('pricing-options').innerHTML += pricing;
+            
+            resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function generateSummary() {
+            const { venueType, menuType, paymentType } = selections;
+            
+            let summary = `<p class="mb-4">Based on your selections:</p><ul class="list-disc list-inside space-y-2">`;
+            
+            if (venueType === 'inperson') {
+                summary += `<li><strong>In-person ordering</strong> at your venue</li>`;
+            } else {
+                summary += `<li><strong>Online ordering</strong> for remote customers</li>`;
+            }
+            
+            if (menuType === 'physical') {
+                summary += `<li>Currently using <strong>physical/PDF menus</strong></li>`;
+            } else {
+                summary += `<li>Already have an <strong>online/web-based menu</strong></li>`;
+            }
+            
+            if (paymentType === 'pos') {
+                summary += `<li>Processing payments through a <strong>POS system</strong></li>`;
+            } else {
+                summary += `<li>Using a <strong>digital payment system</strong></li>`;
+            }
+            
+            summary += `</ul>`;
+            return summary;
+        }
+
+        function generateIntegration() {
+            const { venueType, menuType, paymentType } = selections;
+            
+            let integration = '<div class="bg-white rounded-3xl p-8 shadow-xl mb-12"><h3 class="text-2xl font-bold mb-6 text-center">Recommended Integration</h3>';
+            
+            if (menuType === 'physical') {
+                integration += `
+                    <div class="bg-gradient-to-br from-primary to-red-600 text-white rounded-2xl p-8 mb-6">
+                        <h4 class="text-xl font-bold mb-4">🎯 A/Bite Hosted Digital Menu (Free)</h4>
+                        <p class="mb-4">Since you're using physical/PDF menus, we'll create a free digital menu for you:</p>
+                        <ul class="space-y-2">
+                            <li>✓ QR codes for table-side ordering</li>
+                            <li>✓ Mobile-optimized menu</li>
+                            <li>✓ Easy menu updates</li>
+                            <li>✓ Built-in personalization</li>
+                            <li>✓ Zero setup cost</li>
+                        </ul>
+                    </div>`;
+            } else {
+                integration += `
+                    <div class="bg-gradient-to-br from-blue-500 to-blue-700 text-white rounded-2xl p-8 mb-6">
+                        <h4 class="text-xl font-bold mb-4">🔌 JavaScript Widget Integration</h4>
+                        <p class="mb-4">Add our lightweight script to your existing menu:</p>
+                        <ul class="space-y-2">
+                            <li>✓ Works with any website/CMS</li>
+                            <li>✓ No design changes needed</li>
+                            <li>✓ Instant A/B testing capability</li>
+                            <li>✓ Real-time analytics</li>
+                            <li>✓ 5-minute setup</li>
+                        </ul>
+                    </div>`;
+            }
+            
+            if (paymentType === 'pos') {
+                integration += `
+                    <div class="border-2 border-gray-200 rounded-2xl p-8">
+                        <h4 class="text-xl font-bold mb-4">💳 POS Integration</h4>
+                        <p class="mb-4">Connect your existing POS system:</p>
+                        <ul class="space-y-2 text-gray-700">
+                            <li>✓ Square, Toast, Lightspeed support</li>
+                            <li>✓ Read-only integration</li>
+                            <li>✓ Keep your current payment rates</li>
+                            <li>✓ Automatic sales tracking</li>
+                        </ul>
+                    </div>`;
+            } else {
+                integration += `
+                    <div class="border-2 border-gray-200 rounded-2xl p-8">
+                        <h4 class="text-xl font-bold mb-4">💳 Payment Processing Options</h4>
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div>
+                                <p class="font-semibold mb-2">Keep Your Current System:</p>
+                                <p class="text-sm text-gray-600">Integrate with your existing payment processor</p>
+                            </div>
+                            <div class="bg-primary/10 rounded-lg p-4">
+                                <p class="font-semibold mb-2">A/Bite Payments:</p>
+                                <p class="text-lg font-bold text-primary">3.5% + 20p per transaction</p>
+                                <p class="text-sm text-gray-600">All fees included, next-day payouts</p>
+                            </div>
+                        </div>
+                    </div>`;
+            }
+            
+            integration += '</div>';
+            return integration;
+        }
+
+        function generatePricing() {
+            return `
+                <div class="grid md:grid-cols-3 gap-8 mt-8">
+                    <!-- Starter -->
+                    <div class="bg-white rounded-3xl p-8 shadow-lg hover:shadow-xl transition">
+                        <div class="text-center mb-6">
+                            <h4 class="text-2xl font-bold mb-2">Starter</h4>
+                            <div class="text-4xl font-bold mb-2">$99</div>
+                            <div class="text-gray-600">per month</div>
+                        </div>
+                        <ul class="space-y-3 mb-8">
+                            <li class="flex items-start gap-2"><span class="text-primary">✓</span> <span>Up to 3 active experiments</span></li>
+                            <li class="flex items-start gap-2"><span class="text-primary">✓</span> <span>Basic heatmaps</span></li>
+                            <li class="flex items-start gap-2"><span class="text-primary">✓</span> <span>Click tracking</span></li>
+                            <li class="flex items-start gap-2"><span class="text-primary">✓</span> <span>1 location</span></li>
+                            <li class="flex items-start gap-2"><span class="text-primary">✓</span> <span>Email support</span></li>
+                        </ul>
+                        <button class="w-full bg-darkgray text-white px-6 py-3 rounded-xl font-bold hover:bg-gray-800 transition">
+                            Start Free Trial
+                        </button>
+                    </div>
+
+                    <!-- Professional -->
+                    <div class="bg-gradient-to-br from-primary to-red-600 text-white rounded-3xl p-8 shadow-2xl transform md:scale-105 relative">
+                        <div class="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-yellow-400 text-darkgray px-4 py-1 rounded-full text-sm font-bold">
+                            RECOMMENDED
+                        </div>
+                        <div class="text-center mb-6">
+                            <h4 class="text-2xl font-bold mb-2">Professional</h4>
+                            <div class="text-4xl font-bold mb-2">$299</div>
+                            <div class="opacity-90">per month</div>
+                        </div>
+                        <ul class="space-y-3 mb-8">
+                            <li class="flex items-start gap-2"><span>✓</span> <span>Unlimited experiments</span></li>
+                            <li class="flex items-start gap-2"><span>✓</span> <span>Advanced heatmaps & replays</span></li>
+                            <li class="flex items-start gap-2"><span>✓</span> <span>Funnel analysis</span></li>
+                            <li class="flex items-start gap-2"><span>✓</span> <span>Up to 5 locations</span></li>
+                            <li class="flex items-start gap-2"><span>✓</span> <span>Priority support</span></li>
+                            <li class="flex items-start gap-2"><span>✓</span> <span>Custom reports</span></li>
+                        </ul>
+                        <button class="w-full bg-white text-primary px-6 py-3 rounded-xl font-bold hover:bg-gray-100 transition">
+                            Start Free Trial
+                        </button>
+                    </div>
+
+                    <!-- Enterprise -->
+                    <div class="bg-white rounded-3xl p-8 shadow-lg hover:shadow-xl transition">
+                        <div class="text-center mb-6">
+                            <h4 class="text-2xl font-bold mb-2">Enterprise</h4>
+                            <div class="text-4xl font-bold mb-2">Custom</div>
+                            <div class="text-gray-600">contact sales</div>
+                        </div>
+                        <ul class="space-y-3 mb-8">
+                            <li class="flex items-start gap-2"><span class="text-primary">✓</span> <span>Everything in Professional</span></li>
+                            <li class="flex items-start gap-2"><span class="text-primary">✓</span> <span>Unlimited locations</span></li>
+                            <li class="flex items-start gap-2"><span class="text-primary">✓</span> <span>Dedicated success manager</span></li>
+                            <li class="flex items-start gap-2"><span class="text-primary">✓</span> <span>Custom integrations</span></li>
+                            <li class="flex items-start gap-2"><span class="text-primary">✓</span> <span>White-label options</span></li>
+                        </ul>
+                        <button class="w-full bg-darkgray text-white px-6 py-3 rounded-xl font-bold hover:bg-gray-800 transition">
+                            Contact Sales
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function resetJourney() {
+            selections = { venueType: null, menuType: null, paymentType: null };
+            document.getElementById('question-2').classList.add('hidden');
+            document.getElementById('question-3').classList.add('hidden');
+            document.getElementById('results-section').classList.add('hidden');
+            
+            // Reset all buttons
+            document.querySelectorAll('[id^="venue-"], [id^="menu-"], [id^="payment-"]').forEach(btn => {
+                btn.classList.remove('bg-primary', 'text-white', 'border-primary');
+                btn.classList.add('bg-white', 'text-gray-700', 'border-gray-300');
+            });
+            
+            // Clear dynamic content
+            document.getElementById('recommended-integration').innerHTML = '';
+            document.getElementById('pricing-options').innerHTML = '<div class="text-center mb-10"><h3 class="text-3xl font-bold mb-3">Choose Your Plan</h3><p class="text-gray-600">All plans include a 14-day free trial</p></div>';
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Initialize button styles
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('[id^="venue-"], [id^="menu-"], [id^="payment-"]').forEach(btn => {
+                btn.classList.add('bg-white', 'text-gray-700', 'border-gray-300');
+            });
+        });
+    </script>
+
+    {% include 'core/footer.html' %}
+</body>
+</html>

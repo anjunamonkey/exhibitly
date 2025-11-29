@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard – A/Bite</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: '#EA4949',
+                        customgray: '#ECECEC',
+                        lightgray: '#F7F7F7',
+                        darkgray: '#1A1A1A',
+                        posthog: {
+                            yellow: '#F9BD2B',
+                            blue: '#1D4AFF',
+                            purple: '#B62AD9',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>    
+        .main-content {
+            margin-left: 300px;
+            padding-right: 20px;
+            padding-left: 24px;
+            max-width: calc(100% - 360px);
+        }
+
+        .chart-card {
+            min-height: 260px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .ai-chat-container {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            width: 400px;
+            max-height: 600px;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+        
+        .ai-chat-collapsed {
+            max-height: 60px;
+        }
+        
+        .metric-card {
+            transition: all 0.2s ease;
+        }
+        
+        .metric-card:hover {
+            transform: translateY(-2px);
+        }
+        
+        .test-tile {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .test-tile:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        
+        .insight-badge {
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        .chat-messages {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .chat-messages::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .chat-messages::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+        
+        .chat-messages::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .main-content {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body class="bg-lightgray text-gray-900">
+
+    {% include 'core/sidebar.html' %}
+
+    <!-- AI Chatbot -->
+    <div id="ai-chat" class="ai-chat-container ai-chat-collapsed bg-white rounded-2xl shadow-2xl overflow-hidden">
+        <div class="bg-gradient-to-r from-posthog-blue to-posthog-purple p-4 cursor-pointer" onclick="toggleChat()">
+            <div class="flex items-center justify-between text-white">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center">
+                        <i class="fas fa-robot text-posthog-blue text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold">A/Bite AI Assistant</h3>
+                        <p class="text-xs opacity-90">Ask me anything about your menu</p>
+                    </div>
+                </div>
+                <i id="chat-icon" class="fas fa-chevron-down transition-transform"></i>
+            </div>
+        </div>
+        
+        <div id="chat-content" class="hidden">
+            <!-- Smart Recommendations -->
+            <div class="p-4 bg-gradient-to-r from-yellow-50 to-orange-50 border-b border-yellow-200">
+                <div class="flex items-start gap-2 mb-3">
+                    <i class="fas fa-lightbulb text-posthog-yellow mt-1"></i>
+                    <div>
+                        <h4 class="font-bold text-sm mb-1">💡 Smart Recommendations</h4>
+                        <div class="space-y-2 text-sm">
+                            <div class="bg-white p-2 rounded-lg shadow-sm cursor-pointer hover:shadow-md transition" onclick="applyRecommendation(1)">
+                                <p class="font-semibold text-primary">📈 Move "Margherita Pizza" up 2 places</p>
+                                <p class="text-xs text-gray-600">23% higher CTR in current position tests</p>
+                            </div>
+                            <div class="bg-white p-2 rounded-lg shadow-sm cursor-pointer hover:shadow-md transition" onclick="applyRecommendation(2)">
+                                <p class="font-semibold text-primary">🖼️ Replace "Pasta Carbonara" image</p>
+                                <p class="text-xs text-gray-600">Current image has 31% lower engagement</p>
+                            </div>
+                            <div class="bg-white p-2 rounded-lg shadow-sm cursor-pointer hover:shadow-md transition" onclick="applyRecommendation(3)">
+                                <p class="font-semibold text-primary">💰 Test £12.95 → £11.99 pricing</p>
+                                <p class="text-xs text-gray-600">Similar items perform better at .99 endings</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Chat Messages -->
+            <div class="chat-messages p-4 space-y-3">
+                <div class="flex items-start gap-2">
+                    <div class="w-8 h-8 bg-posthog-blue rounded-full flex items-center justify-center flex-shrink-0">
+                        <i class="fas fa-robot text-white text-sm"></i>
+                    </div>
+                    <div class="bg-gray-100 rounded-2xl rounded-tl-none p-3 max-w-[85%]">
+                        <p class="text-sm">Hi! I'm analyzing your menu performance. What would you like to know? 🎯</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Chat Input -->
+            <div class="p-4 border-t border-gray-200">
+                <div class="flex gap-2">
+                    <input 
+                        type="text" 
+                        id="chat-input" 
+                        placeholder="Ask about menu performance..." 
+                        class="flex-1 px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-posthog-blue text-sm"
+                        onkeypress="handleChatKeypress(event)"
+                    >
+                    <button onclick="sendChatMessage()" class="bg-posthog-blue text-white px-4 py-2 rounded-xl hover:bg-blue-700 transition">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+                <div class="flex gap-2 mt-2 flex-wrap">
+                    <button onclick="quickQuestion('What\'s my best seller?')" class="text-xs bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-full transition">
+                        Best seller?
+                    </button>
+                    <button onclick="quickQuestion('Which items need better images?')" class="text-xs bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-full transition">
+                        Image issues?
+                    </button>
+                    <button onclick="quickQuestion('Show pricing insights')" class="text-xs bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-full transition">
+                        Pricing insights
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Dashboard -->
+    <div class="main-content pt-6 pb-12 px-8">
+        
+        <!-- Header -->
+        <div class="mb-8">
+            <div class="flex items-center justify-between mb-4">
+                <div>
+                    <h1 class="text-4xl font-bold mb-2">Dashboard</h1>
+                    <p class="text-gray-600">Welcome back! Here's what's happening with your menu.</p>
+                </div>
+                <div class="flex gap-3">
+                    <button class="px-4 py-2 border border-gray-300 rounded-xl hover:bg-gray-50 transition">
+                        <i class="fas fa-calendar-alt mr-2"></i>Last 7 days
+                    </button>
+                    <button class="px-4 py-2 bg-primary text-white rounded-xl hover:bg-red-600 transition">
+                        <i class="fas fa-plus mr-2"></i>New Test
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Key Metrics -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="metric-card bg-white rounded-2xl p-6 shadow-sm">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="text-gray-600 text-sm font-medium">Menu Views</span>
+                    <i class="fas fa-eye text-posthog-blue"></i>
+                </div>
+                <div class="text-3xl font-bold mb-2">12,847</div>
+                <div class="flex items-center text-sm">
+                    <span class="text-green-600 font-semibold">↑ 23.5%</span>
+                    <span class="text-gray-500 ml-2">vs last week</span>
+                </div>
+            </div>
+
+            <div class="metric-card bg-white rounded-2xl p-6 shadow-sm">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="text-gray-600 text-sm font-medium">Conversion Rate</span>
+                    <i class="fas fa-shopping-cart text-posthog-purple"></i>
+                </div>
+                <div class="text-3xl font-bold mb-2">68.3%</div>
+                <div class="flex items-center text-sm">
+                    <span class="text-green-600 font-semibold">↑ 5.2%</span>
+                    <span class="text-gray-500 ml-2">vs last week</span>
+                </div>
+            </div>
+
+            <div class="metric-card bg-white rounded-2xl p-6 shadow-sm">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="text-gray-600 text-sm font-medium">Avg Order Value</span>
+                    <i class="fas fa-pound-sign text-posthog-yellow"></i>
+                </div>
+                <div class="text-3xl font-bold mb-2">£24.50</div>
+                <div class="flex items-center text-sm">
+                    <span class="text-green-600 font-semibold">↑ 12.1%</span>
+                    <span class="text-gray-500 ml-2">vs last week</span>
+                </div>
+            </div>
+
+            <div class="metric-card bg-white rounded-2xl p-6 shadow-sm">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="text-gray-600 text-sm font-medium">Active Tests</span>
+                    <i class="fas fa-flask text-primary"></i>
+                </div>
+                <div class="text-3xl font-bold mb-2">4</div>
+                <div class="flex items-center text-sm">
+                    <span class="text-gray-500">2 with significant results</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <div class="bg-white rounded-2xl p-6 shadow-sm chart-card">
+                <h3 class="text-lg font-bold mb-4">Menu Views (Last 14 days)</h3>
+                <div class="flex-1">
+                    <canvas id="chartViews"></canvas>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl p-6 shadow-sm chart-card">
+                <h3 class="text-lg font-bold mb-4">Item Conversion Rate</h3>
+                <div class="flex-1">
+                    <canvas id="chartConversions"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Active Experiments -->
+        <div class="bg-white rounded-2xl p-6 shadow-sm mb-8">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-2xl font-bold">Active Experiments</h2>
+                <button class="text-posthog-blue hover:text-blue-700 font-semibold text-sm">
+                    View All <i class="fas fa-arrow-right ml-1"></i>
+                </button>
+            </div>
+
+            <div class="space-y-4">
+                <!-- Experiment 1 -->
+                <div class="border border-gray-200 rounded-xl p-5 hover:border-posthog-blue transition">
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2 mb-2">
+                                <h3 class="font-bold text-lg">Burger Menu Image Test</h3>
+                                <span class="insight-badge bg-green-100 text-green-700 text-xs px-2 py-1 rounded-full font-semibold">
+                                    <i class="fas fa-check-circle"></i> Significant
+                                </span>
+                            </div>
+                            <p class="text-sm text-gray-600 mb-3">Testing professional vs casual food photography style</p>
+                            
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="bg-gray-50 rounded-lg p-3">
+                                    <div class="text-xs text-gray-600 mb-1">Control (Current)</div>
+                                    <div class="text-2xl font-bold mb-1">62.3%</div>
+                                    <div class="text-xs text-gray-500">Click-through rate</div>
+                                </div>
+                                <div class="bg-green-50 rounded-lg p-3 border border-green-200">
+                                    <div class="text-xs text-green-700 mb-1">Variant B 🏆</div>
+                                    <div class="text-2xl font-bold mb-1 text-green-700">71.8%</div>
+                                    <div class="text-xs text-gray-500">
+                                        <span class="text-green-700 font-semibold">+15.3%</span> improvement
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ml-4">
+                            <div class="text-right mb-2">
+                                <div class="text-sm text-gray-500">Progress</div>
+                                <div class="text-lg font-bold">87%</div>
+                            </div>
+                            <div class="w-32 h-2 bg-gray-200 rounded-full overflow-hidden">
+                                <div class="h-full bg-green-500" style="width: 87%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center justify-between pt-3 border-t border-gray-200">
+                        <div class="text-sm text-gray-500">
+                            <i class="fas fa-users mr-1"></i> 2,847 visitors • Started 5 days ago
+                        </div>
+                        <div class="flex gap-2">
+                            <button class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-sm font-semibold">
+                                <i class="fas fa-check mr-1"></i> Deploy Winner
+                            </button>
+                            <button class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition text-sm">
+                                View Details
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Experiment 2 -->
+                <div class="border border-gray-200 rounded-xl p-5 hover:border-posthog-blue transition">
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2 mb-2">
+                                <h3 class="font-bold text-lg">Dessert Section Positioning</h3>
+                                <span class="bg-yellow-100 text-yellow-700 text-xs px-2 py-1 rounded-full font-semibold">
+                                    <i class="fas fa-clock"></i> In Progress
+                                </span>
+                            </div>
+                            <p class="text-sm text-gray-600 mb-3">Testing desserts before vs after mains section</p>
+                            
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="bg-gray-50 rounded-lg p-3">
+                                    <div class="text-xs text-gray-600 mb-1">Control (After)</div>
+                                    <div class="text-2xl font-bold mb-1">18.4%</div>
+                                    <div class="text-xs text-gray-500">Dessert orders</div>
+                                </div>
+                                <div class="bg-blue-50 rounded-lg p-3 border border-blue-200">
+                                    <div class="text-xs text-blue-700 mb-1">Variant (Before)</div>
+                                    <div class="text-2xl font-bold mb-1 text-blue-700">21.7%</div>
+                                    <div class="text-xs text-gray-500">
+                                        <span class="text-blue-700 font-semibold">+17.9%</span> lift
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ml-4">
+                            <div class="text-right mb-2">
+                                <div class="text-sm text-gray-500">Progress</div>
+                                <div class="text-lg font-bold">52%</div>
+                            </div>
+                            <div class="w-32 h-2 bg-gray-200 rounded-full overflow-hidden">
+                                <div class="h-full bg-posthog-blue" style="width: 52%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center justify-between pt-3 border-t border-gray-200">
+                        <div class="text-sm text-gray-500">
+                            <i class="fas fa-users mr-1"></i> 1,523 visitors • Started 2 days ago
+                        </div>
+                        <div class="flex gap-2">
+                            <button class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition text-sm">
+                                View Details
+                            </button>
+                            <button class="px-4 py-2 border border-red-300 text-red-600 rounded-lg hover:bg-red-50 transition text-sm">
+                                Stop Test
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Menu Performance -->
+        <div class="grid lg:grid-cols-2 gap-8 mb-8">
+            <!-- Top Performers -->
+            <div class="bg-white rounded-2xl p-6 shadow-sm">
+                <h2 class="text-2xl font-bold mb-6">Top Performing Items</h2>
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+                        <div class="flex items-center gap-3">
+                            <div class="text-2xl">🍕</div>
+                            <div>
+                                <div class="font-semibold">Margherita Pizza</div>
+                                <div class="text-sm text-gray-600">234 orders this week</div>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="font-bold text-green-600">+28%</div>
+                            <div class="text-xs text-gray-500">vs avg</div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+                        <div class="flex items-center gap-3">
+                            <div class="text-2xl">🍔</div>
+                            <div>
+                                <div class="font-semibold">Classic Burger</div>
+                                <div class="text-sm text-gray-600">187 orders this week</div>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="font-bold text-green-600">+21%</div>
+                            <div class="text-xs text-gray-500">vs avg</div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+                        <div class="flex items-center gap-3">
+                            <div class="text-2xl">🍝</div>
+                            <div>
+                                <div class="font-semibold">Pasta Carbonara</div>
+                                <div class="text-sm text-gray-600">156 orders this week</div>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="font-bold text-green-600">+15%</div>
+                            <div class="text-xs text-gray-500">vs avg</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Needs Attention -->
+            <div class="bg-white rounded-2xl p-6 shadow-sm">
+                <h2 class="text-2xl font-bold mb-6">Needs Your Attention</h2>
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between p-3 bg-red-50 rounded-lg border border-red-200">
+                        <div class="flex items-center gap-3">
+                            <div class="text-2xl">🥗</div>
+                            <div>
+                                <div class="font-semibold">Caesar Salad</div>
+                                <div class="text-sm text-gray-600">Low click rate: 12%</div>
+                            </div>
+                        </div>
+                        <button class="px-3 py-1 bg-primary text-white text-sm rounded-lg hover:bg-red-600 transition">
+                            Fix Image
+                        </button>
+                    </div>
+                    
+                    <div class="flex items-center justify-between p-3 bg-yellow-50 rounded-lg border border-yellow-200">
+                        <div class="flex items-center gap-3">
+                            <div class="text-2xl">🍰</div>
+                            <div>
+                                <div class="font-semibold">Chocolate Cake</div>
+                                <div class="text-sm text-gray-600">High views, low orders</div>
+                            </div>
+                        </div>
+                        <button class="px-3 py-1 bg-primary text-white text-sm rounded-lg hover:bg-red-600 transition">
+                            Test Price
+                        </button>
+                    </div>
+                    
+                    <div class="flex items-center justify-between p-3 bg-orange-50 rounded-lg border border-orange-200">
+                        <div class="flex items-center gap-3">
+                            <div class="text-2xl">🍜</div>
+                            <div>
+                                <div class="font-semibold">Ramen Bowl</div>
+                                <div class="text-sm text-gray-600">Poor positioning</div>
+                            </div>
+                        </div>
+                        <button class="px-3 py-1 bg-primary text-white text-sm rounded-lg hover:bg-red-600 transition">
+                            Reposition
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- What Do You Want to Test? -->
+        <div class="mb-8">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold mb-3">What Do You Want to Test?</h2>
+                <p class="text-gray-600">Choose a test type to start optimizing your menu</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Price Testing -->
+                <div class="test-tile bg-white rounded-2xl p-6 shadow-sm border-2 border-transparent hover:border-posthog-blue">
+                    <div class="w-16 h-16 bg-gradient-to-br from-green-400 to-green-600 rounded-2xl flex items-center justify-center mb-4 text-3xl">
+                        💰
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Price Testing</h3>
+                    <p class="text-gray-600 text-sm mb-4">Find the optimal price point for your items. Test different pricing strategies.</p>
+                    <ul class="text-sm text-gray-600 space-y-1 mb-4">
+                        <li>• A/B test price points</li>
+                        <li>• Psychological pricing</li>
+                        <li>• Bundle pricing</li>
+                    </ul>
+                    <button class="w-full bg-darkgray text-white py-2 rounded-xl font-semibold hover:bg-gray-800 transition">
+                        Create Test
+                    </button>
+                </div>
+
+                <!-- Menu Positioning -->
+                <div class="test-tile bg-white rounded-2xl p-6 shadow-sm border-2 border-transparent hover:border-posthog-purple">
+                    <div class="w-16 h-16 bg-gradient-to-br from-posthog-purple to-purple-600 rounded-2xl flex items-center justify-center mb-4 text-3xl">
+                        📍
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Menu Positioning</h3>
+                    <p class="text-gray-600 text-sm mb-4">Test different menu layouts and item order to maximize sales.</p>
+                    <ul class="text-sm text-gray-600 space-y-1 mb-4">
+                        <li>• Item order testing</li>
+                        <li>• Section placement</li>
+                        <li>• Category priority</li>
+                    </ul>
+                    <button class="w-full bg-darkgray text-white py-2 rounded-xl font-semibold hover:bg-gray-800 transition">
+                        Create Test
+                    </button>
+                </div>
+
+                <!-- Images & Copy -->
+                <div class="test-tile bg-white rounded-2xl p-6 shadow-sm border-2 border-transparent hover:border-posthog-yellow">
+                    <div class="w-16 h-16 bg-gradient-to-br from-posthog-yellow to-yellow-600 rounded-2xl flex items-center justify-center mb-4 text-3xl">
+                        🖼️
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Images & Copy</h3>
+                    <p class="text-gray-600 text-sm mb-4">Optimize your food photos and descriptions for maximum appeal.</p>
+                    <ul class="text-sm text-gray-600 space-y-1 mb-4">
+                        <li>• Image style testing</li>
+                        <li>• Description variants</li>
+                        <li>• CTA optimization</li>
+                    </ul>
+                    <button class="w-full bg-darkgray text-white py-2 rounded-xl font-semibold hover:bg-gray-800 transition">
+                        Create Test
+                    </button>
+                </div>
+
+                <!-- Promotions -->
+                <div class="test-tile bg-white rounded-2xl p-6 shadow-sm border-2 border-transparent hover:border-primary">
+                    <div class="w-16 h-16 bg-gradient-to-br from-primary to-red-600 rounded-2xl flex items-center justify-center mb-4 text-3xl">
+                        🎯
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Promotions</h3>
+                    <p class="text-gray-600 text-sm mb-4">Test promotional offers, badges, and special deals effectiveness.</p>
+                    <ul class="text-sm text-gray-600 space-y-1 mb-4">
+                        <li>• Discount strategies</li>
+                        <li>• Badge placements</li>
+                        <li>• Limited time offers</li>
+                    </ul>
+                    <button class="w-full bg-darkgray text-white py-2 rounded-xl font-semibold hover:bg-gray-800 transition">
+                        Create Test
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Insights -->
+        <div class="bg-white rounded-2xl p-6 shadow-sm">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-2xl font-bold">Recent Insights</h2>
+                <button class="text-posthog-blue hover:text-blue-700 font-semibold text-sm">
+                    View All <i class="fas fa-arrow-right ml-1"></i>
+                </button>
+            </div>
+
+            <div class="space-y-3">
+                <div class="flex items-start gap-3 p-4 bg-gradient-to-r from-green-50 to-transparent rounded-xl border border-green-200">
+                    <i class="fas fa-chart-line text-green-600 mt-1"></i>
+                    <div>
+                        <div class="font-semibold mb-1">Weekend Orders Surge</div>
+                        <div class="text-sm text-gray-600">Orders increase by 47% on Saturdays. Consider weekend-specific promotions.</div>
+                        <div class="text-xs text-gray-500 mt-1">Detected 2 hours ago</div>
+                    </div>
+                </div>
+
+                <div class="flex items-start gap-3 p-4 bg-gradient-to-r from-blue-50 to-transparent rounded-xl border border-blue-200">
+                    <i class="fas fa-users text-blue-600 mt-1"></i>
+                    <div>
+                        <div class="font-semibold mb-1">High Bounce Rate on Starters</div>
+                        <div class="text-sm text-gray-600">42% of users skip your starters section. Test repositioning or better imagery.</div>
+                        <div class="text-xs text-gray-500 mt-1">Detected 5 hours ago</div>
+                    </div>
+                </div>
+
+                <div class="flex items-start gap-3 p-4 bg-gradient-to-r from-purple-50 to-transparent rounded-xl border border-purple-200">
+                    <i class="fas fa-clock text-purple-600 mt-1"></i>
+                    <div>
+                        <div class="font-semibold mb-1">Lunch Rush Opportunity</div>
+                        <div class="text-sm text-gray-600">Peak browsing at 12pm but orders drop at 12:30pm. Consider lunch combos.</div>
+                        <div class="text-xs text-gray-500 mt-1">Detected 1 day ago</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        let chatExpanded = false;
+        let currentSection = 'overview';
+
+        function switchSection(section) {
+            // Update active state
+            document.querySelectorAll('.sidebar-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            document.querySelector(`[data-section="${section}"]`).classList.add('active');
+            
+            currentSection = section;
+            
+            // Here you would implement section switching logic
+            // For now, we'll just scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            
+            // In a full implementation, you'd show/hide different content sections
+            console.log('Switched to section:', section);
+        }
+
+        function toggleChat() {
+            chatExpanded = !chatExpanded;
+            const chatContainer = document.getElementById('ai-chat');
+            const chatContent = document.getElementById('chat-content');
+            const chatIcon = document.getElementById('chat-icon');
+            
+            if (chatExpanded) {
+                chatContainer.classList.remove('ai-chat-collapsed');
+                chatContent.classList.remove('hidden');
+                chatIcon.style.transform = 'rotate(180deg)';
+            } else {
+                chatContainer.classList.add('ai-chat-collapsed');
+                chatContent.classList.add('hidden');
+                chatIcon.style.transform = 'rotate(0deg)';
+            }
+        }
+
+        function sendChatMessage() {
+            const input = document.getElementById('chat-input');
+            const message = input.value.trim();
+            
+            if (message) {
+                addUserMessage(message);
+                input.value = '';
+                
+                // Simulate AI response
+                setTimeout(() => {
+                    respondToMessage(message);
+                }, 1000);
+            }
+        }
+
+        function quickQuestion(question) {
+            document.getElementById('chat-input').value = question;
+            sendChatMessage();
+        }
+
+        function handleChatKeypress(event) {
+            if (event.key === 'Enter') {
+                sendChatMessage();
+            }
+        }
+
+        function addUserMessage(message) {
+            const chatMessages = document.querySelector('.chat-messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'flex items-start gap-2 justify-end';
+            messageDiv.innerHTML = `
+                <div class="bg-posthog-blue text-white rounded-2xl rounded-tr-none p-3 max-w-[85%]">
+                    <p class="text-sm">${message}</p>
+                </div>
+                <div class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center flex-shrink-0">
+                    <i class="fas fa-user text-white text-sm"></i>
+                </div>
+            `;
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function addAIMessage(message) {
+            const chatMessages = document.querySelector('.chat-messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'flex items-start gap-2';
+            messageDiv.innerHTML = `
+                <div class="w-8 h-8 bg-posthog-blue rounded-full flex items-center justify-center flex-shrink-0">
+                    <i class="fas fa-robot text-white text-sm"></i>
+                </div>
+                <div class="bg-gray-100 rounded-2xl rounded-tl-none p-3 max-w-[85%]">
+                    <p class="text-sm">${message}</p>
+                </div>
+            `;
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function respondToMessage(message) {
+            const lowerMessage = message.toLowerCase();
+            let response = '';
+
+            if (lowerMessage.includes('best seller') || lowerMessage.includes('top')) {
+                response = "Your best seller this week is the <strong>Margherita Pizza</strong> with 234 orders! It's performing 28% above average. The Classic Burger is your second best at 187 orders. 🍕";
+            } else if (lowerMessage.includes('image') || lowerMessage.includes('photo')) {
+                response = "I've identified 3 items that need better images:<br>• Caesar Salad (12% CTR - very low)<br>• Pasta Carbonara (31% below avg engagement)<br>• Chocolate Cake (high views but low orders)<br><br>Would you like me to create an image test for any of these? 📸";
+            } else if (lowerMessage.includes('pric')) {
+                response = "Based on your data:<br>• Items ending in .99 convert 8% better than .95<br>• Your £12.95 Chocolate Cake should test at £11.99<br>• Weekend pricing can be 5-10% higher without affecting orders<br><br>Want to set up a price test? 💰";
+            } else if (lowerMessage.includes('conversion') || lowerMessage.includes('convert')) {
+                response = "Your overall conversion rate is 68.3% (great!). Areas to improve:<br>• Starters section: 42% skip rate<br>• Desserts: Try positioning before mains (+17.9% in current test)<br>• Mobile users convert 12% lower - check mobile UX 📊";
+            } else {
+                response = "I'm analyzing your menu data. I can help with:<br>• Performance insights<br>• Test recommendations<br>• Image & copy optimization<br>• Pricing strategies<br><br>What would you like to know? 🤔";
+            }
+
+            addAIMessage(response);
+        }
+
+        function applyRecommendation(id) {
+            let message = '';
+            
+            switch(id) {
+                case 1:
+                    message = 'Great choice! I'll create a positioning test to move Margherita Pizza up 2 places. Based on similar tests, you could see a 15-20% sales increase. Want me to start the test?';
+                    break;
+                case 2:
+                    message = 'Smart move! I'll set up an A/B test with 3 new image variants for Pasta Carbonara. Our AI will generate professional food photos that match your brand. Ready to proceed?';
+                    break;
+                case 3:
+                    message = 'Good instinct! I'll create a price test: £12.95 vs £11.99. Based on similar items, the .99 pricing typically increases conversions by 8-12%. Should I launch the test?';
+                    break;
+            }
+            
+            if (!chatExpanded) toggleChat();
+            addAIMessage(message);
+        }
+
+        // Charts: render sample charts using Chart.js
+        function renderCharts() {
+            const ctxViews = document.getElementById('chartViews');
+            if (ctxViews) {
+                new Chart(ctxViews, {
+                    type: 'line',
+                    data: {
+                        labels: Array.from({length:14}, (_,i)=>`Day ${i+1}`),
+                        datasets: [{
+                            label: 'Menu Views',
+                            data: [820,900,950,1100,980,1200,1340,1280,1400,1500,1420,1600,1700,1840],
+                            borderColor: '#1D4AFF',
+                            backgroundColor: 'rgba(29,74,255,0.08)',
+                            fill: true,
+                            tension: 0.25,
+                        }]
+                    },
+                    options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: { legend: { display: false } },
+                            scales: {
+                                x: { grid: { display: false } },
+                                y: { ticks: { callback: function(v){return v;} } }
+                            }
+                        }
+                });
+            }
+
+            const ctxConv = document.getElementById('chartConversions');
+            if (ctxConv) {
+                new Chart(ctxConv, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Margherita','Burger','Carbonara','Caesar','Cake'],
+                        datasets: [{
+                            label: 'Conversion %',
+                            data: [28,21,15,12,10],
+                            backgroundColor: ['#34D399','#60A5FA','#FBBF24','#F472B6','#F87171']
+                        }]
+                    },
+                    options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: { legend: { display: false } },
+                            scales: { y: { beginAtZero: true, max: 40 } }
+                        }
+                });
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            renderCharts();
+        });
+    </script>
+
+</body>
+</html>

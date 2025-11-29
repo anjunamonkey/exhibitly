@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A\Bite – Grab a/bite</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: '#EA4949',
+                        lightgray: '#F7F7F7',
+                        darkgray: '#1A1A1A',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-white text-gray-900">
+    <!-- Navigation -->
+
+    {% include 'core/header.html' %}
+
+    <!-- Hero Section -->
+    <section class="pt-32 pb-24 bg-darkgray px-4 relative overflow-hidden min-h-screen flex items-center">
+
+        
+        <!-- Background Image with Overlay -->
+        <div class="absolute inset-0 z-0">
+            <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=2000&q=80" 
+                 alt="Delicious restaurant food" 
+                 class="w-full h-full object-cover opacity-40">
+            <div class="absolute inset-0 bg-gradient-to-br from-darkgray/90 via-darkgray/85 to-primary/20"></div>
+        </div>
+        
+        <!-- Content -->
+        <div class="max-w-7xl mx-auto text-center relative z-10">
+            <div class="text-7xl mb-8 animate-bounce">🍽️</div>
+            <h1 class="text-7xl md:text-9xl font-bold mb-10 text-white drop-shadow-2xl">
+                Grab <span class="text-primary">a/bite</span>
+            </h1>
+            <p class="text-3xl md:text-4xl text-white mb-10 max-w-3xl mx-auto font-bold drop-shadow-lg">
+                Experiment. Optimise. Serve.
+            </p>
+            <p class="text-xl md:text-2xl text-gray-200 mb-12 max-w-3xl mx-auto leading-relaxed">
+                AI-based dynamic pricing + PostHog style A/B testing and heatmapping, focused on menu optimisation. You optimise your dishes, we optimise your menus.
+            </p>
+
+
+            <button class="bg-primary text-white px-12 py-5 rounded-xl text-xl font-bold hover:bg-red-600 transition shadow-2xl hover:shadow-primary/50 transform hover:scale-105">
+                Start Optimising Today →
+            </button>
+        </div>
+        
+    </section>
+
+    <!-- Dynamic Pricing Hero Section -->
+    <!-- <section id="dynamic-pricing" class="py-28 px-4 bg-gradient-to-br from-primary via-red-500 to-orange-500 text-white relative overflow-hidden"> -->
+    <section id="dynamic-pricing" class="py-28 px-4 bg-lightgray relative overflow-hidden">
+        <div class="absolute inset-0 opacity-10">
+            <div class="absolute top-0 left-0 w-96 h-96 bg-white rounded-full blur-3xl"></div>
+            <div class="absolute bottom-0 right-0 w-96 h-96 bg-white rounded-full blur-3xl"></div>
+        </div>
+        
+        <div class="max-w-7xl mx-auto relative z-10">
+            <div class="text-center mb-20">
+                <div class="text-7xl mb-8">🧠</div>
+                <h2 class="text-5xl md:text-7xl font-bold mb-8">AI Dynamic Pricing Engine</h2>
+                <p class="text-3xl md:text-4xl font-bold mb-6">Your Menu. Always Optimised. In Real-Time.</p>
+                <p class="text-xl md:text-2xl opacity-95 max-w-4xl mx-auto leading-relaxed">
+                    A\Bite's AI continuously adjusts your prices based on demand, weather, events, inventory, and cultural moments - maximizing revenue while reducing waste.
+                </p>
+            </div>
+
+            <div class="mt-8 flex flex-col md:flex-row items-center justify-center gap-4 mb-12">
+  <div class="bg-white/10 backdrop-blur-lg rounded-3xl px-6 py-4 flex flex-col items-center min-w-[12rem]">
+    <div class="text-4xl md:text-5xl font-extrabold text-primary" data-target="23">0%</div>
+    <div class="text-sm text-gray-200 mt-1">Avg revenue uplift</div>
+  </div>
+  <div class="bg-white/10 backdrop-blur-lg rounded-3xl px-6 py-4 flex flex-col items-center min-w-[12rem]">
+    <div class="text-4xl md:text-5xl font-extrabold text-primary" data-target="18">0%</div>
+    <div class="text-sm text-gray-200 mt-1">Less food waste</div>
+  </div>
+  <div class="bg-white/10 backdrop-blur-lg rounded-3xl px-6 py-4 flex flex-col items-center min-w-[12rem]">
+    <div class="text-4xl md:text-5xl font-extrabold text-primary" data-target="12">0%</div>
+    <div class="text-sm text-gray-200 mt-1">Higher conversion</div>
+  </div>
+</div>
+
+            <div class="bg-white/15 backdrop-blur-md rounded-3xl p-10 md:p-16 mb-16 border-2 border-white/30 shadow-2xl">
+                <h3 class="text-4xl font-bold mb-12 text-center">Smart Pricing Based On:</h3>
+                <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <div class="bg-white/20 backdrop-blur-lg rounded-2xl p-8 text-center hover:bg-white/30 transition transform hover:scale-105 shadow-xl">
+                        <div class="text-5xl mb-4">⏰</div>
+                        <h4 class="font-bold text-xl mb-3">Time Intelligence</h4>
+                        <p class="text-sm opacity-90 leading-relaxed">Day of week, hour, rush periods</p>
+                    </div>
+                    <div class="bg-white/20 backdrop-blur-lg rounded-2xl p-8 text-center hover:bg-white/30 transition transform hover:scale-105 shadow-xl">
+                        <div class="text-5xl mb-4">🌡️</div>
+                        <h4 class="font-bold text-xl mb-3">Weather Impact</h4>
+                        <p class="text-sm opacity-90 leading-relaxed">Temperature, conditions, forecasts</p>
+                    </div>
+                    <div class="bg-white/20 backdrop-blur-lg rounded-2xl p-8 text-center hover:bg-white/30 transition transform hover:scale-105 shadow-xl">
+                        <div class="text-5xl mb-4">🎉</div>
+                        <h4 class="font-bold text-xl mb-3">Events & Moments</h4>
+                        <p class="text-sm opacity-90 leading-relaxed">Holidays, cultural celebrations, local events</p>
+                    </div>
+                    <div class="bg-white/20 backdrop-blur-lg rounded-2xl p-8 text-center hover:bg-white/30 transition transform hover:scale-105 shadow-xl">
+                        <div class="text-5xl mb-4">👥</div>
+                        <h4 class="font-bold text-xl mb-3">Demand & Traffic</h4>
+                        <p class="text-sm opacity-90 leading-relaxed">Foot traffic, booking rates, capacity</p>
+                    </div>
+                    <div class="bg-white/20 backdrop-blur-lg rounded-2xl p-8 text-center hover:bg-white/30 transition transform hover:scale-105 shadow-xl">
+                        <div class="text-5xl mb-4">📦</div>
+                        <h4 class="font-bold text-xl mb-3">Inventory Status</h4>
+                        <p class="text-sm opacity-90 leading-relaxed">Stock levels, expiration dates</p>
+                    </div>
+                    <div class="bg-white/20 backdrop-blur-lg rounded-2xl p-8 text-center hover:bg-white/30 transition transform hover:scale-105 shadow-xl">
+                        <div class="text-5xl mb-4">👨‍🍳</div>
+                        <h4 class="font-bold text-xl mb-3">Kitchen Capacity</h4>
+                        <p class="text-sm opacity-90 leading-relaxed">Staffing levels, prep times</p>
+                    </div>
+                    <div class="bg-white/20 backdrop-blur-lg rounded-2xl p-8 text-center hover:bg-white/30 transition transform hover:scale-105 shadow-xl">
+                        <div class="text-5xl mb-4">🌙</div>
+                        <h4 class="font-bold text-xl mb-3">Cultural Calendar</h4>
+                        <p class="text-sm opacity-90 leading-relaxed">Ramadan, Diwali, Lunar New Year</p>
+                    </div>
+                    <div class="bg-white/20 backdrop-blur-lg rounded-2xl p-8 text-center hover:bg-white/30 transition transform hover:scale-105 shadow-xl">
+                        <div class="text-5xl mb-4">🌱</div>
+                        <h4 class="font-bold text-xl mb-3">Seasonal Trends</h4>
+                        <p class="text-sm opacity-90 leading-relaxed">Veganuary, summer heatwaves</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-10">
+                <div class="bg-white text-gray-900 rounded-3xl p-10 shadow-2xl hover:shadow-3xl transition">
+                    <h3 class="text-3xl font-bold mb-8 text-primary">Real-World Examples</h3>
+                    <ul class="space-y-6">
+                        <li class="flex items-start">
+                            <span class="text-3xl mr-4">☀️</span>
+                            <div>
+                                <p class="font-bold text-lg mb-1">Hot Day Optimization</p>
+                                <p class="text-gray-600">Auto-raise cold drink prices by 15% when temp hits 30°C</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-3xl mr-4">🌙</span>
+                            <div>
+                                <p class="font-bold text-lg mb-1">Ramadan Pricing</p>
+                                <p class="text-gray-600">Highlight halal options & adjust Iftar bundle pricing at sunset</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-3xl mr-4">⚠️</span>
+                            <div>
+                                <p class="font-bold text-lg mb-1">Waste Reduction</p>
+                                <p class="text-gray-600">Drop prices 20% on ingredients expiring in 24 hours</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-3xl mr-4">📉</span>
+                            <div>
+                                <p class="font-bold text-lg mb-1">Off-Peak Boost</p>
+                                <p class="text-gray-600">Auto-activate happy hour when foot traffic drops below threshold</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-3xl mr-4">🌱</span>
+                            <div>
+                                <p class="font-bold text-lg mb-1">Veganuary Strategy</p>
+                                <p class="text-gray-600">Promote plant-based dishes to top positions throughout January</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="bg-white text-gray-900 rounded-3xl p-10 shadow-2xl hover:shadow-3xl transition">
+                    <h3 class="text-3xl font-bold mb-6 text-primary">Instant Updates Everywhere</h3>
+                    <p class="text-gray-700 mb-8 text-lg">When A\Bite adjusts your prices, changes sync instantly across all channels:</p>
+                    <div class="space-y-4">
+                        <div class="flex items-center bg-lightgray rounded-xl p-4 hover:bg-gray-100 transition">
+                            <span class="text-3xl mr-4">📱</span>
+                            <span class="font-bold text-lg">QR Code Menus</span>
+                        </div>
+                        <div class="flex items-center bg-lightgray rounded-xl p-4 hover:bg-gray-100 transition">
+                            <span class="text-3xl mr-4">💳</span>
+                            <span class="font-bold text-lg">POS Systems</span>
+                        </div>
+                        <div class="flex items-center bg-lightgray rounded-xl p-4 hover:bg-gray-100 transition">
+                            <span class="text-3xl mr-4">📲</span>
+                            <span class="font-bold text-lg">Mobile Apps</span>
+                        </div>
+                        <div class="flex items-center bg-lightgray rounded-xl p-4 hover:bg-gray-100 transition">
+                            <span class="text-3xl mr-4">🚗</span>
+                            <span class="font-bold text-lg">Delivery Platforms</span>
+                        </div>
+                        <div class="flex items-center bg-lightgray rounded-xl p-4 hover:bg-gray-100 transition">
+                            <span class="text-3xl mr-4">💻</span>
+                            <span class="font-bold text-lg">Website & Kiosks</span>
+                        </div>
+                    </div>
+                    <div class="mt-8 p-6 bg-primary/10 rounded-2xl border-2 border-primary">
+                        <p class="font-bold text-center text-primary text-lg">Zero delay. Zero manual work. Always Optimised.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Value Proposition -->
+    <section class="py-20 px-4 bg-gradient-to-br from-primary via-red-500 to-orange-500">
+        <div class="max-w-5xl mx-auto text-center">
+            <h2 class="text-4xl md:text-5xl font-bold mb-8 text-gray-900">Turn Your Menu Into a Living, Learning System</h2>
+            <p class="text-xl md:text-2xl text-gray-700 leading-relaxed">
+                With A\Bite, restaurants can continuously test, learn, and adapt their menus in real time to maximize revenue, reduce waste, and respond to trends, seasons, and cultural moments.
+            </p>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-24 px-4 bg-lightgray">
+        <div class="max-w-7xl mx-auto">
+            <h2 class="text-5xl md:text-6xl font-bold text-center mb-20">⭐ More Powerful Features</h2>
+            
+            <!-- A/B Testing -->
+            <div class="bg-white rounded-3xl p-10 md:p-14 mb-10 shadow-xl hover:shadow-2xl transition border-4 border-primary">
+                <div class="flex items-start mb-8">
+                    <div class="text-5xl mr-4">🧪</div>
+                    <div>
+                        <h3 class="text-3xl font-bold mb-4">A/B Testing & Experimentation Suite</h3>
+                        <p class="text-lg text-gray-700 mb-2"><span class="text-primary font-bold">The Heart of A\Bite</span></p>
+                        <p class="text-lg text-gray-700 mb-6">Restaurants can finally test everything - just like growth teams do.</p>
+                    </div>
+                </div>
+                <div class="mb-8">
+                    <h4 class="font-bold mb-4 text-xl">Testable Variables:</h4>
+                    <div class="grid md:grid-cols-2 gap-3">
+                        <div class="bg-lightgray rounded-lg p-3">Prices (±10%, segmented by audience)</div>
+                        <div class="bg-lightgray rounded-lg p-3">Item positioning (top, center, category order)</div>
+                        <div class="bg-lightgray rounded-lg p-3">Naming & descriptions</div>
+                        <div class="bg-lightgray rounded-lg p-3">Images (bright vs. lifestyle photos)</div>
+                        <div class="bg-lightgray rounded-lg p-3">Promotions (BOGO vs. 10% off)</div>
+                        <div class="bg-lightgray rounded-lg p-3">Bundles & seasonal specials</div>
+                    </div>
+                </div>
+                <div class="bg-primary/10 rounded-xl p-6">
+                    <h4 class="font-bold mb-4 text-lg">Test Examples:</h4>
+                    <ul class="space-y-2">
+                        <li>• <strong>Veganuary:</strong> Test which vegan dish performs best when placed first</li>
+                        <li>• <strong>Ramadan:</strong> Compare conversion on different Iftar bundle descriptions</li>
+                        <li>• <strong>Tourist district:</strong> A/B test multi-language item names</li>
+                        <li>• <strong>Weekend brunch:</strong> Test premium vs. standard cocktail pricing</li>
+                    </ul>
+                    <p class="mt-4 text-sm italic">A\Bite calculates statistical significance automatically and promotes winning variants.</p>
+                </div>
+            </div>
+
+            <!-- Real-Time Promotions -->
+            <div class="bg-white rounded-3xl p-10 md:p-14 mb-10 shadow-xl hover:shadow-2xl transition">
+                <div class="flex items-start mb-8">
+                    <div class="text-5xl mr-4">⚡</div>
+                    <div>
+                        <h3 class="text-3xl font-bold mb-4">Real-Time Promotional Marketplace</h3>
+                        <p class="text-lg text-gray-700 mb-6">A Too Good To Go–style engagement layer to drive demand when you need it:</p>
+                    </div>
+                </div>
+                <div class="grid md:grid-cols-3 gap-4">
+                    <div class="bg-lightgray rounded-lg p-4 text-center">Flash sales</div>
+                    <div class="bg-lightgray rounded-lg p-4 text-center">Expiring inventory deals</div>
+                    <div class="bg-lightgray rounded-lg p-4 text-center">Table availability discounts</div>
+                    <div class="bg-lightgray rounded-lg p-4 text-center">Smart happy hour automation</div>
+                    <div class="bg-lightgray rounded-lg p-4 text-center">Geofenced deals</div>
+                    <div class="bg-lightgray rounded-lg p-4 text-center">Demand-based pricing</div>
+                </div>
+                <p class="text-center mt-6 text-lg font-semibold text-primary">Turn quiet hours into revenue opportunities.</p>
+            </div>
+
+            <!-- Competitor Intelligence -->
+            <div class="bg-white rounded-3xl p-10 md:p-14 shadow-xl hover:shadow-2xl transition">
+                <div class="flex items-start mb-8">
+                    <div class="text-5xl mr-4">📊</div>
+                    <div>
+                        <h3 class="text-3xl font-bold mb-4">Competitor Intelligence</h3>
+                        <p class="text-lg text-gray-700 mb-6">A\Bite constantly scans nearby menus to reveal:</p>
+                    </div>
+                </div>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div class="flex items-center"><span class="text-primary text-2xl mr-2">→</span> Real-time competitor pricing</div>
+                    <div class="flex items-center"><span class="text-primary text-2xl mr-2">→</span> Promotional campaigns in your area</div>
+                    <div class="flex items-center"><span class="text-primary text-2xl mr-2">→</span> Market elasticity insights</div>
+                    <div class="flex items-center"><span class="text-primary text-2xl mr-2">→</span> Geo-based demand heatmaps</div>
+                    <div class="flex items-center"><span class="text-primary text-2xl mr-2">→</span> Price gap recommendations</div>
+                    <div class="flex items-center"><span class="text-primary text-2xl mr-2">→</span> Opportunity alerts</div>
+                </div>
+                <p class="text-center mt-6 text-lg font-semibold">Stay ahead of your neighborhood.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Use Cases -->
+    <section id="use-cases" class="py-24 px-4 bg-white">
+        <div class="max-w-7xl mx-auto">
+            <h2 class="text-5xl md:text-6xl font-bold text-center mb-6">📍 Seasonal, Cultural & Trend-Based Use Cases</h2>
+            <p class="text-center text-2xl text-gray-700 mb-20">A\Bite adapts menus instantly based on:</p>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-10">
+                <!-- Veganuary -->
+                <div class="bg-lightgray rounded-2xl p-8 hover:shadow-2xl transition transform hover:scale-105 border-2 border-transparent hover:border-primary">
+                    <h3 class="text-3xl font-bold mb-6 text-primary">🌱 Veganuary</h3>
+                    <ul class="space-y-3 text-lg">
+                        <li>• Highlight vegan dishes</li>
+                        <li>• Test new plant-based items</li>
+                        <li>• Switch pricing as demand spikes</li>
+                    </ul>
+                </div>
+
+                <!-- Ramadan -->
+                <div class="bg-lightgray rounded-2xl p-8 hover:shadow-2xl transition transform hover:scale-105 border-2 border-transparent hover:border-primary">
+                    <h3 class="text-3xl font-bold mb-6 text-primary">🌙 Ramadan</h3>
+                    <ul class="space-y-3 text-lg">
+                        <li>• Prioritize halal-certified dishes</li>
+                        <li>• Surface Iftar bundles near sunset</li>
+                        <li>• Adjust peak window prices</li>
+                    </ul>
+                </div>
+
+                <!-- Holiday Season -->
+                <div class="bg-lightgray rounded-2xl p-8 hover:shadow-2xl transition transform hover:scale-105 border-2 border-transparent hover:border-primary">
+                    <h3 class="text-3xl font-bold mb-6 text-primary">🎄 Holiday Season</h3>
+                    <ul class="space-y-3 text-lg">
+                        <li>• Push festive specials</li>
+                        <li>• Auto-price seasonal ingredients</li>
+                        <li>• Test holiday bundles</li>
+                    </ul>
+                </div>
+
+                <!-- Weather Swings -->
+                <div class="bg-lightgray rounded-2xl p-8 hover:shadow-2xl transition transform hover:scale-105 border-2 border-transparent hover:border-primary">
+                    <h3 class="text-3xl font-bold mb-6 text-primary">☀️ Weather Swings</h3>
+                    <ul class="space-y-3 text-lg">
+                        <li>• Promote warm comfort foods in cold snaps</li>
+                        <li>• Boost iced drinks in heatwaves</li>
+                        <li>• Dynamic seasonal pricing</li>
+                    </ul>
+                </div>
+
+                <!-- Diwali -->
+                <div class="bg-lightgray rounded-2xl p-8 hover:shadow-2xl transition transform hover:scale-105 border-2 border-transparent hover:border-primary">
+                    <h3 class="text-3xl font-bold mb-6 text-primary">🪔 Diwali & Cultural Events</h3>
+                    <ul class="space-y-3 text-lg">
+                        <li>• Feature culturally relevant dishes</li>
+                        <li>• Test special occasion bundles</li>
+                        <li>• Optimise for celebration times</li>
+                    </ul>
+                </div>
+
+                <!-- Lunar New Year -->
+                <div class="bg-lightgray rounded-2xl p-8 hover:shadow-2xl transition transform hover:scale-105 border-2 border-transparent hover:border-primary">
+                    <h3 class="text-3xl font-bold mb-6 text-primary">🧧 Lunar New Year</h3>
+                    <ul class="space-y-3 text-lg">
+                        <li>• Highlight auspicious dishes</li>
+                        <li>• Test festive menu designs</li>
+                        <li>• Price premium celebration items</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Who It's For -->
+    <section id="who" class="py-24 px-4 bg-gradient-to-br from-lightgray to-gray-100">
+        <div class="max-w-7xl mx-auto">
+            <h2 class="text-5xl md:text-6xl font-bold text-center mb-20">🎯 Who A\Bite Is For</h2>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="bg-white rounded-2xl p-8 text-center hover:shadow-2xl transition transform hover:scale-105">
+                    <div class="text-5xl mb-4">🏢</div>
+                    <h3 class="font-bold text-xl">Multi-location restaurants</h3>
+                </div>
+                <div class="bg-white rounded-2xl p-8 text-center hover:shadow-2xl transition transform hover:scale-105">
+                    <div class="text-5xl mb-4">🍔</div>
+                    <h3 class="font-bold text-xl">Fast casual chains</h3>
+                </div>
+                <div class="bg-white rounded-2xl p-8 text-center hover:shadow-2xl transition transform hover:scale-105">
+                    <div class="text-5xl mb-4">👻</div>
+                    <h3 class="font-bold text-xl">Ghost kitchens</h3>
+                </div>
+                <div class="bg-white rounded-2xl p-8 text-center hover:shadow-2xl transition transform hover:scale-105">
+                    <div class="text-5xl mb-4">🏨</div>
+                    <h3 class="font-bold text-xl">Hotels & venues</h3>
+                </div>
+                <div class="bg-white rounded-2xl p-8 text-center hover:shadow-2xl transition transform hover:scale-105">
+                    <div class="text-5xl mb-4">⭐</div>
+                    <h3 class="font-bold text-xl">High-volume independents</h3>
+                </div>
+                <div class="bg-white rounded-2xl p-8 text-center hover:shadow-2xl transition transform hover:scale-105">
+                    <div class="text-5xl mb-4">🏟️</div>
+                    <h3 class="font-bold text-xl">Stadiums & airports</h3>
+                </div>
+                <div class="bg-white rounded-2xl p-8 text-center hover:shadow-2xl transition transform hover:scale-105 col-span-2">
+                    <div class="text-5xl mb-4">📈</div>
+                    <h3 class="font-bold text-xl">Anyone who wants data-driven menus instead of guesswork</h3>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Big Idea -->
+    <section class="py-28 px-4 bg-gradient-to-r from-primary via-red-500 to-orange-500 text-white relative overflow-hidden">
+        <div class="absolute inset-0 opacity-10">
+            <div class="absolute top-10 right-10 w-64 h-64 bg-white rounded-full blur-3xl"></div>
+            <div class="absolute bottom-10 left-10 w-64 h-64 bg-white rounded-full blur-3xl"></div>
+        </div>
+        <div class="max-w-5xl mx-auto text-center relative z-10">
+            <h2 class="text-5xl md:text-6xl font-bold mb-10">💡 The Big Idea</h2>
+            <p class="text-3xl md:text-4xl font-bold mb-8 leading-relaxed">
+                Menus have been static for decades. <br>A\Bite turns them into living experiments.
+            </p>
+            <p class="text-xl md:text-2xl opacity-95 leading-relaxed">
+                Restaurants using A\Bite learn faster, adapt instantly, and earn more - powered by real-time pricing, true A/B testing, and intelligent decision-making automation.
+            </p>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="py-28 px-4 bg-white">
+        <div class="max-w-4xl mx-auto text-center">
+            <h2 class="text-5xl md:text-6xl font-bold mb-8">Ready to Transform Your Menu?</h2>
+            <p class="text-2xl text-gray-700 mb-12 leading-relaxed">
+                Join the future of restaurant operations. Start experimenting today.
+            </p>
+            <button class="bg-primary text-white px-14 py-6 rounded-xl text-2xl font-bold hover:bg-red-600 transition shadow-2xl hover:shadow-primary/50 transform hover:scale-105">
+                Get Started with A\Bite →
+            </button>
+            <p class="text-gray-600 mt-8 text-lg">No credit card required • Setup in minutes</p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-darkgray text-white py-16 px-4">
+        <div class="max-w-7xl mx-auto text-center">
+            <img src="{% static 'abite.png' %}" alt="A\Bite Logo" class="h-16 mx-auto mb-8">
+            <p class="text-gray-400 mb-6 text-xl">Experiment. Optimise. Serve Smarter.</p>
+            <p class="text-gray-500 text-sm">© 2024 A\Bite. All rights reserved.</p>
+        </div>
+    </footer>
+
+
+    <script>
+(function () {
+  const els = document.querySelectorAll('[data-target]');
+  if (!els.length) return;
+  els.forEach(el => {
+    const target = Number(el.getAttribute('data-target')) || 0;
+    const suffix = el.getAttribute('data-suffix') || '%';
+    const duration = 1200;
+    const fps = 60;
+    const steps = Math.max(Math.round((duration / 1000) * fps), 1);
+    let current = 0;
+    const increment = target / steps;
+    const start = performance.now();
+    function step(ts) {
+      const progress = Math.min((ts - start) / duration, 1);
+      const value = Math.floor(progress * target);
+      el.textContent = value + suffix;
+      if (progress < 1) requestAnimationFrame(step);
+      else el.textContent = target + suffix;
+    }
+    requestAnimationFrame(step);
+  });
+})();
+</script>
+
+
+</body>
+</html>
