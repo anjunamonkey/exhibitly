@@ -1,13 +1,14 @@
-# StoriApp
+# A/Bite
 
-A basic Django application with a beautiful landing page for story sharing and creation.
+A/Bite — menu optimisation and A/B testing for restaurants.
 
 ## Features
 
-- 📖 Create and publish stories
-- 📚 Discover content from other writers  
-- 👥 Connect with fellow readers and writers
-- Modern, responsive landing page design
+- AI-driven dynamic pricing
+- A/B testing for pricing, images, copy and menu order
+- Personalised menus via a conversational assistant
+- Automated promotions and waste reduction tools
+- Dashboard with charts, experiments and recommendations
 
 ## Setup Instructions
 
@@ -18,7 +19,7 @@ A basic Django application with a beautiful landing page for story sharing and c
 
 1. Clone or navigate to the project directory:
    ```bash
-   cd /Users/oliverdaniel/storiapp
+   cd /Users/oliverdaniel/ideas/abite
    ```
 
 2. Create and activate a virtual environment:
@@ -47,32 +48,32 @@ A basic Django application with a beautiful landing page for story sharing and c
 ## Project Structure
 
 ```
-storiapp/
+abite/
 ├── core/                 # Main Django app
-│   ├── templates/        # HTML templates
-│   ├── views.py         # View functions
-│   └── urls.py          # URL routing
-├── storiapp/            # Project settings
-│   ├── settings.py      # Django configuration
-│   └── urls.py          # Main URL configuration
-├── manage.py            # Django management script
-├── requirements.txt     # Python dependencies
-└── venv/               # Virtual environment
+│   ├── templates/        # HTML templates (core/ and app/)
+│   ├── views.py          # View functions
+│   └── urls.py           # URL routing
+├── abite/                # Project settings
+│   ├── settings.py       # Django configuration
+│   └── urls.py           # Main URL configuration
+├── manage.py             # Django management script
+├── requirements.txt      # Python dependencies
+└── venv/                 # Virtual environment
 ```
 
 ## Development
 
-To make changes to the landing page, edit:
-- `core/templates/core/landing.html` - HTML template and styling
-- `core/views.py` - View logic and context data
+To edit the public landing page:
+- `core/templates/core/abite.html` — main landing page template
+- `core/templates/core/header.html` — site header/navigation
+- `core/templates/core/footer.html` — site footer
 
-## Next Steps
+To edit the dashboard and app pages:
+- `core/templates/app/*.html` — application templates (dashboard, tests, etc.)
+- `core/views.py` — view logic serving dashboard and app pages
 
-This is a basic scaffold. You can extend it by:
-- Adding user authentication
-- Creating story models and forms
-- Adding a proper database (PostgreSQL, MySQL)
-- Implementing user profiles
-- Adding story creation and editing functionality
-- Setting up static file handling for CSS/JS
-- Adding more sophisticated styling with CSS frameworks
+## Notes
+
+- The dashboard entrypoint is available at `/dashboard/` in development.
+- Pages inside `core/templates/app/` are intentionally kept minimal and can omit the site footer to provide an app-like experience (see template includes).
+- Extend the project by adding auth, story/menu models, integrations with POS systems, and production static file handling.

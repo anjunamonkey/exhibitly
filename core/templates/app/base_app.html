@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script>
+        // Palette matched to core/abite.html (landing page)
         tailwind.config = {
             theme: {
                 extend: {
@@ -21,11 +22,6 @@
                         customgray: '#ECECEC',
                         lightgray: '#F7F7F7',
                         darkgray: '#1A1A1A',
-                        posthog: {
-                            yellow: '#F9BD2B',
-                            blue: '#1D4AFF',
-                            purple: '#B62AD9',
-                        }
                     }
                 }
             }
@@ -98,7 +94,7 @@
 <body class="bg-lightgray text-gray-900">
 
     <!-- Sidebar Navigation -->
-    {% include 'core/sidebar.html' %}
+    {% include 'app/sidebar.html' %}
     <!-- Main Content -->
     <div class="main-content pt-6 pb-12 px-8">
         {% block page_content %}{% endblock %}

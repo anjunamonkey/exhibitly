@@ -8,6 +8,8 @@ urlpatterns = [
     path('diners/', views.diners_page, name='diners_page'),  # Diners discount discovery page
     path('pricing/', views.pricing, name='pricing'),  # Pricing page
     path('dashboard/', views.dashboard, name='dashboard'),  # Dashboard page
+
+    path('app/menu/', views.menu_preview, name='menu_preview'),
     
     # Analytics Pages
     path('app/performance/', views.performance, name='performance'),

@@ -89,12 +89,15 @@
     <div class="bg-white rounded-2xl p-6 shadow-sm border-l-4 border-yellow-400">
         <div class="flex items-start gap-4">
             <div class="bg-yellow-100 rounded-full p-3">
-                <i class="fas fa-bolt text-yellow-600 text-xl"></i>
+                <i class="fas fa-bolt text-3xl"></i>
             </div>
             <div class="flex-1">
                 <div class="flex items-center gap-3 mb-2">
-                    <span class="bg-yellow-100 text-yellow-700 text-xs font-bold px-3 py-1 rounded-full">HIGH IMPACT</span>
-                    <span class="text-sm text-gray-500">5 hours ago</span>
+                    <i class="fas fa-bolt text-3xl"></i>
+                    <div>
+                        <div class="text-sm opacity-90">HIGH IMPACT</div>
+                        <div class="text-2xl font-bold">7</div>
+                    </div>
                 </div>
                 <h3 class="text-xl font-bold mb-2">Price Optimization Opportunity</h3>
                 <p class="text-gray-700 mb-4">Your Margherita Pizza is underpriced by £2.50 compared to competitors. Increasing price could add £12,480 annual revenue.</p>
@@ -151,7 +154,7 @@
                     </ul>
                 </div>
                 <div class="flex gap-3">
-                    <button class="bg-posthog-blue text-white px-6 py-2 rounded-xl font-semibold hover:opacity-90 transition">Auto-Optimize</button>
+                    <button class="bg-primary text-white px-6 py-2 rounded-xl font-semibold hover:opacity-90 transition">Auto-Optimize</button>
                     <button class="border border-gray-300 px-6 py-2 rounded-xl font-semibold hover:bg-gray-50 transition">Dismiss</button>
                 </div>
             </div>
@@ -184,7 +187,7 @@
                     </div>
                 </div>
                 <div class="flex gap-3">
-                    <button class="bg-posthog-purple text-white px-6 py-2 rounded-xl font-semibold hover:opacity-90 transition">Apply Layout</button>
+                    <button class="bg-primary text-white px-6 py-2 rounded-xl font-semibold hover:opacity-90 transition">Apply Layout</button>
                     <button class="border border-gray-300 px-6 py-2 rounded-xl font-semibold hover:bg-gray-50 transition">Preview Changes</button>
                 </div>
             </div>
@@ -263,34 +266,9 @@
 
     <div class="bg-white rounded-2xl p-6 shadow-sm">
         <h3 class="text-xl font-bold mb-6">Insight Categories</h3>
-        <div class="h-64">
-            <canvas id="insightCategoriesChart"></canvas>
+        <div class="h-64 flex items-center justify-center text-gray-600">
+            Charts removed — insights summarized above as cards.
         </div>
     </div>
 </div>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const ctx = document.getElementById('insightCategoriesChart');
-    if (ctx) {
-        new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: ['Pricing', 'Inventory', 'Layout', 'Seasonal', 'Promotion', 'Weather'],
-                datasets: [{
-                    label: 'Insights Generated',
-                    data: [7, 5, 3, 4, 6, 2],
-                    backgroundColor: ['#EA4949', '#1D4AFF', '#B62AD9', '#10B981', '#F9BD2B', '#6366F1']
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: { y: { beginAtZero: true } }
-            }
-        });
-    }
-});
-</script>
 {% endblock %}

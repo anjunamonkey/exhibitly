@@ -65,3 +65,6 @@ def integrations(request):
     """POS and third-party service integrations"""
     return render(request, 'app/integrations.html')
 
+def menu_preview(request):
+    """Live menu preview and testing environment"""
+    return render(request, 'app/menu_preview.html')

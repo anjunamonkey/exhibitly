@@ -10,6 +10,7 @@
 {% url 'core:promotions' as url_promotions %}
 {% url 'core:menu_settings' as url_menu_settings %}
 {% url 'core:integrations' as url_integrations %}
+{% url 'core:menu_preview' as url_menu %}
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -209,6 +210,10 @@
                <a href="{{ url_dashboard }}" onclick="switchSection('overview')" class="{% if request.path == url_dashboard %}sidebar-item active{% else %}sidebar-item{% endif %} flex items-center gap-3 px-4 py-3 rounded-lg cursor-pointer" data-section="overview">
                     <i class="fas fa-home text-lg w-5"></i>
                     <span class="font-medium">Overview</span>
+                </a>
+                <a href="{{ url_menu }}" onclick="switchSection('menu')" class="{% if request.path == url_menu %}sidebar-item active{% else %}sidebar-item{% endif %} flex items-center gap-3 px-4 py-3 rounded-lg cursor-pointer" data-section="menu">
+                    <i class="fas fa-utensils text-lg w-5"></i>
+                    <span class="font-medium">Digital Menu</span>
                 </a>
             </div>
             

@@ -270,8 +270,8 @@
 <div class="grid lg:grid-cols-2 gap-8">
     <div class="bg-white rounded-2xl p-6 shadow-sm">
         <h3 class="text-xl font-bold mb-6">Promotion Performance</h3>
-        <div class="h-64">
-            <canvas id="promotionChart"></canvas>
+        <div class="h-64 flex items-center justify-center text-gray-600">
+            Charts disabled — promotion performance shown as numeric tiles above.
         </div>
     </div>
 
@@ -314,37 +314,5 @@
     </div>
 </div>
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const ctx = document.getElementById('promotionChart');
-    if (ctx) {
-        new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: ['Weather', 'Happy Hour', 'Inventory', 'Events', 'BOGO', 'Seasonal'],
-                datasets: [{
-                    label: 'Revenue Impact (£)',
-                    data: [1535, 1892, 459, 987, 643, 1124],
-                    backgroundColor: ['#F9BD2B', '#B62AD9', '#EA4949', '#1D4AFF', '#10B981', '#F97316']
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            callback: function(value) {
-                                return '£' + value;
-                            }
-                        }
-                    }
-                }
-            }
-        });
-    }
-});
-</script>
+<!-- charts removed: promotion visuals replaced by numeric summaries -->
 {% endblock %}

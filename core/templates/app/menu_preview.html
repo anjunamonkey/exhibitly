@@ -1,0 +1,544 @@
+{% extends 'app/base_app.html' %}
+{% load static %}
+
+{% block title %}Menu (QR) – A/Bite{% endblock %}
+
+{% block page_content %}
+	<div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-6">
+		<div>
+			<h1 class="text-3xl font-bold">QR Menu — Reorder & Columns</h1>
+			<p class="text-sm text-gray-600 mt-1">Desktop & mobile optimised. Drag to reorder items, choose columns and share via QR code.</p>
+		</div>
+
+		<div class="flex items-center gap-3">
+			<!-- Columns -->
+			<div class="inline-flex items-center gap-2 bg-white rounded-xl p-2 shadow-sm">
+				<span class="text-xs text-gray-500">Columns</span>
+				<button id="cols1" class="px-3 py-1 rounded-md bg-primary text-white text-sm">1</button>
+				<button id="cols2" class="px-3 py-1 rounded-md bg-gray-100 text-gray-700 text-sm">2</button>
+				<button id="cols3" class="px-3 py-1 rounded-md bg-gray-100 text-gray-700 text-sm">3</button>
+			</div>
+
+			<!-- Images toggle -->
+			<label class="inline-flex items-center gap-2 bg-white rounded-xl p-2 px-3 shadow-sm">
+				<input id="toggleImages" type="checkbox" checked class="h-4 w-4">
+				<span class="text-xs text-gray-500">Images</span>
+			</label>
+
+			<!-- Reorder toggle -->
+			<button id="toggleReorder" class="px-4 py-2 bg-gray-100 rounded-xl text-sm hover:bg-gray-200">Enable Reorder</button>
+
+			<!-- QR -->
+			<img id="qrPreview" src="https://via.placeholder.com/72?text=QR" alt="QR preview" class="w-16 h-16 rounded-md border object-cover" />
+			<button id="showQR" class="px-4 py-2 bg-primary text-white rounded-xl text-sm">Show QR</button>
+		</div>
+	</div>
+
+	<!-- Preview toggle -->
+	<div class="flex items-center gap-3 mb-4">
+		<label class="inline-flex items-center gap-2 text-sm">
+			<input id="previewMobile" type="checkbox" class="rounded border-gray-300">
+			<span class="text-gray-600">Mobile preview</span>
+		</label>
+		<button id="saveOrder" class="ml-3 px-3 py-1 bg-primary text-white rounded-md text-sm">Save Order</button>
+		<button id="resetOrder" class="px-3 py-1 bg-gray-100 rounded-md text-sm">Reset</button>
+	</div>
+
+	<!-- AI filter / query box -->
+	<div class="flex items-center gap-3 mb-6">
+		<input id="aiFilterInput" type="text" placeholder="e.g. Vegetarian with nut allergy" class="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-primary" />
+		<button id="aiFilterBtn" class="px-4 py-2 bg-primary text-white rounded-xl text-sm">Filter</button>
+		<button id="aiClearFilter" class="px-4 py-2 bg-gray-100 rounded-xl text-sm">Clear</button>
+	</div>
+
+	<!-- Menu container -->
+	<div class="relative">
+		<!-- Mobile preview wrapper (applies when toggled) -->
+		<div id="previewWrapper" class="mx-auto">
+			<!-- grid will be injected here -->
+			<div id="menuGrid" class="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3"></div>
+		</div>
+	</div>
+
+	<!-- QR Modal -->
+	<div id="qrModal" aria-hidden="true" class="fixed inset-0 hidden items-center justify-center bg-black/50 z-50">
+		<div class="bg-white rounded-2xl p-6 w-full max-w-md">
+			<div class="flex justify-between items-center mb-4">
+				<h3 class="text-lg font-semibold">Share QR Menu</h3>
+				<button id="closeQR" class="text-gray-500">Close</button>
+			</div>
+			<div class="flex flex-col items-center gap-4">
+				<img id="qrImg" alt="QR code" class="w-48 h-48 bg-gray-100 rounded" />
+				<input id="menuLink" class="w-full px-3 py-2 border rounded text-sm" readonly />
+				<div class="flex gap-2 w-full">
+					<button id="copyLink" class="flex-1 px-3 py-2 bg-primary text-white rounded">Copy link</button>
+					<a id="openLink" class="flex-1 px-3 py-2 bg-gray-100 rounded text-center" target="_blank">Open</a>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Item Metrics Modal -->
+	<div id="itemModal" class="fixed inset-0 hidden items-center justify-center bg-black/60 z-50">
+		<div class="bg-white rounded-2xl w-full max-w-lg p-6 shadow-lg">
+			<div class="flex justify-between items-start gap-4 mb-4">
+				<div>
+					<h3 id="modalTitle" class="text-xl font-bold"></h3>
+					<div id="modalSubtitle" class="text-sm text-gray-500"></div>
+				</div>
+				<button id="closeItemModal" class="text-gray-600">Close</button>
+			</div>
+			<div class="flex gap-4">
+				<div id="modalImageWrap" class="w-32 h-32 bg-gray-100 rounded overflow-hidden flex-shrink-0">
+					<img id="modalImage" src="" alt="" class="w-full h-full object-cover">
+				</div>
+				<div class="flex-1">
+					<div class="grid grid-cols-3 gap-3 mb-4">
+						<div class="p-3 bg-gray-100 rounded text-center">
+							<div class="text-xs text-gray-600">Orders</div>
+							<div id="modalOrders" class="font-bold text-lg">—</div>
+						</div>
+						<div class="p-3 bg-gray-100 rounded text-center">
+							<div class="text-xs text-gray-600">Revenue</div>
+							<div id="modalRevenue" class="font-bold text-lg">—</div>
+						</div>
+						<div class="p-3 bg-gray-100 rounded text-center">
+							<div class="text-xs text-gray-600">Conversion</div>
+							<div id="modalConversion" class="font-bold text-lg">—</div>
+						</div>
+					</div>
+
+					<!-- new KPI row -->
+					<div class="grid grid-cols-3 gap-3 mb-4">
+						<div class="p-3 bg-gray-50 rounded text-center">
+							<div class="text-xs text-gray-600">Margin</div>
+							<div id="modalMargin" class="font-bold text-lg">—%</div>
+						</div>
+						<div class="p-3 bg-gray-50 rounded text-center">
+							<div class="text-xs text-gray-600">Waste Risk</div>
+							<div id="modalWaste" class="font-bold text-lg">—</div>
+						</div>
+						<div class="p-3 bg-gray-50 rounded text-center">
+							<div class="text-xs text-gray-600">Popularity</div>
+							<div id="modalPopularity" class="font-bold text-lg">—</div>
+						</div>
+					</div>
+
+					<div class="mb-3">
+						<div class="text-sm text-gray-600 mb-2">Recent trend</div>
+						<div id="modalTrendText" class="text-sm text-gray-700">Graph removed — showing numeric KPIs instead.</div>
+					</div>
+					<div class="mb-3">
+						<div class="text-sm text-gray-600 mb-2">Orders (last 7 days)</div>
+						<div id="modalOrdersText" class="text-sm text-gray-700">Graph removed — latest: <span id="modalOrdersInline">—</span> orders</div>
+					</div>
+
+					<!-- automated insights -->
+					<div>
+						<div class="text-sm font-semibold mb-2">Insights & recommendations</div>
+						<ul id="modalInsights" class="list-disc ml-5 text-sm text-gray-700 space-y-1"></ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<style>
+/* filepath: /Users/oliverdaniel/ideas/abite/core/templates/app/menu_qr.html (styles) */
+.menu-item { cursor: grab; }
+.menu-item.dragging { opacity: 0.6; transform: scale(0.98); }
+.drag-handle { cursor: grab; }
+.preview-mobile { max-width: 420px; margin: 0 auto; border-radius: 12px; box-shadow: 0 12px 30px rgba(0,0,0,0.12); overflow: hidden; }
+@media (max-width: 640px) {
+	#menuGrid { grid-template-columns: repeat(1, minmax(0,1fr)); }
+}
+
+/* new: hide images when toggled */
+.hide-images .menu-item img { display: none !important; }
+.hide-images .menu-item .relative.h-44 { min-height: 0; height: auto; }
+
+/* modal small adjustments */
+#itemModal { align-items: center; }
+</style>
+
+<script>
+/* filepath: /Users/oliverdaniel/ideas/abite/core/templates/app/menu_qr.html (script) */
+(function(){
+	// Sample menu items with semantic tags, 3-line descriptions and metrics (replaceable / can be server-supplied)
+	const DEFAULT_ITEMS = [
+		{ id: 'm1', title: 'Margherita Pizza', price: '£12.00', img: 'https://t3.ftcdn.net/jpg/04/44/86/70/360_F_444867086_79U7yvSiS6LaEWo8nN0ZYX8CJ7NhvhJh.jpg',
+		  desc: 'Tomato, buffalo mozzarella, basil. Freshly baked sourdough base. Classic Italian crowd-pleaser.',
+		  vegetarian: true, vegan: false, containsNuts: false,
+		  metrics: { orders: 234, revenue: 2808, conversion: 23.4, margin: 67, wasteRisk: 0.08, popularity: 92, history: [20,24,30,40,50,60,40] } },
+
+		{ id: 'm2', title: 'Classic Burger', price: '£13.50', img: 'https://images.unsplash.com/photo-1550547660-d9450f859349?w=800&q=60',
+		  desc: 'Beef patty, lettuce, tomato, house sauce. Served with fries. Popular hand-held comfort food.',
+		  vegetarian: false, vegan: false, containsNuts: false,
+		  metrics: { orders: 187, revenue: 2431, conversion: 21.0, margin: 54, wasteRisk: 0.12, popularity: 88, history: [15,18,22,35,45,55,33] } },
+
+		{ id: 'm3', title: 'Pasta Carbonara', price: '£14.00', img: 'https://upload.wikimedia.org/wikipedia/commons/3/33/Espaguetis_carbonara.jpg',
+		  desc: 'Creamy sauce, pancetta, parmesan. Silky texture with house-seasoned pepper. Chef special.',
+		  vegetarian: false, vegan: false, containsNuts: false,
+		  metrics: { orders: 156, revenue: 2184, conversion: 18.5, margin: 71, wasteRisk: 0.05, popularity: 74, history: [10,12,18,28,38,48,30] } },
+
+		{ id: 'm4', title: 'Caesar Salad', price: '£9.00', img: 'https://images.unsplash.com/photo-1551218808-94e220e084d2?w=800&q=60',
+		  desc: 'Romaine, parmesan, croutons. Creamy house dressing on the side. Light & refreshing.',
+		  vegetarian: true, vegan: false, containsNuts: false,
+		  metrics: { orders: 143, revenue: 1287, conversion: 16.2, margin: 40, wasteRisk: 0.35, popularity: 60, history: [8,10,12,20,30,40,22] } },
+
+		{ id: 'm5', title: 'Chocolate Cake', price: '£6.50', img: 'https://images.unsplash.com/photo-1544025162-d76694265947?w=800&q=60',
+		  desc: 'Rich chocolate, whipped cream. Decadent layers with ganache. A sweet finish.',
+		  vegetarian: true, vegan: false, containsNuts: true,
+		  metrics: { orders: 98, revenue: 637, conversion: 9.8, margin: 62, wasteRisk: 0.22, popularity: 48, history: [5,8,10,12,18,25,20] } },
+
+		{ id: 'm6', title: 'Ramen Bowl', price: '£11.00', img: 'https://images.unsplash.com/photo-1553621042-f6e147245754?w=800&q=60',
+		  desc: 'Savory broth, noodles, egg. Slow-cooked stock with umami depth. Served piping hot.',
+		  vegetarian: false, vegan: false, containsNuts: false,
+		  metrics: { orders: 112, revenue: 1232, conversion: 12.5, margin: 58, wasteRisk: 0.10, popularity: 66, history: [9,11,15,22,28,35,18] } }
+	];
+
+	const storeKey = 'abite_menu_order_v1';
+	let items = [];
+	const grid = document.getElementById('menuGrid');
+	const previewWrapper = document.getElementById('previewWrapper');
+
+	// Column controls
+	const colsBtns = {1: document.getElementById('cols1'), 2: document.getElementById('cols2'), 3: document.getElementById('cols3')};
+	let cols = 3;
+	function applyCols(n){
+		cols = n;
+		// Tailwind classes already present in CSS; toggle utility classes
+		grid.className = 'grid gap-6 ' + (n===1 ? 'grid-cols-1 md:grid-cols-1 lg:grid-cols-1' : n===2 ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-2' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3');
+		Object.keys(colsBtns).forEach(k=>colsBtns[k].classList.toggle('bg-primary', Number(k)===n));
+		Object.keys(colsBtns).forEach(k=>colsBtns[k].classList.toggle('text-white', Number(k)===n));
+	}
+	colsBtns[1].addEventListener('click', ()=>applyCols(1));
+	colsBtns[2].addEventListener('click', ()=>applyCols(2));
+	colsBtns[3].addEventListener('click', ()=>applyCols(3));
+	applyCols(3);
+
+	// Reorder toggle
+	let reorderEnabled = false;
+	const toggleReorder = document.getElementById('toggleReorder');
+	toggleReorder.addEventListener('click', ()=>{
+		reorderEnabled = !reorderEnabled;
+		toggleReorder.textContent = reorderEnabled ? 'Disable Reorder' : 'Enable Reorder';
+		renderItems();
+	});
+
+	// Save / reset
+	document.getElementById('saveOrder').addEventListener('click', ()=> {
+		localStorage.setItem(storeKey, JSON.stringify(items.map(i=>i.id)));
+		alert('Order saved');
+	});
+	document.getElementById('resetOrder').addEventListener('click', ()=> {
+		localStorage.removeItem(storeKey);
+		items = DEFAULT_ITEMS.slice();
+		renderItems();
+	});
+
+	// QR modal
+	const qrModal = document.getElementById('qrModal');
+	const qrImg = document.getElementById('qrImg');
+	const menuLink = document.getElementById('menuLink');
+	const showQR = document.getElementById('showQR');
+	const closeQR = document.getElementById('closeQR');
+	const copyLink = document.getElementById('copyLink');
+	const openLink = document.getElementById('openLink');
+
+	// Item modal elements
+	const itemModal = document.getElementById('itemModal');
+	const closeItemModal = document.getElementById('closeItemModal');
+	const modalTitle = document.getElementById('modalTitle');
+	const modalSubtitle = document.getElementById('modalSubtitle');
+	const modalImage = document.getElementById('modalImage');
+	const modalImageWrap = document.getElementById('modalImageWrap');
+	const modalOrders = document.getElementById('modalOrders');
+	const modalRevenue = document.getElementById('modalRevenue');
+	const modalConversion = document.getElementById('modalConversion');
+	const modalMargin = document.getElementById('modalMargin');
+	const modalWaste = document.getElementById('modalWaste');
+	const modalPopularity = document.getElementById('modalPopularity');
+	const modalInsights = document.getElementById('modalInsights');
+	const modalBar = document.getElementById('modalBar');
+	const modalSparkline = document.getElementById('modalSparkline');
+
+	// --- New: openItemModal & modal close wiring ---
+	function openItemModal(it){
+		// Populate textual fields
+		modalTitle.textContent = it.title || '';
+		modalSubtitle.textContent = (it.price ? it.price + ' • ' : '') + (it.desc ? it.desc : '');
+		// Image
+		if(it.img){
+			modalImage.src = it.img;
+			modalImage.alt = it.title || '';
+			modalImageWrap.classList.remove('hidden');
+		} else {
+			modalImageWrap.classList.add('hidden');
+		}
+		// Metrics (guard for missing metrics)
+		const m = it.metrics || {};
+		modalOrders.textContent = m.orders ?? '—';
+		modalRevenue.textContent = (m.revenue !== undefined) ? '£' + m.revenue : '—';
+		modalConversion.textContent = (m.conversion !== undefined) ? String(m.conversion) + '%' : '—';
+		modalMargin.textContent = (m.margin !== undefined) ? String(m.margin) + '%' : '—%';
+		modalWaste.textContent = (m.wasteRisk !== undefined) ? (Math.round((m.wasteRisk||0)*100) + '%') : '—';
+		modalPopularity.textContent = (m.popularity !== undefined) ? String(m.popularity) + '%' : '—';
+		// Orders inline and trend text
+		const ordersInline = document.getElementById('modalOrdersInline');
+		if(ordersInline) ordersInline.textContent = m.orders ?? '—';
+		const modalTrendText = document.getElementById('modalTrendText');
+		if(modalTrendText){
+			modalTrendText.textContent = 'Showing latest numeric KPIs. Recent history: ' + (m.history ? m.history.join(', ') : '—');
+		}
+		// Insights: simple automated suggestions
+		modalInsights.innerHTML = '';
+		if(m.margin !== undefined){
+			const li = document.createElement('li');
+			li.textContent = (m.margin < 50) ? 'Consider a slight price increase or supplier optimisation to improve margin.' : 'Margin healthy for this item.';
+			modalInsights.appendChild(li);
+		}
+		if(m.wasteRisk !== undefined){
+			const li = document.createElement('li');
+			li.textContent = (m.wasteRisk > 0.2) ? 'High waste risk — review prep quantities.' : 'Waste risk within expected range.';
+			modalInsights.appendChild(li);
+		}
+		// Show modal
+		itemModal.classList.remove('hidden');
+		itemModal.classList.add('flex');
+	}
+
+	// Close item modal button
+	if(closeItemModal){
+		closeItemModal.addEventListener('click', ()=> {
+			itemModal.classList.add('hidden');
+			itemModal.classList.remove('flex');
+		});
+	}
+	// Close when clicking outside modal content
+	itemModal.addEventListener('click', (e)=> {
+		if(e.target === itemModal){
+			itemModal.classList.add('hidden');
+			itemModal.classList.remove('flex');
+		}
+	});
+
+	showQR.addEventListener('click', ()=> {
+		const url = window.location.href;
+		menuLink.value = url;
+		const qrSrc = 'https://chart.googleapis.com/chart?cht=qr&chs=300x300&chl=' + encodeURIComponent(url);
+		qrImg.src = qrSrc;
+		// also update the small preview on the page
+		const qrPreview = document.getElementById('qrPreview');
+		if(qrPreview) qrPreview.src = qrSrc;
+		openLink.href = url;
+		qrModal.classList.remove('hidden');
+		qrModal.classList.add('flex');
+	});
+	closeQR.addEventListener('click', ()=> { qrModal.classList.add('hidden'); qrModal.classList.remove('flex'); });
+	copyLink.addEventListener('click', async ()=> {
+		try { await navigator.clipboard.writeText(menuLink.value); alert('Link copied'); } catch(e){ alert('Copy failed'); }
+	});
+
+	// Mobile preview toggle
+	document.getElementById('previewMobile').addEventListener('change', (e)=>{
+		if(e.target.checked){ previewWrapper.classList.add('preview-mobile'); } else { previewWrapper.classList.remove('preview-mobile'); }
+	});
+
+	// Images toggle logic
+	const toggleImagesEl = document.getElementById('toggleImages');
+	toggleImagesEl.addEventListener('change', (e)=> {
+		if(!e.target.checked) previewWrapper.classList.add('hide-images');
+		else previewWrapper.classList.remove('hide-images');
+	});
+
+	// Drag & drop handlers
+	let dragId = null;
+	function onDragStart(e){
+		const el = e.currentTarget;
+		dragId = el.dataset.id;
+		el.classList.add('dragging');
+		e.dataTransfer.effectAllowed = 'move';
+	}
+	function onDragEnd(e){
+		e.currentTarget.classList.remove('dragging');
+		dragId = null;
+	}
+	function onDragOver(e){
+		e.preventDefault();
+		const target = e.currentTarget;
+		target.classList.add('ring-2','ring-primary','ring-offset-2');
+	}
+	function onDragLeave(e){
+		e.currentTarget.classList.remove('ring-2','ring-primary','ring-offset-2');
+	}
+	function onDrop(e){
+		e.preventDefault();
+		const target = e.currentTarget;
+		target.classList.remove('ring-2','ring-primary','ring-offset-2');
+		const toId = target.dataset.id;
+		if(!dragId || dragId===toId) return;
+		const fromIndex = items.findIndex(i=>i.id===dragId);
+		const toIndex = items.findIndex(i=>i.id===toId);
+		const [moved] = items.splice(fromIndex,1);
+		items.splice(toIndex,0,moved);
+		renderItems();
+	}
+
+	// Render function
+	function renderItems(){
+		grid.innerHTML = '';
+		items.forEach(it=>{
+			const card = document.createElement('article');
+			card.className = 'menu-item bg-white rounded-2xl shadow-sm overflow-hidden flex flex-col';
+			card.setAttribute('data-id', it.id);
+			card.setAttribute('draggable', reorderEnabled ? 'true' : 'false');
+			card.innerHTML = `
+				<div class="relative h-44 w-full overflow-hidden bg-gray-100">
+					<img src="${it.img}" alt="${escapeHtml(it.title)}" class="object-cover w-full h-full">
+					${reorderEnabled ? '<div class="absolute top-2 left-2 bg-white/80 rounded-full p-2 drag-handle" title="Drag to reorder"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"/></svg></div>' : ''}
+				</div>
+				<div class="p-4 flex-1 flex flex-col">
+					<div class="flex items-start justify-between">
+						<h3 class="text-lg font-semibold">${escapeHtml(it.title)}</h3>
+						<div class="text-sm font-bold text-gray-800">${escapeHtml(it.price)}</div>
+					</div>
+					<!-- tags / pills -->
+					<div class="mt-2 flex flex-wrap gap-2">
+						${it.vegan ? '<span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">Vegan</span>' : ''}
+						${it.vegetarian && !it.vegan ? '<span class="text-xs bg-emerald-100 text-emerald-800 px-2 py-1 rounded-full">Vegetarian</span>' : ''}
+						${it.containsNuts ? '<span class="text-xs bg-red-100 text-red-800 px-2 py-1 rounded-full">Contains nuts</span>' : ''}
+					</div>
+					<p class="text-sm text-gray-600 mt-2 flex-1">${escapeHtml(it.desc)}</p>
+					<div class="mt-4 flex items-center gap-2">
+						<button class="px-3 py-1 bg-primary text-white rounded-md text-sm add-cart">Add</button>
+						<button class="px-3 py-1 border rounded-md text-sm view-more">Details</button>
+					</div>
+				</div>
+			`;
+			// attach drag handlers if enabled
+			if(reorderEnabled){
+				card.addEventListener('dragstart', onDragStart);
+				card.addEventListener('dragend', onDragEnd);
+				card.addEventListener('dragover', onDragOver);
+				card.addEventListener('dragleave', onDragLeave);
+				card.addEventListener('drop', onDrop);
+			}
+			// open metrics modal when clicking the card (but not when reordering or clicking buttons)
+			card.addEventListener('click', function(e){
+				if(reorderEnabled) return;
+				if(e.target.closest('button') || e.target.closest('.drag-handle')) return;
+				openItemModal(it);
+			});
+			grid.appendChild(card);
+		});
+	}
+
+	// Escape helper
+	function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+	// Initialize items from storage or default
+	(function init(){
+		const saved = localStorage.getItem(storeKey);
+		if(saved){
+			const ids = JSON.parse(saved);
+			// build items array with saved order
+			const map = Object.fromEntries(DEFAULT_ITEMS.map(i=>[i.id,i]));
+			items = ids.map(id => map[id]).filter(Boolean);
+			// include any missing items
+			DEFAULT_ITEMS.forEach(d => { if(!items.find(i=>i.id===d.id)) items.push(d); });
+		} else {
+			items = DEFAULT_ITEMS.slice();
+		}
+		renderItems();
+	})();
+
+	// Optional: small hook for add-cart / details (can be wired to backend)
+	grid.addEventListener('click', (e)=> {
+		const btn = e.target.closest('button');
+		if(!btn) return;
+		const card = e.target.closest('[data-id]');
+		if(!card) return;
+		const id = card.dataset.id;
+		if(btn.classList.contains('add-cart')){ alert('Added ' + items.find(i=>i.id===id).title); }
+		if(btn.classList.contains('view-more')){ alert(items.find(i=>i.id===id).desc); }
+	});
+
+	// --- AI-style filter helpers (uses simple keyword matching) ---
+	const aiInput = document.getElementById('aiFilterInput');
+	const aiBtn = document.getElementById('aiFilterBtn');
+	const aiClear = document.getElementById('aiClearFilter');
+
+	function parsePreferences(text){
+		if(!text) return {};
+		const t = text.toLowerCase();
+		return {
+			vegetarian: /vegetarian|veg(?!an)|plant-based/.test(t),
+			vegan: /vegan/.test(t),
+			nutAllergy: /nut allergy|no nuts|nut-free|without nuts|allergy to nuts/.test(t),
+			nonSpicy: /non-spicy|no spice|not spicy|mild/.test(t)
+		};
+	}
+
+	function applyFilterFromInput(){
+		const q = aiInput.value.trim();
+		const prefs = parsePreferences(q);
+		// build filtered items based on prefs
+		if(!q){
+			items = (localStorage.getItem(storeKey) ? (() => {
+				const ids = JSON.parse(localStorage.getItem(storeKey)||'[]');
+				const map = Object.fromEntries(DEFAULT_ITEMS.map(i=>[i.id,i]));
+				const ordered = ids.map(id=>map[id]).filter(Boolean);
+				DEFAULT_ITEMS.forEach(d => { if(!ordered.find(i=>i?.id===d.id)) ordered.push(d); });
+				return ordered;
+			})() : DEFAULT_ITEMS.slice());
+			renderItems();
+			return;
+		}
+		let filtered = DEFAULT_ITEMS.filter(it => {
+			if(prefs.vegan && !it.vegan) return false;
+			if(prefs.vegetarian && !it.vegetarian) return false;
+			if(prefs.nutAllergy && it.containsNuts) return false;
+			if(prefs.nonSpicy && /spicy|chili|chili|pepper/i.test(it.desc)) return false;
+			// fallback: match keywords in title/desc
+			return true;
+		});
+		// further narrow by keywords appearing in title/desc
+		if(q && filtered.length){
+			const kw = q.toLowerCase();
+			filtered = filtered.filter(it => (it.title + ' ' + it.desc).toLowerCase().includes(kw) || Object.values(it.metrics||{}).join(' ').includes(kw));
+			if(!filtered.length){
+				// if too strict, fallback to the earlier filtered set
+				filtered = DEFAULT_ITEMS.filter(it => {
+					if(prefs.vegan && !it.vegan) return false;
+					if(prefs.vegetarian && !it.vegetarian) return false;
+					if(prefs.nutAllergy && it.containsNuts) return false;
+					if(prefs.nonSpicy && /spicy|chili|pepper/i.test(it.desc)) return false;
+					return true;
+				});
+			}
+		}
+		items = filtered.slice();
+		renderItems();
+	}
+
+	aiBtn.addEventListener('click', applyFilterFromInput);
+	aiInput.addEventListener('keydown', (e)=> { if(e.key === 'Enter'){ e.preventDefault(); applyFilterFromInput(); }});
+	aiClear.addEventListener('click', ()=>{
+		aiInput.value = '';
+		// restore saved order or default
+		const saved = localStorage.getItem(storeKey);
+		if(saved){
+			const ids = JSON.parse(saved);
+			const map = Object.fromEntries(DEFAULT_ITEMS.map(i=>[i.id,i]));
+			items = ids.map(id => map[id]).filter(Boolean);
+			DEFAULT_ITEMS.forEach(d => { if(!items.find(i=>i.id===d.id)) items.push(d); });
+		} else {
+			items = DEFAULT_ITEMS.slice();
+		}
+		renderItems();
+	});
+})();
+</script>
+{% endblock %}

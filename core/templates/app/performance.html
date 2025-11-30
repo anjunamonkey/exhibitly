@@ -34,7 +34,7 @@
     <div class="bg-white rounded-2xl p-6 shadow-sm">
         <div class="flex items-center justify-between mb-3">
             <span class="text-gray-600 text-sm font-medium">Orders</span>
-            <i class="fas fa-shopping-bag text-posthog-blue"></i>
+            <i class="fas fa-shopping-bag text-primary"></i>
         </div>
         <div class="text-3xl font-bold mb-2">1,973</div>
         <div class="flex items-center text-sm">
@@ -46,7 +46,7 @@
     <div class="bg-white rounded-2xl p-6 shadow-sm">
         <div class="flex items-center justify-between mb-3">
             <span class="text-gray-600 text-sm font-medium">Avg Order Value</span>
-            <i class="fas fa-chart-line text-posthog-purple"></i>
+            <i class="fas fa-chart-line text-primary"></i>
         </div>
         <div class="text-3xl font-bold mb-2">£24.52</div>
         <div class="flex items-center text-sm">
@@ -71,8 +71,8 @@
 <!-- Revenue Chart -->
 <div class="bg-white rounded-2xl p-6 shadow-sm mb-8">
     <h3 class="text-xl font-bold mb-4">Revenue Trend</h3>
-    <div class="h-80">
-        <canvas id="revenueChart"></canvas>
+    <div class="h-80 flex items-center justify-center text-gray-600">
+        Charts disabled — revenue trend shown as KPIs above.
     </div>
 </div>
 
@@ -141,8 +141,8 @@
 
     <div class="bg-white rounded-2xl p-6 shadow-sm">
         <h3 class="text-xl font-bold mb-6">Peak Hours Analysis</h3>
-        <div class="h-64">
-            <canvas id="peakHoursChart"></canvas>
+        <div class="h-64 flex items-center justify-center text-gray-600">
+            Charts disabled — see Peak Hours summary above.
         </div>
         <div class="mt-4 p-4 bg-blue-50 rounded-xl">
             <p class="text-sm text-gray-700"><strong>💡 Insight:</strong> Your busiest hours are 12-2pm and 6-8pm. Consider dynamic pricing during off-peak hours to drive demand.</p>
@@ -208,66 +208,5 @@
     </div>
 </div>
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Revenue Chart
-    const revenueCtx = document.getElementById('revenueChart');
-    if (revenueCtx) {
-        new Chart(revenueCtx, {
-            type: 'line',
-            data: {
-                labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
-                datasets: [{
-                    label: 'Revenue',
-                    data: [10200, 11800, 12400, 14000],
-                    borderColor: '#EA4949',
-                    backgroundColor: 'rgba(234,73,73,0.1)',
-                    fill: true,
-                    tension: 0.4,
-                    borderWidth: 3
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { display: false }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            callback: function(value) {
-                                return '£' + value.toLocaleString();
-                            }
-                        }
-                    }
-                }
-            }
-        });
-    }
-
-    // Peak Hours Chart
-    const peakCtx = document.getElementById('peakHoursChart');
-    if (peakCtx) {
-        new Chart(peakCtx, {
-            type: 'bar',
-            data: {
-                labels: ['6am', '8am', '10am', '12pm', '2pm', '4pm', '6pm', '8pm', '10pm'],
-                datasets: [{
-                    label: 'Orders',
-                    data: [12, 34, 67, 156, 143, 45, 178, 134, 56],
-                    backgroundColor: '#1D4AFF'
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: { y: { beginAtZero: true } }
-            }
-        });
-    }
-});
-</script>
+<!-- charts removed: revenue and peak-hours visualizations replaced by textual summaries/KPIs -->
 {% endblock %}
