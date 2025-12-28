@@ -48,7 +48,7 @@ MIDDLEWARE = [
         'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'storiapp.urls'
+ROOT_URLCONF = 'abite.urls'
 
 TEMPLATES = [
     {
@@ -65,7 +65,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'storiapp.wsgi.application'
+WSGI_APPLICATION = 'abite.wsgi.application'
 
 
 # Database
