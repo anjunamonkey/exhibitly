@@ -23,7 +23,7 @@ SECRET_KEY = 'django-insecure-2d5%0un1g1jp@#oyermkr_gs*lx$*1!mj(ysj_9#nt*=v+h2qs
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['abite-a502a74b0578.herokuapp.com', 'localhost', '127.0.0.1', 'abite.food', 'www.abite.food']
 
 
 # Application definition
