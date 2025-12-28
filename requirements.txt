@@ -1,1 +1,4 @@
 Django==5.2.1
+asgiref==3.11.0
+gunicorn
+sqlparse==0.5.3
