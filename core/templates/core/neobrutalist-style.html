@@ -1,0 +1,59 @@
+<style>
+            :root{
+            --neo-primary: #EA4949;
+            --neo-black: #1A1A1A;
+            --neo-bg: #F7F7F7;
+            --neo-off: #FFFFFF;
+        }
+
+        /* base */
+        html,body { height:100%; }
+        body {
+            background: var(--neo-bg) !important;
+            color: var(--neo-black) !important;
+            font-family: 'Nunito', sans-serif;
+            -webkit-font-smoothing:antialiased;
+        }
+        /* headings use the monospace display */
+        h1,h2,h3,h4 { font-family: 'Nunito', sans-serif; letter-spacing:0.02em; color:var(--neo-black); }
+
+        /* remove soft rounding and shadows */
+        /* .rounded-2xl, .rounded-xl, .rounded-lg, .rounded { border-radius: 3px !important; } */
+        [class*="shadow-"] { box-shadow: none !important; }
+
+        /* strong boxed cards */
+        .bg-white, .bg-lightgray, .bg-customgray, .bg-offwhite {
+            background: var(--neo-off) !important;
+            border: 3px solid var(--neo-black) !important;
+            color: var(--neo-black) !important;
+        }
+
+        /* primary blocks */
+        .bg-primary {
+            background: var(--neo-primary) !important;
+            color: var(--neo-black) !important;
+            border: 3px solid var(--neo-black) !important;
+        }
+
+        /* blocky buttons */
+        button, .btn {
+            border:3px solid var(--neo-black) !important;
+            background: var(--neo-primary) !important;
+            color: var(--neo-black) !important;
+            padding: .9rem 1.2rem !important;
+            font-weight: 900 !important;
+            border-radius: 0.5rem !important;
+            box-shadow: none !important;
+        }
+
+        /* image frames */
+
+        /* utility tweaks */
+        .neo-outline { outline: 4px dashed rgba(0,0,0,0.08); }
+        .text-primary { color: var(--neo-primary) !important; }
+        .text-neo-black { color: var(--neo-black) !important; }
+
+        /* reduce subtle translucency used elsewhere */
+        .bg-white/10, .bg-white/20, .bg-darkgray/80, [class*="/10"] { background: var(--neo-off) !important; opacity: 1 !important; }
+
+</style>

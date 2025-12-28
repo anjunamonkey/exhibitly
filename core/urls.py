@@ -5,6 +5,9 @@ app_name = 'core'
 
 urlpatterns = [
     path('', views.landing_page, name='landing_page'),  # Root URL goes to landing page
+    path('menu-analysis-results/', views.menu_analysis_results, name='menu_analysis_results'),
+    path('questionnaire/', views.questionnaire, name='questionnaire'),
+
     path('diners/', views.diners_page, name='diners_page'),  # Diners discount discovery page
     path('pricing/', views.pricing, name='pricing'),  # Pricing page
     path('dashboard/', views.dashboard, name='dashboard'),  # Dashboard page

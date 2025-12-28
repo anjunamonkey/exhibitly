@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restaurant Questionnaire – A/Bite</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Nunito', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: '#EA4949',
+                        customgray: '#ECECEC',
+                        lightgray: '#F7F7F7',
+                        darkgray: '#1A1A1A',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Neobrutalist visual overrides -->
+    <style>
+        :root{
+            --neo-primary: #EA4949;
+            --neo-black: #1A1A1A;
+            --neo-bg: #F7F7F7;
+            --neo-off: #FFFFFF;
+        }
+
+        html,body { height:100%; }
+        body {
+            background: var(--neo-bg) !important;
+            color: var(--neo-black) !important;
+            font-family: 'Nunito', sans-serif;
+            -webkit-font-smoothing:antialiased;
+        }
+        h1,h2,h3,h4 { font-family: 'Nunito', sans-serif; letter-spacing:0.02em; color:var(--neo-black); }
+
+        .rounded-2xl, .rounded-xl, .rounded-lg, .rounded { border-radius: 6px !important; }
+        [class*="shadow-"] { box-shadow: none !important; }
+
+        .bg-white, .bg-lightgray, .bg-customgray, .bg-offwhite {
+            background: var(--neo-off) !important;
+            border: 6px solid var(--neo-black) !important;
+            color: var(--neo-black) !important;
+        }
+
+        .bg-primary {
+            background: var(--neo-primary) !important;
+            color: var(--neo-black) !important;
+            border: 6px solid var(--neo-black) !important;
+        }
+
+        button, .btn {
+            border:6px solid var(--neo-black) !important;
+            background: var(--neo-primary) !important;
+            color: var(--neo-black) !important;
+            padding: .9rem 1.2rem !important;
+            font-weight: 900 !important;
+            border-radius: 8px !important;
+            box-shadow: none !important;
+            cursor: pointer;
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Checkbox styling */
+        .option-card {
+            background: var(--neo-off);
+            border: 6px solid var(--neo-black);
+            border-radius: 6px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .option-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .option-card.selected {
+            background: var(--neo-primary);
+            border-color: var(--neo-black);
+        }
+
+        .option-card input[type="checkbox"] {
+            width: 24px;
+            height: 24px;
+            border: 4px solid var(--neo-black);
+            cursor: pointer;
+        }
+
+        .text-primary { color: var(--neo-primary) !important; }
+        .text-neo-black { color: var(--neo-black) !important; }
+
+        /* Progress bar */
+        .progress-bar {
+            height: 12px;
+            background: var(--neo-off);
+            border: 4px solid var(--neo-black);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--neo-primary);
+            border-right: 4px solid var(--neo-black);
+            transition: width 0.3s;
+        }
+
+        /* Stage transitions */
+        .stage {
+            display: none;
+        }
+
+        .stage.active {
+            display: block;
+            animation: slideIn 0.3s;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+    </style>
+</head>
+<body class="bg-lightgray text-gray-900">
+    {% include 'core/header.html' %}
+
+    <div class="pt-32 pb-20 px-4 min-h-screen">
+        <div class="max-w-4xl mx-auto">
+            <!-- Progress bar -->
+            <div class="mb-8">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-sm font-bold">Progress</span>
+                    <span class="text-sm font-bold" id="progress-text">Step 1 of 5</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill" style="width: 20%;"></div>
+                </div>
+            </div>
+
+            <!-- Main card -->
+            <div class="bg-white rounded-2xl p-8 md:p-12">
+                <!-- Stage 1: Service Type -->
+                <div class="stage active" id="stage-1">
+                    <div class="text-center mb-8">
+                        <div class="text-6xl mb-4">🍽️</div>
+                        <h1 class="text-4xl md:text-5xl font-bold mb-4">How do you serve customers?</h1>
+                        <p class="text-lg text-gray-600">Select all that apply</p>
+                    </div>
+
+                    <div class="space-y-4 mb-8">
+                        <label class="option-card block">
+                            <div class="flex items-center gap-4">
+                                <input type="checkbox" name="service-type" value="in-person" class="service-checkbox">
+                                <div class="flex-1">
+                                    <div class="text-3xl mb-2">🏪</div>
+                                    <h3 class="font-bold text-xl mb-1">In-person venue</h3>
+                                    <p class="text-sm text-gray-600">Customers dine at your restaurant</p>
+                                </div>
+                            </div>
+                        </label>
+
+                        <label class="option-card block">
+                            <div class="flex items-center gap-4">
+                                <input type="checkbox" name="service-type" value="delivery" class="service-checkbox">
+                                <div class="flex-1">
+                                    <div class="text-3xl mb-2">🚗</div>
+                                    <h3 class="font-bold text-xl mb-1">Delivery / Online ordering</h3>
+                                    <p class="text-sm text-gray-600">Orders via apps or your website for delivery</p>
+                                </div>
+                            </div>
+                        </label>
+
+                        <label class="option-card block">
+                            <div class="flex items-center gap-4">
+                                <input type="checkbox" name="service-type" value="click-collect" class="service-checkbox">
+                                <div class="flex-1">
+                                    <div class="text-3xl mb-2">🥡</div>
+                                    <h3 class="font-bold text-xl mb-1">Click & Collect</h3>
+                                    <p class="text-sm text-gray-600">Customers order online and pick up</p>
+                                </div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <button id="stage-1-continue" class="w-full bg-primary text-white px-8 py-4 rounded-xl text-xl font-bold" disabled>
+                        Continue →
+                    </button>
+                </div>
+
+                <!-- Stage 2: In-Person Details -->
+                <div class="stage" id="stage-2">
+                    <div class="text-center mb-8">
+                        <div class="text-6xl mb-4">📋</div>
+                        <h2 class="text-4xl md:text-5xl font-bold mb-4">In-person venue setup</h2>
+                        <p class="text-lg text-gray-600">Tell us about your in-venue experience</p>
+                    </div>
+
+                    <div class="space-y-6 mb-8">
+                        <div>
+                            <label class="block font-bold text-lg mb-3">What type of menus do you use?</label>
+                            <div class="space-y-3">
+                                <label class="option-card block">
+                                    <div class="flex items-center gap-4">
+                                        <input type="checkbox" name="menu-type" value="printed" class="menu-type-checkbox">
+                                        <div class="flex-1">
+                                            <h4 class="font-bold">📄 Printed / Physical menus</h4>
+                                            <p class="text-sm text-gray-600">Traditional paper menus</p>
+                                        </div>
+                                    </div>
+                                </label>
+
+                                <label class="option-card block">
+                                    <div class="flex items-center gap-4">
+                                        <input type="checkbox" name="menu-type" value="digital" class="menu-type-checkbox">
+                                        <div class="flex-1">
+                                            <h4 class="font-bold">📱 Digital menus (QR codes, tablets)</h4>
+                                            <p class="text-sm text-gray-600">Customers scan QR or use tablets</p>
+                                        </div>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block font-bold text-lg mb-3">How do customers order?</label>
+                            <div class="space-y-3">
+                                <label class="option-card block">
+                                    <div class="flex items-center gap-4">
+                                        <input type="checkbox" name="order-method" value="waiter" class="order-method-checkbox">
+                                        <div class="flex-1">
+                                            <h4 class="font-bold">👨‍🍳 Through wait staff</h4>
+                                        </div>
+                                    </div>
+                                </label>
+
+                                <label class="option-card block">
+                                    <div class="flex items-center gap-4">
+                                        <input type="checkbox" name="order-method" value="counter" class="order-method-checkbox">
+                                        <div class="flex-1">
+                                            <h4 class="font-bold">🏪 At the counter</h4>
+                                        </div>
+                                    </div>
+                                </label>
+
+                                <label class="option-card block">
+                                    <div class="flex items-center gap-4">
+                                        <input type="checkbox" name="order-method" value="self-service" class="order-method-checkbox">
+                                        <div class="flex-1">
+                                            <h4 class="font-bold">📱 Self-service (QR code ordering)</h4>
+                                        </div>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-4">
+                        <button id="stage-2-back" class="flex-1 bg-gray-200 text-black px-8 py-4 rounded-xl text-xl font-bold">
+                            ← Back
+                        </button>
+                        <button id="stage-2-continue" class="flex-1 bg-primary text-white px-8 py-4 rounded-xl text-xl font-bold" disabled>
+                            Continue →
+                        </button>
+                    </div>
+                </div>
+
+                <!-- NEW Stage 2b: Venue Scale Details -->
+                <div class="stage" id="stage-2b">
+                    <div class="text-center mb-8">
+                        <div class="text-6xl mb-4">📊</div>
+                        <h2 class="text-4xl md:text-5xl font-bold mb-4">Tell us about your venue scale</h2>
+                        <p class="text-lg text-gray-600">This helps us tailor our recommendations</p>
+                    </div>
+
+                    <div class="space-y-6 mb-8">
+                        <div>
+                            <label class="block font-bold text-lg mb-3">How many locations do you have?</label>
+                            <div class="space-y-3">
+                                <label class="option-card block">
+                                    <div class="flex items-center gap-4">
+                                        <input type="radio" name="location-count" value="1" class="location-radio">
+                                        <h4 class="font-bold flex-1">🏪 Single location</h4>
+                                    </div>
+                                </label>
+
+                                <label class="option-card block">
+                                    <div class="flex items-center gap-4">
+                                        <input type="radio" name="location-count" value="2-5" class="location-radio">
+                                        <h4 class="font-bold flex-1">🏬 2-5 locations</h4>
+                                    </div>
+                                </label>
+
+                                <label class="option-card block">
+                                    <div class="flex items-center gap-4">
+                                        <input type="radio" name="location-count" value="6-10" class="location-radio">
+                                        <h4 class="font-bold flex-1">🏢 6-10 locations</h4>
+                                    </div>
+                                </label>
+
+                                <label class="option-card block">
+                                    <div class="flex items-center gap-4">
+                                        <input type="radio" name="location-count" value="11+" class="location-radio">
+                                        <h4 class="font-bold flex-1">🏙️ 11+ locations</h4>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block font-bold text-lg mb-3">What's your approximate annual turnover?</label>
+                            <div class="space-y-3">
+                                <label class="option-card block">
+                                    <div class="flex items-center gap-4">
+                                        <input type="radio" name="annual-turnover" value="under-100k" class="turnover-radio">
+                                        <h4 class="font-bold flex-1">Under £100k</h4>
+                                    </div>
+                                </label>
+
+                                <label class="option-card block">
+                                    <div class="flex items-center gap-4">
+                                        <input type="radio" name="annual-turnover" value="100k-500k" class="turnover-radio">
+                                        <h4 class="font-bold flex-1">£100k - £500k</h4>
+                                    </div>
+                                </label>
+
+                                <label class="option-card block">
+                                    <div class="flex items-center gap-4">
+                                        <input type="radio" name="annual-turnover" value="500k-1m" class="turnover-radio">
+                                        <h4 class="font-bold flex-1">£500k - £1M</h4>
+                                    </div>
+                                </label>
+
+                                <label class="option-card block">
+                                    <div class="flex items-center gap-4">
+                                        <input type="radio" name="annual-turnover" value="1m-5m" class="turnover-radio">
+                                        <h4 class="font-bold flex-1">£1M - £5M</h4>
+                                    </div>
+                                </label>
+
+                                <label class="option-card block">
+                                    <div class="flex items-center gap-4">
+                                        <input type="radio" name="annual-turnover" value="5m+" class="turnover-radio">
+                                        <h4 class="font-bold flex-1">£5M+</h4>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block font-bold text-lg mb-3">Approximate monthly customer count (per location)</label>
+                            <div class="space-y-3">
+                                <label class="option-card block">
+                                    <div class="flex items-center gap-4">
+                                        <input type="radio" name="customer-count" value="under-500" class="customer-radio">
+                                        <h4 class="font-bold flex-1">Under 500 customers/month</h4>
+                                    </div>
+                                </label>
+
+                                <label class="option-card block">
+                                    <div class="flex items-center gap-4">
+                                        <input type="radio" name="customer-count" value="500-1000" class="customer-radio">
+                                        <h4 class="font-bold flex-1">500 - 1,000 customers/month</h4>
+                                    </div>
+                                </label>
+
+                                <label class="option-card block">
+                                    <div class="flex items-center gap-4">
+                                        <input type="radio" name="customer-count" value="1000-2500" class="customer-radio">
+                                        <h4 class="font-bold flex-1">1,000 - 2,500 customers/month</h4>
+                                    </div>
+                                </label>
+
+                                <label class="option-card block">
+                                    <div class="flex items-center gap-4">
+                                        <input type="radio" name="customer-count" value="2500-5000" class="customer-radio">
+                                        <h4 class="font-bold flex-1">2,500 - 5,000 customers/month</h4>
+                                    </div>
+                                </label>
+
+                                <label class="option-card block">
+                                    <div class="flex items-center gap-4">
+                                        <input type="radio" name="customer-count" value="5000+" class="customer-radio">
+                                        <h4 class="font-bold flex-1">5,000+ customers/month</h4>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-4">
+                        <button id="stage-2b-back" class="flex-1 bg-gray-200 text-black px-8 py-4 rounded-xl text-xl font-bold">
+                            ← Back
+                        </button>
+                        <button id="stage-2b-continue" class="flex-1 bg-primary text-white px-8 py-4 rounded-xl text-xl font-bold" disabled>
+                            Continue →
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Stage 3: Delivery Details -->
+                <div class="stage" id="stage-3">
+                    <div class="text-center mb-8">
+                        <div class="text-6xl mb-4">🚗</div>
+                        <h2 class="text-4xl md:text-5xl font-bold mb-4">Delivery & Online ordering</h2>
+                        <p class="text-lg text-gray-600">Which platforms do you use?</p>
+                    </div>
+
+                    <div class="space-y-4 mb-8">
+                        <label class="option-card block">
+                            <div class="flex items-center gap-4">
+                                <input type="checkbox" name="delivery-platform" value="uber-eats" class="delivery-checkbox">
+                                <div class="flex-1">
+                                    <h4 class="font-bold">🟢 Uber Eats</h4>
+                                </div>
+                            </div>
+                        </label>
+
+                        <label class="option-card block">
+                            <div class="flex items-center gap-4">
+                                <input type="checkbox" name="delivery-platform" value="deliveroo" class="delivery-checkbox">
+                                <div class="flex-1">
+                                    <h4 class="font-bold">🔷 Deliveroo</h4>
+                                </div>
+                            </div>
+                        </label>
+
+                        <label class="option-card block">
+                            <div class="flex items-center gap-4">
+                                <input type="checkbox" name="delivery-platform" value="just-eat" class="delivery-checkbox">
+                                <div class="flex-1">
+                                    <h4 class="font-bold">🟠 Just Eat</h4>
+                                </div>
+                            </div>
+                        </label>
+
+                        <label class="option-card block">
+                            <div class="flex items-center gap-4">
+                                <input type="checkbox" name="delivery-platform" value="own-website" class="delivery-checkbox">
+                                <div class="flex-1">
+                                    <h4 class="font-bold">🌐 Own website</h4>
+                                    <p class="text-sm text-gray-600">Direct online ordering</p>
+                                </div>
+                            </div>
+                        </label>
+
+                        <label class="option-card block">
+                            <div class="flex items-center gap-4">
+                                <input type="checkbox" name="delivery-platform" value="other-platform" class="delivery-checkbox">
+                                <div class="flex-1">
+                                    <h4 class="font-bold">📦 Other platform</h4>
+                                    <input type="text" id="other-platform-text" placeholder="Specify platform" class="mt-2 w-full px-4 py-2 rounded border-2 border-gray-300 focus:outline-none focus:border-primary">
+                                </div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="flex gap-4">
+                        <button id="stage-3-back" class="flex-1 bg-gray-200 text-black px-8 py-4 rounded-xl text-xl font-bold">
+                            ← Back
+                        </button>
+                        <button id="stage-3-continue" class="flex-1 bg-primary text-white px-8 py-4 rounded-xl text-xl font-bold" disabled>
+                            Continue →
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Stage 4: POS System -->
+                <div class="stage" id="stage-4">
+                    <div class="text-center mb-8">
+                        <div class="text-6xl mb-4">💻</div>
+                        <h2 class="text-4xl md:text-5xl font-bold mb-4">What POS system do you use?</h2>
+                        <p class="text-lg text-gray-600">Select your point of sale system</p>
+                    </div>
+
+                    <div class="space-y-4 mb-8">
+                        <label class="option-card block">
+                            <div class="flex items-center gap-4">
+                                <input type="radio" name="pos-system" value="square" class="pos-radio">
+                                <h4 class="font-bold flex-1">Square</h4>
+                            </div>
+                        </label>
+
+                        <label class="option-card block">
+                            <div class="flex items-center gap-4">
+                                <input type="radio" name="pos-system" value="toast" class="pos-radio">
+                                <h4 class="font-bold flex-1">Toast</h4>
+                            </div>
+                        </label>
+
+                        <label class="option-card block">
+                            <div class="flex items-center gap-4">
+                                <input type="radio" name="pos-system" value="lightspeed" class="pos-radio">
+                                <h4 class="font-bold flex-1">Lightspeed</h4>
+                            </div>
+                        </label>
+
+                        <label class="option-card block">
+                            <div class="flex items-center gap-4">
+                                <input type="radio" name="pos-system" value="clover" class="pos-radio">
+                                <h4 class="font-bold flex-1">Clover</h4>
+                            </div>
+                        </label>
+
+                        <label class="option-card block">
+                            <div class="flex items-center gap-4">
+                                <input type="radio" name="pos-system" value="touchbistro" class="pos-radio">
+                                <h4 class="font-bold flex-1">TouchBistro</h4>
+                            </div>
+                        </label>
+
+                        <label class="option-card block">
+                            <div class="flex items-center gap-4">
+                                <input type="radio" name="pos-system" value="none" class="pos-radio">
+                                <h4 class="font-bold flex-1">No POS system</h4>
+                            </div>
+                        </label>
+
+                        <label class="option-card block">
+                            <div class="flex items-center gap-4">
+                                <input type="radio" name="pos-system" value="other" class="pos-radio">
+                                <div class="flex-1">
+                                    <h4 class="font-bold">Other</h4>
+                                    <input type="text" id="other-pos-text" placeholder="Specify POS system" class="mt-2 w-full px-4 py-2 rounded border-2 border-gray-300 focus:outline-none focus:border-primary">
+                                </div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="flex gap-4">
+                        <button id="stage-4-back" class="flex-1 bg-gray-200 text-black px-8 py-4 rounded-xl text-xl font-bold">
+                            ← Back
+                        </button>
+                        <button id="stage-4-continue" class="flex-1 bg-primary text-white px-8 py-4 rounded-xl text-xl font-bold" disabled>
+                            Continue →
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Stage 5: Contact Details -->
+                <div class="stage" id="stage-5">
+                    <div class="text-center mb-8">
+                        <div class="text-6xl mb-4">📧</div>
+                        <h2 class="text-4xl md:text-5xl font-bold mb-4">Almost done!</h2>
+                        <p class="text-lg text-gray-600">Let us know how to reach you</p>
+                    </div>
+
+                    <div class="space-y-6 mb-8">
+                        <div>
+                            <label class="block font-bold text-lg mb-2">Restaurant name</label>
+                            <input type="text" id="restaurant-name" placeholder="e.g. Mario's Italian Kitchen" class="w-full px-4 py-3 rounded border-2 border-gray-300 focus:outline-none focus:border-primary" required>
+                        </div>
+
+                        <div>
+                            <label class="block font-bold text-lg mb-2">Your name</label>
+                            <input type="text" id="contact-name" placeholder="e.g. John Smith" class="w-full px-4 py-3 rounded border-2 border-gray-300 focus:outline-none focus:border-primary" required>
+                        </div>
+
+                        <div>
+                            <label class="block font-bold text-lg mb-2">Email</label>
+                            <input type="email" id="contact-email" placeholder="your@email.com" class="w-full px-4 py-3 rounded border-2 border-gray-300 focus:outline-none focus:border-primary" required>
+                        </div>
+
+                        <div>
+                            <label class="block font-bold text-lg mb-2">Phone (optional)</label>
+                            <input type="tel" id="contact-phone" placeholder="+44 7XXX XXXXXX" class="w-full px-4 py-3 rounded border-2 border-gray-300 focus:outline-none focus:border-primary">
+                        </div>
+                    </div>
+
+                    <div class="flex gap-4">
+                        <button id="stage-5-back" class="flex-1 bg-gray-200 text-black px-8 py-4 rounded-xl text-xl font-bold">
+                            ← Back
+                        </button>
+                        <button id="stage-5-submit" class="flex-1 bg-primary text-white px-8 py-4 rounded-xl text-xl font-bold" disabled>
+                            Submit →
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% include 'core/footer.html' %}
+
+    <script>
+    (function() {
+        const questionnaire = {
+            currentStage: 1,
+            totalStages: 5,
+            data: {
+                serviceTypes: [],
+                menuTypes: [],
+                orderMethods: [],
+                venueScale: {
+                    locationCount: '',
+                    annualTurnover: '',
+                    customerCount: ''
+                },
+                deliveryPlatforms: [],
+                posSystem: '',
+                contact: {}
+            },
+            stages: []
+        };
+
+        // Collect service types selected to determine which stages to show
+        const serviceCheckboxes = document.querySelectorAll('.service-checkbox');
+        
+        // Update progress
+        function updateProgress() {
+            const progress = (questionnaire.currentStage / questionnaire.totalStages) * 100;
+            document.getElementById('progress-fill').style.width = progress + '%';
+            document.getElementById('progress-text').textContent = `Step ${questionnaire.currentStage} of ${questionnaire.totalStages}`;
+        }
+
+        // Show stage
+        function showStage(stageNum) {
+            document.querySelectorAll('.stage').forEach(s => s.classList.remove('active'));
+            document.getElementById(`stage-${stageNum}`).classList.add('active');
+            questionnaire.currentStage = stageNum;
+            updateProgress();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Handle option card clicks
+        document.querySelectorAll('.option-card').forEach(card => {
+            card.addEventListener('click', function(e) {
+                if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'BUTTON') {
+                    const checkbox = this.querySelector('input[type="checkbox"], input[type="radio"]');
+                    if (checkbox) {
+                        if (checkbox.type === 'radio') {
+                            document.querySelectorAll(`input[name="${checkbox.name}"]`).forEach(r => {
+                                r.closest('.option-card').classList.remove('selected');
+                            });
+                        }
+                        checkbox.checked = !checkbox.checked;
+                        this.classList.toggle('selected', checkbox.checked);
+                        checkbox.dispatchEvent(new Event('change'));
+                    }
+                }
+            });
+        });
+
+        // Handle checkbox changes for visual feedback
+        document.querySelectorAll('input[type="checkbox"], input[type="radio"]').forEach(input => {
+            input.addEventListener('change', function() {
+                const card = this.closest('.option-card');
+                if (card) {
+                    if (this.type === 'radio') {
+                        document.querySelectorAll(`input[name="${this.name}"]`).forEach(r => {
+                            r.closest('.option-card')?.classList.remove('selected');
+                        });
+                    }
+                    card.classList.toggle('selected', this.checked);
+                }
+            });
+        });
+
+        // Stage 1: Service type
+        serviceCheckboxes.forEach(cb => {
+            cb.addEventListener('change', () => {
+                const anyChecked = Array.from(serviceCheckboxes).some(c => c.checked);
+                document.getElementById('stage-1-continue').disabled = !anyChecked;
+                questionnaire.data.serviceTypes = Array.from(serviceCheckboxes)
+                    .filter(c => c.checked)
+                    .map(c => c.value);
+            });
+        });
+
+        document.getElementById('stage-1-continue').addEventListener('click', () => {
+            // Determine which stages to show based on service types
+            questionnaire.stages = [1]; // Always show stage 1
+            
+            if (questionnaire.data.serviceTypes.includes('in-person')) {
+                questionnaire.stages.push(2);
+                questionnaire.stages.push('2b'); // Add venue scale stage
+            }
+            if (questionnaire.data.serviceTypes.includes('delivery') || questionnaire.data.serviceTypes.includes('click-collect')) {
+                questionnaire.stages.push(3);
+            }
+            questionnaire.stages.push(4, 5); // Always show POS and contact
+
+            // Navigate to next relevant stage
+            const nextStage = questionnaire.stages[questionnaire.stages.indexOf(1) + 1];
+            showStage(nextStage);
+        });
+
+        // Stage 2: In-person details
+        const menuTypeCheckboxes = document.querySelectorAll('.menu-type-checkbox');
+        const orderMethodCheckboxes = document.querySelectorAll('.order-method-checkbox');
+
+        function checkStage2Complete() {
+            const menuTypeChecked = Array.from(menuTypeCheckboxes).some(c => c.checked);
+            const orderMethodChecked = Array.from(orderMethodCheckboxes).some(c => c.checked);
+            document.getElementById('stage-2-continue').disabled = !(menuTypeChecked && orderMethodChecked);
+        }
+
+        menuTypeCheckboxes.forEach(cb => cb.addEventListener('change', checkStage2Complete));
+        orderMethodCheckboxes.forEach(cb => cb.addEventListener('change', checkStage2Complete));
+
+        document.getElementById('stage-2-back').addEventListener('click', () => showStage(1));
+        document.getElementById('stage-2-continue').addEventListener('click', () => {
+            questionnaire.data.menuTypes = Array.from(menuTypeCheckboxes).filter(c => c.checked).map(c => c.value);
+            questionnaire.data.orderMethods = Array.from(orderMethodCheckboxes).filter(c => c.checked).map(c => c.value);
+            
+            const currentIndex = questionnaire.stages.indexOf(2);
+            const nextStage = questionnaire.stages[currentIndex + 1];
+            showStage(nextStage);
+        });
+
+        // NEW Stage 2b: Venue scale details
+        const locationRadios = document.querySelectorAll('.location-radio');
+        const turnoverRadios = document.querySelectorAll('.turnover-radio');
+        const customerRadios = document.querySelectorAll('.customer-radio');
+
+        function checkStage2bComplete() {
+            const locationSelected = Array.from(locationRadios).some(r => r.checked);
+            const turnoverSelected = Array.from(turnoverRadios).some(r => r.checked);
+            const customerSelected = Array.from(customerRadios).some(r => r.checked);
+            document.getElementById('stage-2b-continue').disabled = !(locationSelected && turnoverSelected && customerSelected);
+        }
+
+        locationRadios.forEach(radio => radio.addEventListener('change', checkStage2bComplete));
+        turnoverRadios.forEach(radio => radio.addEventListener('change', checkStage2bComplete));
+        customerRadios.forEach(radio => radio.addEventListener('change', checkStage2bComplete));
+
+        document.getElementById('stage-2b-back').addEventListener('click', () => showStage(2));
+        document.getElementById('stage-2b-continue').addEventListener('click', () => {
+            const selectedLocation = document.querySelector('.location-radio:checked');
+            const selectedTurnover = document.querySelector('.turnover-radio:checked');
+            const selectedCustomer = document.querySelector('.customer-radio:checked');
+            
+            questionnaire.data.venueScale = {
+                locationCount: selectedLocation ? selectedLocation.value : '',
+                annualTurnover: selectedTurnover ? selectedTurnover.value : '',
+                customerCount: selectedCustomer ? selectedCustomer.value : ''
+            };
+            
+            const currentIndex = questionnaire.stages.indexOf('2b');
+            const nextStage = questionnaire.stages[currentIndex + 1];
+            showStage(nextStage);
+        });
+
+        // Stage 3: Delivery platforms
+        const deliveryCheckboxes = document.querySelectorAll('.delivery-checkbox');
+        deliveryCheckboxes.forEach(cb => {
+            cb.addEventListener('change', () => {
+                const anyChecked = Array.from(deliveryCheckboxes).some(c => c.checked);
+                document.getElementById('stage-3-continue').disabled = !anyChecked;
+            });
+        });
+
+        document.getElementById('stage-3-back').addEventListener('click', () => {
+            const currentIndex = questionnaire.stages.indexOf(3);
+            const prevStage = questionnaire.stages[currentIndex - 1];
+            showStage(prevStage);
+        });
+
+        document.getElementById('stage-3-continue').addEventListener('click', () => {
+            questionnaire.data.deliveryPlatforms = Array.from(deliveryCheckboxes)
+                .filter(c => c.checked)
+                .map(c => {
+                    if (c.value === 'other-platform') {
+                        return document.getElementById('other-platform-text').value || 'Other';
+                    }
+                    return c.value;
+                });
+            showStage(4);
+        });
+
+        // Stage 4: POS system
+        const posRadios = document.querySelectorAll('.pos-radio');
+        posRadios.forEach(radio => {
+            radio.addEventListener('change', () => {
+                document.getElementById('stage-4-continue').disabled = false;
+            });
+        });
+
+        document.getElementById('stage-4-back').addEventListener('click', () => {
+            const currentIndex = questionnaire.stages.indexOf(4);
+            const prevStage = questionnaire.stages[currentIndex - 1];
+            showStage(prevStage);
+        });
+
+        document.getElementById('stage-4-continue').addEventListener('click', () => {
+            const selectedPOS = document.querySelector('.pos-radio:checked');
+            questionnaire.data.posSystem = selectedPOS ? 
+                (selectedPOS.value === 'other' ? document.getElementById('other-pos-text').value : selectedPOS.value) 
+                : '';
+            showStage(5);
+        });
+
+        // Stage 5: Contact details
+        const contactInputs = ['restaurant-name', 'contact-name', 'contact-email'];
+        contactInputs.forEach(id => {
+            document.getElementById(id).addEventListener('input', () => {
+                const allFilled = contactInputs.every(inputId => document.getElementById(inputId).value.trim());
+                document.getElementById('stage-5-submit').disabled = !allFilled;
+            });
+        });
+
+        document.getElementById('stage-5-back').addEventListener('click', () => showStage(4));
+        
+        document.getElementById('stage-5-submit').addEventListener('click', () => {
+            questionnaire.data.contact = {
+                restaurantName: document.getElementById('restaurant-name').value,
+                contactName: document.getElementById('contact-name').value,
+                email: document.getElementById('contact-email').value,
+                phone: document.getElementById('contact-phone').value
+            };
+
+            // Store in sessionStorage
+            sessionStorage.setItem('questionnaireData', JSON.stringify(questionnaire.data));
+
+            // Redirect to thank you page or dashboard
+            alert('Thank you! We\'ll be in touch soon.');
+            window.location.href = '/dashboard/';
+        });
+
+        // Initialize
+        updateProgress();
+    })();
+    </script>
+</body>
+</html>

@@ -5,14 +5,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>A/Bite – Grab a/bite</title>
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     fontFamily: {
-                        sans: ['Nunito', 'sans-serif'],
+                        sans: ['Inter', 'sans-serif'],
                     },
                     colors: {
                         primary: '#EA4949',
@@ -24,13 +24,10 @@
             }
         }
     </script>
-
-    <!-- Neobrutalist visual overrides: thick borders, high contrast, blocky UI -->
- 
-
 </head>
-<body class="bg-white text-gray-900" style="font-family: 'Nunito', sans-serif;">
+<body class="bg-white text-gray-900">
     <!-- Navigation -->
+
     {% include 'core/header.html' %}
 
     <!-- Hero Section -->
@@ -55,331 +52,167 @@
                 Experiment. Optimise. Serve.
             </h2>
             <h3 class="text-xl md:text-2xl text-gray-200 mb-12 max-w-3xl mx-auto leading-relaxed">
-                A/Bite gives restaurants the same optimisation tools tech companies use - dynamic pricing, A/B testing, and personalisation - to maximise revenue and minimise waste.<br>
-                <strong>You optimise your dishes, A Bite optimises your menus</strong>.
+                AI-based dynamic pricing, PostHog-style A/B testing and instant personalisation - focused on optimising menu performance.<br> <strong>You optimise your dishes, A Bite optimises your menus</strong>.
             </h3>
 
             <a href="/dashboard/">
                 <button class="bg-primary text-white px-12 py-5 rounded-xl text-xl font-bold hover:bg-red-600 transition shadow-2xl hover:shadow-primary/50 transform hover:scale-105">
-                    See how much more you could earn →
+                    Start Optimising Today →
                 </button>
             </a>
         </div>
         
     </section>
 
-
-    <!-- PRODUCTS SECTION - Clear differentiation -->
-    <section class="py-20 px-4 bg-white">
-        <div class="max-w-7xl mx-auto">
-            <div class="text-center mb-16">
-                <h2 class="text-4xl md:text-5xl font-bold mb-4">Powerful Products, One Platform</h2>
+    <!-- Offering Summary - keep but strengthen the intro copy -->
+    <section id="offering-summary" class="py-16 px-4 bg-white">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-10">
+                <h2 class="text-4xl md:text-5xl font-bold mb-4">Turn Static Menus Into Revenue Engines</h2>
                 <p class="text-xl text-gray-600 max-w-3xl mx-auto">
-                    Choose the solution that fits your needs, or combine all three for maximum impact.
-                </p>
-                <p class="text-sm text-gray-500 max-w-3xl mx-auto mt-3">
-                    Built for food & drink venues of all sizes — single sites, multi-location operators, and hospitality groups — and designed to work whether you serve guests in‑person, handle delivery/online orders, or offer click‑and‑collect.
+                    A/Bite gives restaurants the same optimisation tools tech companies use - dynamic pricing, A/B testing, and personalisation - to maximise revenue and minimise waste.
                 </p>
             </div>
 
-            <div class="grid md:grid-cols-3 gap-8 mb-12">
-                <!-- A/Bite Insights -->
-                <div class="bg-gradient-to-br from-lightgray to-white rounded-3xl p-8 border-2 border-gray-200 hover:border-primary hover:shadow-2xl transition flex flex-col">
-                    <div class="text-5xl mb-4">🧪</div>
-                    <h3 class="text-3xl font-bold mb-4">A/Bite Insights</h3>
-                    <p class="text-lg text-gray-700 mb-6">
-                        Run simple menu experiments and get clear, actionable recommendations to boost revenue.
-                    </p>
-                    <div class="space-y-4 mb-8 flex-1">
-                        <div class="flex items-start">
-                            <span class="text-primary font-bold mr-3">✓</span>
-                            <p class="text-gray-700">A/B test prices, images, descriptions, and layouts</p>
-                        </div>
-                        <div class="flex items-start">
-                            <span class="text-primary font-bold mr-3">✓</span>
-                            <p class="text-gray-700">Session replays & heatmaps to understand diner behavior</p>
-                        </div>
-                        <div class="flex items-start">
-                            <span class="text-primary font-bold mr-3">✓</span>
-                            <p class="text-gray-700">Clear recommendations you can implement today</p>
-                        </div>
-                        <div class="flex items-start">
-                            <span class="text-primary font-bold mr-3">✓</span>
-                            <p class="text-gray-700">Works with your existing POS and menus, whether digital or physical</p>
-                        </div>
-                    </div>
-                    <a href="#features" class="mt-auto">
-                        <button class="w-full bg-primary text-white px-6 py-3 rounded-xl font-bold hover:bg-red-600 transition">
-                            Learn More About Insights →
-                        </button>
-                    </a>
+            <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 mt-8">
+                <div class="bg-lightgray rounded-2xl p-6 hover:shadow-md transition transform hover:scale-102 text-center">
+                    <div class="text-3xl mb-3">📈</div>
+                    <h3 class="font-bold text-lg mb-2">AI Dynamic Pricing</h3>
+                    <p class="text-sm text-gray-700">Real-time price optimisation based on demand, weather, inventory, and events.</p>
                 </div>
 
-                <!-- A/Bite Actions -->
-                <div class="bg-gradient-to-br from-lightgray to-white rounded-3xl p-8 border-2 border-gray-200 hover:border-primary hover:shadow-2xl transition flex flex-col">
-                    <div class="text-5xl mb-4">🚀</div>
-                    <h3 class="text-3xl font-bold mb-4">A/Bite Actions</h3>
-                    <p class="text-lg text-gray-700 mb-6">
-                        Instantly spot revenue optimisation opportunities and get suggestions for perfect upsells and bundles.
-                    </p>
-                    <div class="space-y-4 mb-8 flex-1">
-                        <div class="flex items-start">
-                            <span class="text-primary font-bold mr-3">✓</span>
-                            <p class="text-gray-700">AI-powered upsell and cross-sell suggestions based on menu and sales data</p>
-                        </div>
-                        <div class="flex items-start">
-                            <span class="text-primary font-bold mr-3">✓</span>
-                            <p class="text-gray-700">Identify high-margin items to promote at the right moments</p>
-                        </div>
-                        <div class="flex items-start">
-                            <span class="text-primary font-bold mr-3">✓</span>
-                            <p class="text-gray-700">Automated recommendations for bundles, combos, and add-ons</p>
-                        </div>
-                        <div class="flex items-start">
-                            <span class="text-primary font-bold mr-3">✓</span>
-                            <p class="text-gray-700">Personalised suggestions for every guest and order channel</p>
-                        </div>
-                    </div>
-                    <a href="#personalised" class="mt-auto">
-                        <button class="w-full bg-primary text-white px-6 py-3 rounded-xl font-bold hover:bg-red-600 transition">
-                            Learn More About Actions →
-                        </button>
-                    </a>
+                <div class="bg-lightgray rounded-2xl p-6 hover:shadow-md transition transform hover:scale-102 text-center">
+                    <div class="text-3xl mb-3">🧪</div>
+                    <h3 class="font-bold text-lg mb-2">A/B Testing Suite</h3>
+                    <p class="text-sm text-gray-700">Test pricing, positioning, images, and copy - winners promote automatically.</p>
                 </div>
 
-                <!-- A/Bite Price Optimisation -->
-                <div class="bg-gradient-to-br from-lightgray to-white rounded-3xl p-8 border-2 border-gray-200 hover:border-primary hover:shadow-2xl transition flex flex-col">
-                    <div class="text-5xl mb-4">📈</div>
-                    <h3 class="text-3xl font-bold mb-4">A/Bite Price Optimisation</h3>
-                    <p class="text-lg text-gray-700 mb-6">
-                        Automatic pricing that maximizes revenue, reduces waste, and fills slow periods.
-                    </p>
-                    <div class="space-y-4 mb-8 flex-1">
-                        <div class="flex items-start">
-                            <span class="text-primary font-bold mr-3">✓</span>
-                            <p class="text-gray-700">Smart pricing based on 8+ real-time signals</p>
-                        </div>
-                        <div class="flex items-start">
-                            <span class="text-primary font-bold mr-3">✓</span>
-                            <p class="text-gray-700">Automated promotions for expiring inventory</p>
-                        </div>
-                        <div class="flex items-start">
-                            <span class="text-primary font-bold mr-3">✓</span>
-                            <p class="text-gray-700">Dynamic happy hours that boost slow periods</p>
-                        </div>
-                        <div class="flex items-start">
-                            <span class="text-primary font-bold mr-3">✓</span>
-                            <p class="text-gray-700">You control min/max prices and rules</p>
-                        </div>
-                    </div>
-                    <a href="#dynamic-pricing" class="mt-auto">
-                        <button class="w-full bg-primary text-white px-6 py-3 rounded-xl font-bold hover:bg-red-600 transition">
-                            Learn More About Pricing →
-                        </button>
-                    </a>
+                <div class="bg-lightgray rounded-2xl p-6 hover:shadow-md transition transform hover:scale-102 text-center">
+                    <div class="text-3xl mb-3">⚡</div>
+                    <h3 class="font-bold text-lg mb-2">Smart Promotions</h3>
+                    <p class="text-sm text-gray-700">Auto-triggered deals based on inventory age, footfall, weather, and capacity.</p>
+                </div>
+
+                <div class="bg-lightgray rounded-2xl p-6 hover:shadow-md transition transform hover:scale-102 text-center">
+                    <div class="text-3xl mb-3">🥗</div>
+                    <h3 class="font-bold text-lg mb-2">Personalised Menus</h3>
+                    <p class="text-sm text-gray-700">AI chatbot filters menus by dietary needs, allergies, and preferences instantly.</p>
                 </div>
             </div>
 
-            <p class="text-center text-sm text-gray-600 mt-6">
-                💡 <strong>Pro tip:</strong> Use all three together for maximum impact – test with Insights, act on recommendations, then scale winners with Price Optimisation.
-            </p>
+
+            <div class="mt-10">
+                <div class="flex items-center justify-between gap-8 bg-primary/10 rounded-2xl px-8 py-4 mb-6">
+                    <div class="text-center flex-1">
+                        <div class="text-3xl font-bold text-primary">23%</div>
+                        <div class="text-sm text-gray-700">Avg revenue lift</div>
+                    </div>
+                    <div class="text-center flex-1">
+                        <div class="text-3xl font-bold text-primary">18%</div>
+                        <div class="text-sm text-gray-700">Less waste</div>
+                    </div>
+                    <div class="text-center flex-1">
+                        <div class="text-3xl font-bold text-primary">12%</div>
+                        <div class="text-sm text-gray-700">Higher conversion</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- <div class="mt-10 text-center">
+                <div class="inline-flex items-center gap-8 bg-primary/10 rounded-2xl px-8 py-4 mb-6">
+                    <div class="text-center">
+                        <div class="text-3xl font-bold text-primary">23%</div>
+                        <div class="text-sm text-gray-700">Avg revenue lift</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-3xl font-bold text-primary">18%</div>
+                        <div class="text-sm text-gray-700">Less waste</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-3xl font-bold text-primary">12%</div>
+                        <div class="text-sm text-gray-700">Higher conversion</div>
+                    </div>
+                </div>
+            </div> -->
         </div>
     </section>
 
-    <!-- HOW TO GET STARTED / WORKS WITH YOUR EXISTING TOOLS SECTION -->
-<!-- HOW TO GET STARTED / WORKS WITH YOUR EXISTING TOOLS SECTION -->
-<section class="py-20 px-4 bg-gradient-to-br from-lightgray to-white">
-    <div class="max-w-7xl mx-auto">
-        <div class="text-center mb-16">
-            <h2 class="text-4xl md:text-5xl font-bold mb-4">Get Started in Minutes</h2>
-            <p class="text-xl text-gray-700 max-w-2xl mx-auto">
-                Start with just your menu. Add integrations later to unlock deeper insights.
-            </p>
-        </div>
-
-        <!-- Visual Step-by-Step Flow -->
-        <div class="grid md:grid-cols-3 gap-8 mb-16">
-            <!-- Step 1 -->
-            <div class="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition transform hover:scale-105 border-2 border-transparent hover:border-primary relative">
-                <div class="absolute -top-4 left-8 bg-primary text-white w-10 h-10 rounded-full flex items-center justify-center font-bold text-xl shadow-lg">1</div>
-                <div class="text-5xl mb-4 text-center">📋</div>
-                <h3 class="text-2xl font-bold mb-3 text-center">Upload Your Menu</h3>
-                <p class="text-gray-700 text-center mb-4">
-                    Start here - upload your menu in any format. Takes less than 2 minutes.
-                </p>
-                <div class="bg-lightgray rounded-lg p-3 text-sm text-gray-600">
-                    <strong>✓</strong> PDF, photo, or spreadsheet<br>
-                    <strong>✓</strong> Auto-detects items & prices<br>
-                    <strong>✓</strong> Get instant recommendations
-                </div>
+    <!-- MOVE Dynamic Pricing section here (right after summary) -->
+    <!-- Keep existing #dynamic-pricing section but remove the animated stats -->
+    <section id="dynamic-pricing" class="py-20 px-4 bg-lightgray relative overflow-hidden">
+        <div class="max-w-7xl mx-auto relative z-10">
+            <div class="text-center mb-16">
+                <div class="text-6xl mb-6">🧠</div>
+                <h2 class="text-4xl md:text-5xl font-bold mb-6">AI Dynamic Pricing Engine</h2>
+<p class="text-xl text-gray-700 max-w-3xl mx-auto leading-relaxed">
+    Prices adjust daily based on 100s of real-time signals to maximise revenue while reducing waste.
+    Apply menu‑wide rules (e.g. 10% off everything) or fine‑tune prices per item with dynamic, per‑dish pricing.
+</p>
             </div>
 
-            <!-- Step 2 -->
-            <div class="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition transform hover:scale-105 border-2 border-transparent hover:border-primary relative">
-                <div class="absolute -top-4 left-8 bg-gray-400 text-white w-10 h-10 rounded-full flex items-center justify-center font-bold text-xl shadow-lg">2</div>
-                <div class="text-5xl mb-4 text-center">🔗</div>
-                <h3 class="text-2xl font-bold mb-3 text-center">Add Integrations <span class="text-sm text-gray-500 font-normal">(Optional)</span></h3>
-                <p class="text-gray-700 text-center mb-4">
-                    Connect your POS or accounting software when you're ready. Each one unlocks more insights.
-                </p>
-                <div class="bg-lightgray rounded-lg p-3 text-sm text-gray-600">
-                    <strong>✓</strong> Square, Toast, Clover<br>
-                    <strong>✓</strong> QuickBooks, Xero<br>
-                    <strong>✓</strong> Invoice OCR scanning
-                </div>
-            </div>
+            <!-- Keep the 8 signal cards but make grid more compact -->
+            <div class="rounded-3xl p-6 md:p-8">
+                <div class="grid md:grid-cols-4 gap-4">
+                    <div class="bg-customgray rounded-2xl p-6 hover:shadow-2xl transition transform hover:scale-105 border-2 border-transparent hover:border-primary text-center">
+                        <div class="text-5xl mb-4">⏰</div>
+                        <h4 class="font-bold text-lg mb-2">Time Intelligence</h4>
+                        <p class="text-sm text-gray-700">Dynamically adjust prices based on day of week, time of day, and historical rush periods. Maximise revenue during peak hours while attracting customers during slower times.</p>
+                    </div>
 
-            <!-- Step 3 -->
-            <div class="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition transform hover:scale-105 border-2 border-transparent hover:border-primary relative">
-                <div class="absolute -top-4 left-8 bg-primary text-white w-10 h-10 rounded-full flex items-center justify-center font-bold text-xl shadow-lg">3</div>
-                <div class="text-5xl mb-4 text-center">🚀</div>
-                <h3 class="text-2xl font-bold mb-3 text-center">Start Optimizing</h3>
-                <p class="text-gray-700 text-center mb-4">
-                    Get AI-powered recommendations and start testing within 24 hours.
-                </p>
-                <div class="bg-lightgray rounded-lg p-3 text-sm text-gray-600">
-                    <strong>✓</strong> Instant test suggestions<br>
-                    <strong>✓</strong> Revenue opportunity alerts<br>
-                    <strong>✓</strong> One-click implementation
-                </div>
-            </div>
-        </div>
+                    <div class="bg-customgray rounded-2xl p-6 hover:shadow-2xl transition transform hover:scale-105 border-2 border-transparent hover:border-primary text-center">
+                        <div class="text-5xl mb-4">🌡️</div>
+                        <h4 class="font-bold text-lg mb-2">Weather Impact</h4>
+                        <p class="text-sm text-gray-700">Real-time weather data influences pricing - promote warm comfort foods during cold snaps, boost iced drinks in heatwaves, and adjust for rain or sunshine patterns.</p>
+                    </div>
 
-        <!-- Integration Partners Showcase -->
-        <div class="bg-white rounded-3xl p-10 shadow-xl border-2 border-gray-100">
-            <h3 class="text-2xl font-bold text-center mb-4">Works With Your Favorite Tools</h3>
-            <p class="text-center text-gray-600 mb-8">Connect what you want, when you want. More data = smarter recommendations.</p>
-            
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
-                <div class="bg-lightgray rounded-xl p-6 flex items-center justify-center hover:bg-gray-100 transition">
-                    <span class="text-lg font-bold text-gray-700">Square</span>
-                </div>
-                <div class="bg-lightgray rounded-xl p-6 flex items-center justify-center hover:bg-gray-100 transition">
-                    <span class="text-lg font-bold text-gray-700">Toast POS</span>
-                </div>
-                <div class="bg-lightgray rounded-xl p-6 flex items-center justify-center hover:bg-gray-100 transition">
-                    <span class="text-lg font-bold text-gray-700">Clover</span>
-                </div>
-                <div class="bg-lightgray rounded-xl p-6 flex items-center justify-center hover:bg-gray-100 transition">
-                    <span class="text-lg font-bold text-gray-700">QuickBooks</span>
-                </div>
-            </div>
+                    <div class="bg-customgray rounded-2xl p-6 hover:shadow-2xl transition transform hover:scale-105 border-2 border-transparent hover:border-primary text-center">
+                        <div class="text-5xl mb-4">🎉</div>
+                        <h4 class="font-bold text-lg mb-2">Events & Moments</h4>
+                        <p class="text-sm text-gray-700">Automatically detect and respond to holidays, cultural celebrations, sporting events, and local happenings. Optimise pricing for increased demand during special occasions.</p>
+                    </div>
 
-            <div class="bg-gradient-to-r from-primary/10 to-orange-500/10 rounded-2xl p-6 text-center border-2 border-primary/20">
-                <p class="text-lg text-gray-700 mb-2">
-                    <strong>Start Simple:</strong> Your menu alone gives you valuable insights and test recommendations.
-                </p>
-                <p class="text-sm text-gray-600">
-                    Add integrations as you're ready - POS data enables deeper analysis, inventory connects unlock waste reduction, and so on.
-                </p>
-            </div>
-        </div>
+                    <div class="bg-customgray rounded-2xl p-6 hover:shadow-2xl transition transform hover:scale-105 border-2 border-transparent hover:border-primary text-center">
+                        <div class="text-5xl mb-4">👥</div>
+                        <h4 class="font-bold text-lg mb-2">Demand & Traffic</h4>
+                        <p class="text-sm text-gray-700">Monitor real-time foot traffic, booking rates, and venue capacity. Intelligently price based on predicted demand patterns and current occupancy levels.</p>
+                    </div>
 
-        <!-- Quick Stats -->
-        <div class="grid md:grid-cols-3 gap-6 mt-12">
-            <div class="text-center">
-                <div class="text-4xl font-bold text-primary mb-2">< 5 min</div>
-                <p class="text-gray-700">Average setup time</p>
-            </div>
-            <div class="text-center">
-                <div class="text-4xl font-bold text-primary mb-2">24 hrs</div>
-                <p class="text-gray-700">First insights delivered</p>
-            </div>
-            <div class="text-center">
-                <div class="text-4xl font-bold text-primary mb-2">0</div>
-                <p class="text-gray-700">Integrations required to start</p>
-            </div>
-        </div>
-    </div>
-</section>
+                    <div class="bg-customgray rounded-2xl p-6 hover:shadow-2xl transition transform hover:scale-105 border-2 border-transparent hover:border-primary text-center">
+                        <div class="text-5xl mb-4">📦</div>
+                        <h4 class="font-bold text-lg mb-2">Inventory Status</h4>
+                        <p class="text-sm text-gray-700">Track ingredient stock levels and expiry dates. Automatically discount items nearing expiration to reduce waste while maintaining profitability through smart pricing floors.</p>
+                    </div>
 
-    <!-- FREE TOOL SECTION - Prominent placement after hero (two-column: text left, form right) -->
-    <section class="py-20 px-4 bg-gradient-to-br from-primary via-red-500 to-orange-500 relative overflow-hidden">
-        <div class="absolute inset-0 opacity-10">
-            <div class="absolute top-10 right-10 w-64 h-64 bg-white rounded-full blur-3xl"></div>
-            <div class="absolute bottom-10 left-10 w-64 h-64 bg-white rounded-full blur-3xl"></div>
-        </div>
+                    <div class="bg-customgray rounded-2xl p-6 hover:shadow-2xl transition transform hover:scale-105 border-2 border-transparent hover:border-primary text-center">
+                        <div class="text-5xl mb-4">👨‍🍳</div>
+                        <h4 class="font-bold text-lg mb-2">Kitchen Capacity</h4>
+                        <p class="text-sm text-gray-700">Consider staffing levels and prep constraints when pricing. Steer demand toward items that match current kitchen capacity and resource availability.</p>
+                    </div>
 
-        <div class="max-w-6xl mx-auto relative z-10">
-            <div class="grid gap-8 md:grid-cols-2 items-center">
-                <!-- Left: explanatory text -->
-                <div class="text-left text-white">
-                    <div class="text-6xl mb-6">🎯</div>
-                    <h2 class="text-4xl md:text-5xl font-bold mb-4">Free Menu Analysis Tool</h2>
-                    <p class="text-xl text-white/90 mb-6 max-w-xl">
-                        Simply upload a screenshot or photo of your menu and A/Bite will analyse it.
-                        Get instant recommendations on tests to run, revenue opportunities, and optimisation strategies.
-                    </p>
-                    <ul class="text-white/90 space-y-2 text-sm">
-                        <li>• Quick, actionable test suggestions (images, pricing, layout)</li>
-                        <li>• Estimated revenue opportunity and expected lift</li>
-                        <li>• Report sent to your email with next steps</li>
-                    </ul>
-                </div>
+                    <div class="bg-customgray rounded-2xl p-6 hover:shadow-2xl transition transform hover:scale-105 border-2 border-transparent hover:border-primary text-center">
+                        <div class="text-5xl mb-4">🌙</div>
+                        <h4 class="font-bold text-lg mb-2">Cultural Calendar</h4>
+                        <p class="text-sm text-gray-700">Respect and celebrate Ramadan, Diwali, Lunar New Year, and other cultural moments. Automatically surface relevant dishes and adjust pricing for celebration periods.</p>
+                    </div>
 
-                <!-- Right: form (right-aligned) -->
-                <div class="flex justify-end">
-                    <form id="menu-upload-form" class="bg-white rounded-2xl p-8 shadow-2xl w-full max-w-md">
-                        <!-- <div class="mb-4">
-                            <label for="menu-type" class="block text-left font-bold text-gray-800 mb-2">Menu type</label>
-                            <select id="menu-type" name="menu-type" required
-                                    class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary">
-                                <option value="printed">Printed / Physical</option>
-                                <option value="online">Online / Digital</option>
-                            </select>
-                        </div> -->
-
-                        <div class="mb-6">
-                            <label for="menu-image" class="block text-left font-bold text-gray-800 mb-3">Upload Your Menu</label>
-                            <div class="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-primary transition cursor-pointer" id="upload-area">
-                                <input type="file" id="menu-image" name="menu-image" accept="image/*" class="hidden" required>
-                                <div id="upload-prompt">
-                                    <div class="text-5xl mb-3">📸</div>
-                                    <p class="text-gray-600 mb-2">Click to upload or drag and drop</p>
-                                    <p class="text-sm text-gray-500">PNG, JPG up to 10MB</p>
-                                </div>
-                                <div id="upload-preview" class="hidden">
-                                    <img id="preview-image" class="max-h-48 mx-auto rounded-lg mb-3" alt="Menu preview">
-                                    <p class="text-sm text-gray-600" id="file-name"></p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="mb-6">
-                            <label for="restaurant-name" class="block text-left font-bold text-gray-800 mb-2">Restaurant Name</label>
-                            <input type="text" id="restaurant-name" name="restaurant-name"
-                                   class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary"
-                                   placeholder="e.g. Mario's Italian Kitchen" required>
-                        </div>
-
-                        <div class="mb-6">
-                            <label for="email" class="block text-left font-bold text-gray-800 mb-2">Email (to receive full report)</label>
-                            <input type="email" id="email" name="email"
-                                   class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary"
-                                   placeholder="your@email.com" required>
-                        </div>
-
-                        <button type="submit" class="w-full bg-primary text-white px-8 py-4 rounded-xl text-lg font-bold hover:bg-red-600 transition shadow-lg transform hover:scale-105">
-                            Analyze My Menu (Free) →
-                        </button>
-
-                        <p class="text-xs text-gray-500 mt-4">No credit card required • Results in 30 seconds</p>
-                    </form>
+                    <div class="bg-customgray rounded-2xl p-6 hover:shadow-2xl transition transform hover:scale-105 border-2 border-transparent hover:border-primary text-center">
+                        <div class="text-5xl mb-4">🌱</div>
+                        <h4 class="font-bold text-lg mb-2">Seasonal Trends</h4>
+                        <p class="text-sm text-gray-700">Anticipate and respond to Veganuary, summer barbecue season, holiday feasting patterns, and ingredient seasonality. Price dynamically as demand shifts throughout the year.</p>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 
-
-
-    <!-- A/Bite Insights: moved to immediately after Products -->
+    <!-- MOVE A/B Testing section here (after dynamic pricing) -->
+    <!-- Simplify the testable variables - currently overwhelming -->
     <section id="features" class="py-20 px-4 bg-white">
         <div class="max-w-7xl mx-auto">
             <div class="text-center mb-16">
-                <div class="text-5xl mb-4">🧪</div>
-                <h2 class="text-4xl md:text-5xl font-bold mb-4">A/Bite Insights: Easy Menu Tests & Clear Results</h2>
+                <h2 class="text-4xl md:text-5xl font-bold mb-4">A/B Testing & Analytics Suite</h2>
                 <p class="text-xl text-gray-600 max-w-3xl mx-auto">
-                    Run simple, guided menu experiments — prices, placement, photos, and copy — and get clear recommendations you can apply today.
+                    Test menu presentation like a growth team. Statistical significance calculated automatically.
                 </p>
             </div>
 
@@ -388,37 +221,37 @@
                 <div class="bg-lightgray rounded-2xl p-6 hover:shadow-lg transition border-2 border-transparent hover:border-primary">
                     <div class="text-4xl mb-3">💰</div>
                     <h4 class="font-bold text-xl mb-2">Price Testing</h4>
-                    <p class="text-sm text-gray-600">Quickly see which price points increase revenue without losing customers.</p>
+                    <p class="text-sm text-gray-600">Run controlled price experiments across different customer segments, times, and locations. Automatically calculate price elasticity and identify the optimal price points that maximise revenue without sacrificing volume.</p>
                 </div>
 
                 <div class="bg-lightgray rounded-2xl p-6 hover:shadow-lg transition border-2 border-transparent hover:border-primary">
                     <div class="text-4xl mb-3">📍</div>
                     <h4 class="font-bold text-xl mb-2">Menu Positioning</h4>
-                    <p class="text-sm text-gray-600">Find the layout that helps customers discover and order your most profitable dishes.</p>
+                    <p class="text-sm text-gray-600">Test which items perform best at the top, middle, or bottom of categories. Experiment with different menu layouts, visual hierarchies, and category groupings to boost discovery and sales.</p>
                 </div>
 
                 <div class="bg-lightgray rounded-2xl p-6 hover:shadow-lg transition border-2 border-transparent hover:border-primary">
                     <div class="text-4xl mb-3">📸</div>
                     <h4 class="font-bold text-xl mb-2">Images & Copy</h4>
-                    <p class="text-sm text-gray-600">Test photos and descriptions to see what makes customers click "order" more often.</p>
+                    <p class="text-sm text-gray-600">Compare studio photography vs lifestyle shots, professional vs phone photos. Test short punchy descriptions against detailed storytelling to see what drives more orders and higher check sises.</p>
                 </div>
 
                 <div class="bg-lightgray rounded-2xl p-6 hover:shadow-lg transition border-2 border-transparent hover:border-primary">
                     <div class="text-4xl mb-3">🎁</div>
                     <h4 class="font-bold text-xl mb-2">Promotions</h4>
-                    <p class="text-sm text-gray-600">Compare simple promotion types and see which increases orders and profit the most.</p>
+                    <p class="text-sm text-gray-600">Systematically test BOGOF deals vs percentage discounts vs bundles. Measure impact on attach rates, average order value, and true profit margins - not just top-line revenue.</p>
                 </div>
 
                 <div class="bg-lightgray rounded-2xl p-6 hover:shadow-lg transition border-2 border-transparent hover:border-primary">
                     <div class="text-4xl mb-3">🔥</div>
                     <h4 class="font-bold text-xl mb-2">Heatmaps & Session Replays</h4>
-                    <p class="text-sm text-gray-600">Understand how diners interact with digital menus so you can remove friction and boost orders.</p>
+                    <p class="text-sm text-gray-600">See exactly where customers look, tap, and hesitate on digital menus. Identify confusing layouts, overlooked items, and friction points that prevent orders from being placed.</p>
                 </div>
 
                 <div class="bg-lightgray rounded-2xl p-6 hover:shadow-lg transition border-2 border-transparent hover:border-primary">
                     <div class="text-4xl mb-3">🎄</div>
                     <h4 class="font-bold text-xl mb-2">Seasonal Variants</h4>
-                    <p class="text-sm text-gray-600">Test seasonal menus and limited-time offers to find what drives short-term demand.</p>
+                    <p class="text-sm text-gray-600">Create and test limited-time offerings, holiday menus, and seasonal bundles. A/B test different approaches to scarcity messaging and time-limited promotions to maximise urgency-driven sales.</p>
                 </div>
             </div>
 
@@ -427,14 +260,80 @@
         </div>
     </section>
 
-    <!-- Enhance your menus (personalised) moved after Insights -->
+    <!-- COMBINE "Real Time Optimisation" + "Dynamic Promotions" into one tighter section -->
+    <section class="py-24 px-4 bg-darkgray relative overflow-hidden">
+        <!-- Background image + overlay (matches hero section) -->
+        <div class="absolute inset-0 z-0">
+            <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=2000&q=80"
+                 alt="Delicious restaurant food"
+                 class="w-full h-full object-cover opacity-30">
+            <div class="absolute inset-0 bg-gradient-to-br from-darkgray/85 via-darkgray/80 to-primary/15"></div>
+        </div>
+        
+    <div class="max-w-7xl mx-auto opacity-100 relative z-10">
+            <div class="text-center mb-12">
+                <h2 class="text-4xl md:text-5xl font-bold mb-4 text-white">Automated Promotion Engine</h2>
+                <p class="text-xl text-gray-200 max-w-3xl mx-auto">
+                    Set rules once. A/Bite triggers promotions automatically when conditions are met.
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-6">
+                <!-- Keep your 3 promotion cards (Expiration, Happy Hours, Weekend) -->
+                <div class="bg-white rounded-2xl p-6 hover:shadow-2xl transition border-2 border-transparent hover:border-primary">
+                    <div class="text-3xl mb-3">📦</div>
+                    <h4 class="font-bold mb-2 text-black">Expiration Deals</h4>
+                    <p class="text-sm text-gray-600 mb-3">Auto-create time-limited discounts for items nearing expiry to reduce waste.</p>
+                    <ul class="text-sm text-gray-600 space-y-1">
+                        <li>• Auto-trigger based on inventory age</li>
+                        <li>• Bundle & tiered discounts</li>
+                        <li>• Set minimum margins / constraints</li>
+                    </ul>
+                </div>
+
+                <!-- Happy hours -->
+                <div class="bg-white rounded-2xl p-6 hover:shadow-2xl transition border-2 border-transparent hover:border-primary">
+                    <div class="text-3xl mb-3">🍹</div>
+                    <h4 class="font-bold mb-2 text-black">Smart Happy Hours</h4>
+                    <p class="text-sm text-gray-600 mb-3">Schedule dynamic happy hours triggered by low footfall or set to recurring windows.</p>
+                    <ul class="text-sm text-gray-600 space-y-1">
+                        <li>• Time-based or demand-triggered</li>
+                        <li>• Per-location and per-category controls</li>
+                        <li>• Auto-disable when capacity limits hit</li>
+                    </ul>
+                </div>
+
+                <!-- Weekend / seasonal sales -->
+                <div class="bg-white rounded-2xl p-6 hover:shadow-2xl transition border-2 border-transparent hover:border-primary">
+                    <div class="text-3xl mb-3">🎉</div>
+                    <h4 class="font-bold mb-2 text-black">Weekend & Event Sales</h4>
+                    <p class="text-sm text-gray-600 mb-3">Plan weekend bundles, festival offers, or lunch specials that auto-activate.</p>
+                    <ul class="text-sm text-gray-600 space-y-1">
+                        <li>• Scheduled campaigns with countdowns</li>
+                        <li>• Dynamic bundling / upsell rules</li>
+                        <li>• Channel targeting (QR, app, web)</li>
+                    </ul>
+                </div>
+            </div>
+
+
+            <div class="mt-10 text-center">
+                <p class="text-lg text-gray-300 mb-4">
+                    Changes sync instantly across POS, QR menus, and apps - zero manual updates.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- REMOVE or DRASTICALLY SIMPLIFY "Market & Seasonal Adjustments" section -->
+    <!-- This adds complexity without clear ROI explanation. Consider cutting entirely or merging into Dynamic Pricing section as a single paragraph -->
+
+    <!-- MOVE Personalised Menus to AFTER A/B testing (it's a supporting feature, not the main value prop) -->
+    <!-- Personalised Menu Experiences (chatbot) -->
     <section id="personalised" class="py-20 px-4 bg-gradient-to-br from-lightgray to-white">
         <div class="max-w-4xl mx-auto">
-            <h2 class="text-4xl font-bold text-center mb-6">Enhance your menus</h2>
-            <p class="text-center text-lg text-gray-700 mb-8">
-                Add a data-driven enhancement layer to your existing menus — online or printed. No need to replace or reprint anything, and no change required from staff or customers.
-                Enhanced menus can show dish images so customers no longer need to Google what a dish looks like, increasing confidence and conversion. The layer also surfaces personalised item suggestions based on allergens and dietary preferences, reducing order errors and speeding up the ordering process.
-            </p>
+            <h2 class="text-4xl font-bold text-center mb-6">Offer Personalised Menus</h2>
+            <p class="text-center text-lg text-gray-700 mb-8">Offer tailored / personalised menus for your customers through a natural language chatbot</p>
 
             <div class="bg-white rounded-3xl shadow-lg overflow-hidden border border-gray-200">
                 <div class="p-6">
@@ -467,143 +366,13 @@
         </div>
     </section>
 
-    <!-- A/Bite Price Optimisation: moved to follow personalised -->
-    <section id="dynamic-pricing" class="py-20 px-4 bg-lightgray relative overflow-hidden">
-        <div class="max-w-7xl mx-auto relative z-10">
-            <div class="text-center mb-16">
-                <div class="text-6xl mb-6">📈</div>
-                <h2 class="text-4xl md:text-5xl font-bold mb-6">A/Bite Price Optimisation: Smart Pricing That Boosts Revenue</h2>
-                <p class="text-xl text-gray-700 max-w-3xl mx-auto leading-relaxed">
-                    Automatic price suggestions that help you sell more, cut waste, and protect margins. You stay in control — set minimum prices and rules, and we do the rest.
-                </p>
-            </div>
-
-            <!-- Keep the 8 signal cards but make grid more compact -->
-            <div class="rounded-3xl p-6 md:p-8">
-                <div class="grid md:grid-cols-4 gap-4">
-                    <div class="bg-customgray rounded-2xl p-6 hover:shadow-2xl transition transform hover:scale-105 border-2 border-transparent hover:border-primary text-center">
-                        <div class="text-5xl mb-4">⏰</div>
-                            <h4 class="font-bold text-lg mb-2">Time Intelligence</h4>
-                            <p class="text-sm text-gray-700">Raise prices during busy windows and offer deals during quiet times to balance covers and increase daily revenue.</p>
-                    </div>
-
-                    <div class="bg-customgray rounded-2xl p-6 hover:shadow-2xl transition transform hover:scale-105 border-2 border-transparent hover:border-primary text-center">
-                        <div class="text-5xl mb-4">🌡️</div>
-                        <h4 class="font-bold text-lg mb-2">Weather Impact</h4>
-                        <p class="text-sm text-gray-700">Automatically promote items that suit the weather so customers see the right dishes at the right time.</p>
-                    </div>
-
-                    <div class="bg-customgray rounded-2xl p-6 hover:shadow-2xl transition transform hover:scale-105 border-2 border-transparent hover:border-primary text-center">
-                        <div class="text-5xl mb-4">🎉</div>
-                        <h4 class="font-bold text-lg mb-2">Events & Moments</h4>
-                        <p class="text-sm text-gray-700">Recognise local events and holidays to surface the most relevant dishes and adjust pricing for higher demand.</p>
-                    </div>
-
-                    <div class="bg-customgray rounded-2xl p-6 hover:shadow-2xl transition transform hover:scale-105 border-2 border-transparent hover:border-primary text-center">
-                        <div class="text-5xl mb-4">👥</div>
-                        <h4 class="font-bold text-lg mb-2">Demand & Traffic</h4>
-                        <p class="text-sm text-gray-700">Use occupancy and booking signals to steer customers toward items you want to sell more of.</p>
-                    </div>
-
-                    <div class="bg-customgray rounded-2xl p-6 hover:shadow-2xl transition transform hover:scale-105 border-2 border-transparent hover:border-primary text-center">
-                        <div class="text-5xl mb-4">📦</div>
-                        <h4 class="font-bold text-lg mb-2">Inventory Status</h4>
-                        <p class="text-sm text-gray-700">See low-stock or nearing-expiry items and automatically promote them to reduce waste without hurting margins.</p>
-                    </div>
-
-                    <div class="bg-customgray rounded-2xl p-6 hover:shadow-2xl transition transform hover:scale-105 border-2 border-transparent hover:border-primary text-center">
-                        <div class="text-5xl mb-4">👨‍🍳</div>
-                        <h4 class="font-bold text-lg mb-2">Kitchen Capacity</h4>
-                        <p class="text-sm text-gray-700">Avoid overloading the kitchen: nudge customers toward items that are quick to prepare when you're busy.</p>
-                    </div>
-
-                    <div class="bg-customgray rounded-2xl p-6 hover:shadow-2xl transition transform hover:scale-105 border-2 border-transparent hover:border-primary text-center">
-                        <div class="text-5xl mb-4">🌙</div>
-                        <h4 class="font-bold text-lg mb-2">Cultural Calendar</h4>
-                        <p class="text-sm text-gray-700">Automatically highlight culturally relevant dishes during celebrations so guests find what they're looking for.</p>
-                    </div>
-
-                    <div class="bg-customgray rounded-2xl p-6 hover:shadow-2xl transition transform hover:scale-105 border-2 border-transparent hover:border-primary text-center">
-                        <div class="text-5xl mb-4">🌱</div>
-                        <h4 class="font-bold text-lg mb-2">Seasonal Trends</h4>
-                        <p class="text-sm text-gray-700">Adjust menus for seasonal demand so you sell the right dishes at peak moments.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Automated Promotion Engine (combined section) moved to follow Price Optimisation -->
-    <section class="py-24 px-4 bg-darkgray relative overflow-hidden">
-        <!-- Background image + overlay (matches hero section) -->
-        <div class="absolute inset-0 z-0">
-            <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=2000&q=80"
-                 alt="Delicious restaurant food"
-                 class="w-full h-full object-cover opacity-30">
-            <div class="absolute inset-0 bg-gradient-to-br from-darkgray/85 via-darkgray/80 to-primary/15"></div>
-        </div>
-        
-        <div class="max-w-7xl mx-auto opacity-100 relative z-10">
-            <div class="text-center mb-12">
-                <h2 class="text-4xl md:text-5xl font-bold mb-4 text-white">Automated Promotion Engine</h2>
-                <p class="text-xl text-gray-200 max-w-3xl mx-auto">
-                    Set promotions once and let the system run them when they make sense — sell items that would otherwise go unsold and boost slow hours.
-                </p>
-            </div>
-
-            <div class="grid md:grid-cols-3 gap-6">
-                <!-- Keep your 3 promotion cards (Expiration, Happy Hours, Weekend) -->
-                <div class="bg-white rounded-2xl p-6 hover:shadow-2xl transition border-2 border-transparent hover:border-primary">
-                    <div class="text-3xl mb-3">📦</div>
-                    <h4 class="font-bold mb-2 text-black">Expiration Deals</h4>
-                    <p class="text-sm text-gray-600 mb-3">Auto-create short deals for items nearing expiry to cut waste and recover cost.</p>
-                    <ul class="text-sm text-gray-600 space-y-1">
-                        <li>• Trigger by inventory age</li>
-                        <li>• Bundle or tier discounts</li>
-                        <li>• Enforce minimum margins</li>
-                    </ul>
-                </div>
-
-                <!-- Happy hours -->
-                <div class="bg-white rounded-2xl p-6 hover:shadow-2xl transition border-2 border-transparent hover:border-primary">
-                    <div class="text-3xl mb-3">🍹</div>
-                    <h4 class="font-bold mb-2 text-black">Smart Happy Hours</h4>
-                    <p class="text-sm text-gray-600 mb-3">Run smart happy hours when they will bring customers in — recurring or demand-triggered.</p>
-                    <ul class="text-sm text-gray-600 space-y-1">
-                        <li>• Time-based or demand-triggered</li>
-                        <li>• Per-location controls</li>
-                        <li>• Auto-disable at capacity</li>
-                    </ul>
-                </div>
-
-                <!-- Weekend / seasonal sales -->
-                <div class="bg-white rounded-2xl p-6 hover:shadow-2xl transition border-2 border-transparent hover:border-primary">
-                    <div class="text-3xl mb-3">🎉</div>
-                    <h4 class="font-bold mb-2 text-black">Weekend & Event Sales</h4>
-                    <p class="text-sm text-gray-600 mb-3">Create weekend or event offers that activate automatically to drive footfall and higher spend.</p>
-                    <ul class="text-sm text-gray-600 space-y-1">
-                        <li>• Scheduled campaigns</li>
-                        <li>• Dynamic bundles & upsells</li>
-                        <li>• Channel targeting (QR, app, web)</li>
-                    </ul>
-                </div>
-            </div>
-
-
-            <div class="mt-10 text-center">
-                <p class="text-lg text-gray-300 mb-4">
-                    Changes sync instantly across POS, QR menus, and apps - zero manual updates.
-                </p>
-            </div>
-        </div>
-    </section>
 
     <!-- Value Proposition -->
     <section class="py-20 px-4 bg-gradient-to-br from-primary via-red-500 to-orange-500">
         <div class="max-w-5xl mx-auto text-center">
             <h2 class="text-4xl md:text-5xl font-bold mb-8 text-white">Turn Your Menu Presentation Into a Living, Learning System</h2>
             <p class="text-xl md:text-2xl text-white leading-relaxed">
-                With A/Bite, restaurants continuously test and learn so menus earn more, waste less, and keep up with trends — all delivered as simple, action-ready recommendations.
+                With A/Bite, restaurants can continuously test, learn, and adapt their menus in real time to maximise revenue, reduce waste, and respond to trends, seasons, and cultural moments.
             </p>
         </div>
     </section>
@@ -693,7 +462,7 @@
                 Menus have been static for decades. <br>A/Bite turns them into living experiments.
             </p>
             <p class="text-xl md:text-2xl opacity-95 leading-relaxed">
-                Restaurants using A/Bite learn faster, adapt instantly, and earn more — by running simple menu tests, following clear recommendations, and automating routine changes.
+                Restaurants using A/Bite learn faster, adapt instantly, and earn more - powered by real-time pricing, true A/B testing, and intelligent decision-making automation.
             </p>
         </div>
     </section>
@@ -1123,82 +892,6 @@
                 icon.classList.add('rotate-180');
             }
         });
-    });
-})();
-</script>
-
-<script>
-// Menu Upload Form Handler (updated to save menu type)
-(function() {
-    const form = document.getElementById('menu-upload-form');
-    const fileInput = document.getElementById('menu-image');
-    const uploadArea = document.getElementById('upload-area');
-    const uploadPrompt = document.getElementById('upload-prompt');
-    const uploadPreview = document.getElementById('upload-preview');
-    const previewImage = document.getElementById('preview-image');
-    const fileName = document.getElementById('file-name');
-    const menuTypeSelect = document.getElementById('menu-type');
-
-    // Click to upload
-    uploadArea.addEventListener('click', () => fileInput.click());
-
-    // Drag and drop
-    uploadArea.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        uploadArea.classList.add('border-primary', 'bg-primary/5');
-    });
-
-    uploadArea.addEventListener('dragleave', () => {
-        uploadArea.classList.remove('border-primary', 'bg-primary/5');
-    });
-
-    uploadArea.addEventListener('drop', (e) => {
-        e.preventDefault();
-        uploadArea.classList.remove('border-primary', 'bg-primary/5');
-        const files = e.dataTransfer.files;
-        if (files.length) {
-            fileInput.files = files;
-            handleFileSelect(files[0]);
-        }
-    });
-
-    // File input change
-    fileInput.addEventListener('change', (e) => {
-        if (e.target.files.length) {
-            handleFileSelect(e.target.files[0]);
-        }
-    });
-
-    function handleFileSelect(file) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            previewImage.src = e.target.result;
-            fileName.textContent = file.name;
-            uploadPrompt.classList.add('hidden');
-            uploadPreview.classList.remove('hidden');
-        };
-        reader.readAsDataURL(file);
-    }
-
-    // Form submission
-    form.addEventListener('submit', (e) => {
-        e.preventDefault();
-
-        // Get form data
-        const restaurantName = document.getElementById('restaurant-name').value;
-        const email = document.getElementById('email').value;
-        const menuType = menuTypeSelect ? menuTypeSelect.value : '';
-
-        // Store in sessionStorage for the results page
-        sessionStorage.setItem('menuAnalysis', JSON.stringify({
-            restaurantName: restaurantName,
-            email: email,
-            menuType: menuType,
-            uploadTime: new Date().toISOString()
-        }));
-
-        // Redirect to results page
-        window.location.href = '/menu-analysis-results/';
     });
 })();
 </script>

@@ -17,8 +17,20 @@ def diners_page(request):
     }
     return render(request, 'core/diners.html', context)
 
+def menu_analysis_results(request):
+    """
+    View to display menu analysis results
+    """
+    context = {
+    }
+    return render(request, 'core/menu_analysis_results.html', context)
+
 def pricing(request):
     return render(request, 'core/pricing.html')
+
+
+def questionnaire(request):
+    return render(request, 'core/questionnaire.html')
 
 def dashboard(request):
     """
