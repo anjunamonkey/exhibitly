@@ -51,7 +51,8 @@
       if (!header) return;
       const links = header.querySelectorAll('.header-link');
       const cta = header.querySelector('.header-cta');
-      const SCROLL_LOCK = 900; // do not change header until this many pixels scrolled
+    const SCROLL_LOCK = {{ scroll_lock|default:0 }}; // Use context variable with default
+
 
       function setTransparent() {
         header.style.backgroundColor = 'transparent';

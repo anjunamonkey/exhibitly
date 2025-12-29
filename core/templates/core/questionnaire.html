@@ -25,48 +25,34 @@
         }
     </script>
 
-    <!-- Neobrutalist visual overrides -->
+    <!-- Clean modern visual overrides -->
     <style>
-        :root{
-            --neo-primary: #EA4949;
-            --neo-black: #1A1A1A;
-            --neo-bg: #F7F7F7;
-            --neo-off: #FFFFFF;
-        }
-
         html,body { height:100%; }
         body {
-            background: var(--neo-bg) !important;
-            color: var(--neo-black) !important;
+            background: #F7F7F7;
+            color: #1A1A1A;
             font-family: 'Nunito', sans-serif;
             -webkit-font-smoothing:antialiased;
         }
-        h1,h2,h3,h4 { font-family: 'Nunito', sans-serif; letter-spacing:0.02em; color:var(--neo-black); }
-
-        .rounded-2xl, .rounded-xl, .rounded-lg, .rounded { border-radius: 6px !important; }
-        [class*="shadow-"] { box-shadow: none !important; }
-
-        .bg-white, .bg-lightgray, .bg-customgray, .bg-offwhite {
-            background: var(--neo-off) !important;
-            border: 6px solid var(--neo-black) !important;
-            color: var(--neo-black) !important;
-        }
-
-        .bg-primary {
-            background: var(--neo-primary) !important;
-            color: var(--neo-black) !important;
-            border: 6px solid var(--neo-black) !important;
+        h1,h2,h3,h4 { 
+            font-family: 'Nunito', sans-serif; 
+            color: #1A1A1A; 
         }
 
         button, .btn {
-            border:6px solid var(--neo-black) !important;
-            background: var(--neo-primary) !important;
-            color: var(--neo-black) !important;
-            padding: .9rem 1.2rem !important;
-            font-weight: 900 !important;
-            border-radius: 8px !important;
-            box-shadow: none !important;
+            background: #EA4949;
+            color: white;
+            padding: .9rem 1.2rem;
+            font-weight: 700;
+            border-radius: 8px;
+            border: none;
             cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        button:hover:not(:disabled) {
+            background: #d63939;
+            transform: translateY(-1px);
         }
 
         button:disabled {
@@ -74,49 +60,58 @@
             cursor: not-allowed;
         }
 
+        button.bg-gray-200 {
+            background: #E5E7EB;
+            color: #1A1A1A;
+        }
+
+        button.bg-gray-200:hover:not(:disabled) {
+            background: #D1D5DB;
+        }
+
         /* Checkbox styling */
         .option-card {
-            background: var(--neo-off);
-            border: 6px solid var(--neo-black);
-            border-radius: 6px;
+            background: white;
+            border: 2px solid #E5E7EB;
+            border-radius: 12px;
             padding: 1.5rem;
             cursor: pointer;
             transition: all 0.2s;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
 
         .option-card:hover {
-            transform: translateY(-2px);
+            border-color: #EA4949;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
 
         .option-card.selected {
-            background: var(--neo-primary);
-            border-color: var(--neo-black);
+            background: #FEF2F2;
+            border-color: #EA4949;
+            box-shadow: 0 4px 6px rgba(234,73,73,0.1);
         }
 
-        .option-card input[type="checkbox"] {
-            width: 24px;
-            height: 24px;
-            border: 4px solid var(--neo-black);
+        .option-card input[type="checkbox"],
+        .option-card input[type="radio"] {
+            width: 20px;
+            height: 20px;
             cursor: pointer;
+            accent-color: #EA4949;
         }
-
-        .text-primary { color: var(--neo-primary) !important; }
-        .text-neo-black { color: var(--neo-black) !important; }
 
         /* Progress bar */
         .progress-bar {
-            height: 12px;
-            background: var(--neo-off);
-            border: 4px solid var(--neo-black);
-            border-radius: 6px;
+            height: 8px;
+            background: #E5E7EB;
+            border-radius: 999px;
             overflow: hidden;
         }
 
         .progress-fill {
             height: 100%;
-            background: var(--neo-primary);
-            border-right: 4px solid var(--neo-black);
+            background: #EA4949;
             transition: width 0.3s;
+            border-radius: 999px;
         }
 
         /* Stage transitions */
@@ -138,6 +133,20 @@
                 opacity: 1;
                 transform: translateX(0);
             }
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"] {
+            border: 2px solid #E5E7EB;
+            transition: border-color 0.2s;
+        }
+
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="tel"]:focus {
+            border-color: #EA4949;
+            outline: none;
         }
     </style>
 </head>
