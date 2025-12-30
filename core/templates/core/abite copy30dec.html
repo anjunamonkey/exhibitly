@@ -109,7 +109,7 @@
             </h2>
             <h3 class="text-xl md:text-2xl text-gray-200 mb-12 max-w-3xl mx-auto ">
                 <strong>You optimise your dishes, a bite optimises your menus</strong>.
-                AI-powered menu experiments, A/B testing, dynamic pricing, promotions, intelligent insights and more. No tech skills required.<br>
+                AI-powered menu experiments, A/B testing, dynamic pricing, promotions, intelligent insights and more. Maximise revenue and minimise waste, no tech skills required.<br>
             </h3>
 
             <a href="/dashboard/">
@@ -201,13 +201,13 @@
                         </div>
                     </div>
 
-                    <!-- <div class="mt-8">
+                    <div class="mt-8">
                         <a href="/dashboard/">
                             <button class="bg-primary text-white px-8 py-3 rounded-lg font-semibold hover:bg-red-600 transition shadow-lg">
                                 Get started free
                             </button>
                         </a>
-                    </div> -->
+                    </div>
                 </div>
 
                 <!-- Right: Image -->
@@ -222,6 +222,81 @@
         </div>
     </section>
 
+    <!-- FREE TOOL SECTION - KEPT AS IS -->
+    <section class="py-20 px-4 bg-gradient-to-br from-primary via-red-500 to-orange-500 relative overflow-hidden">
+        <div class="absolute inset-0 opacity-10">
+            <div class="absolute top-10 right-10 w-64 h-64 bg-white rounded-full blur-3xl"></div>
+            <div class="absolute bottom-10 left-10 w-64 h-64 bg-white rounded-full blur-3xl"></div>
+        </div>
+
+        <div class="max-w-6xl mx-auto relative z-10">
+            <div class="grid gap-8 md:grid-cols-2 items-center">
+                <!-- Left: explanatory text -->
+                <div class="text-left text-white">
+                    <h2 class="text-4xl md:text-5xl font-display font-bold mb-4">Free Menu Analysis Tool</h2>
+                    <p class="text-xl text-white/90 mb-6 max-w-xl">
+                        Simply upload a screenshot or photo of your menu and A/Bite will analyse it.
+                        Get instant recommendations on tests to run, revenue opportunities, and optimisation strategies.
+                    </p>
+                    <ul class="text-white/90 space-y-2 text-sm">
+                        <li>• Quick, actionable test suggestions (images, pricing, layout)</li>
+                        <li>• Estimated revenue opportunity and expected lift</li>
+                        <li>• Report sent to your email with next steps</li>
+                    </ul>
+                </div>
+
+                <!-- Right: form (right-aligned) -->
+                <div class="flex justify-end">
+                    <form id="menu-upload-form" class="bg-white rounded-2xl p-8 shadow-2xl w-full max-w-md">
+                        <!-- <div class="mb-4">
+                            <label for="menu-type" class="block text-left font-bold text-gray-800 mb-2">Menu type</label>
+                            <select id="menu-type" name="menu-type" required
+                                    class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary">
+                                <option value="printed">Printed / Physical</option>
+                                <option value="online">Online / Digital</option>
+                            </select>
+                        </div> -->
+
+                        <div class="mb-6">
+                            <label for="menu-image" class="block text-left font-bold text-gray-800 mb-3">Upload Your Menu</label>
+                            <div class="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-primary transition cursor-pointer" id="upload-area">
+                                <input type="file" id="menu-image" name="menu-image" accept="image/*" class="hidden" required>
+                                <div id="upload-prompt">
+                                    <!-- <div class="text-5xl mb-3">📸</div> -->
+                                    <p class="text-gray-600 mb-2">Click to upload or drag and drop</p>
+                                    <p class="text-sm text-gray-500">PNG, JPG up to 10MB</p>
+                                </div>
+                                <div id="upload-preview" class="hidden">
+                                    <img id="preview-image" class="max-h-48 mx-auto rounded-lg mb-3" alt="Menu preview">
+                                    <p class="text-sm text-gray-600" id="file-name"></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-6">
+                            <label for="restaurant-name" class="block text-left font-bold text-gray-800 mb-2">Restaurant Name</label>
+                            <input type="text" id="restaurant-name" name="restaurant-name"
+                                   class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary"
+                                   placeholder="e.g. Mario's Italian Kitchen" required>
+                        </div>
+
+                        <div class="mb-6">
+                            <label for="email" class="block text-left font-bold text-gray-800 mb-2">Email (to receive full report)</label>
+                            <input type="email" id="email" name="email"
+                                   class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary"
+                                   placeholder="your@email.com" required>
+                        </div>
+
+                        <button type="submit" class="w-full bg-primary text-white px-8 py-4 rounded-xl text-lg font-bold hover:bg-red-600 transition shadow-lg transform hover:scale-105">
+                            Analyze My Menu (Free) →
+                        </button>
+
+                        <p class="text-xs text-gray-500 mt-4">No credit card required • Results in 30 seconds</p>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
 
 
 
@@ -257,7 +332,7 @@
                         </div>
                         <div class="flex items-center">
                             <span class="text-primary mr-2">✓</span>
-                            <span>Seasonal & cultural variants</span>
+                            <span>Seasonal variants</span>
                         </div>
                     </div>
                 </div>
@@ -349,10 +424,7 @@
 
                     <!-- Printed Menu Visual -->
                     <div id="printed-visual" class="bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
-                        <img src="https://cdn.prod.website-files.com/67f7da4f68be22e1ab93fbfe/6843246d702934b8a0b6a42b_IMG%20Desktop.png" 
-                             alt="Printed restaurant menu" 
-                             class="w-full h-80 object-cover">
-                        <!-- <div class="bg-gradient-to-br from-gray-50 to-white p-6">
+                        <div class="bg-gradient-to-br from-gray-50 to-white p-6">
                             <div class="bg-white rounded-lg border-2 border-gray-200 p-4 mb-4">
                                 <div class="flex items-center justify-between mb-3">
                                     <div class="h-3 bg-gray-200 rounded w-1/3"></div>
@@ -378,7 +450,7 @@
                                     <div class="text-orange-700 text-xs">Valid until 7pm</div>
                                 </div>
                             </div>
-                        </div> -->
+                        </div>
                     </div>
 
                     <!-- Digital Menu Visual -->
@@ -416,7 +488,7 @@
                     <div id="printed-content">
                         <h2 class="text-4xl font-display font-bold mb-6">Enhance your existing menus</h2>
                         <p class="text-xl text-gray-600 mb-8">
-                            Keep your beautifully designed printed menus - just add a QR code. Customers get an enhanced experience with images, allergen info, and live promotions, while you unlock powerful analytics and testing capabilities.
+                            Keep your beautifully designed printed menus - just add a simple QR code. Customers get an enhanced experience with images, allergen info, and live promotions, while you unlock powerful analytics and testing capabilities.
                         </p>
                         
                         <div class="space-y-6 mb-8">
@@ -425,7 +497,7 @@
                                     <span class="text-primary mr-2">→</span>
                                     Allergen filtering & dietary preferences
                                 </h4>
-                                <p class="text-gray-600 text-sm ml-6">Customers can filter by dietary needs or view AI-determined calorie information.</p>
+                                <p class="text-gray-600 text-sm ml-6">Customers select their dietary needs and see only suitable items - reducing order errors and staff questions. Use AI to add calorie information automatically.</p>
                             </div>
                             
                             <div>
@@ -445,7 +517,7 @@
                             </div>
                         </div>
 
-                        <!-- <div class="bg-gradient-to-r from-primary/10 to-orange-500/10 rounded-xl px-6 py-4 border-2 border-primary/20">
+                        <div class="bg-gradient-to-r from-primary/10 to-orange-500/10 rounded-xl px-6 py-4 border-2 border-primary/20">
                             <h4 class="font-bold mb-3 flex items-center">
                                 <svg class="w-5 h-5 text-primary mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
@@ -455,7 +527,7 @@
                             <p class="text-sm text-gray-700 mb-3">
                                 Automatically access <strong>A/B testing</strong>, <strong>dynamic pricing</strong>, <strong>automated promotions</strong>, and more...
                             </p>
-                        </div> -->
+                        </div>
                     </div>
 
                     <!-- Digital Menu Content -->
@@ -517,7 +589,7 @@
                     <p class="text-xl text-gray-600 mb-8">
                         Dynamic price adjustments based on 8+ real-time signals. You set the rules, we handle the rest.
                     </p>
-                    <div class="grid grid-cols-2 gap-4 text-lg">
+                    <div class="grid grid-cols-2 gap-4 text-sm">
                         <div class="flex items-center">
                             <span class="text-primary mr-2">✓</span>
                             <span>Time of day</span>
@@ -639,7 +711,7 @@
             <div class="grid md:grid-cols-2 gap-12 items-start mb-12">
                 <!-- Left: Promotions Dashboard Preview -->
                 <div class="scroll-animate-left">
-                    <img src="https://cdn.prod.website-files.com/67f7da4f68be22e1ab93fbfe/68077d83a9b66dba59d5cf12_image.webp" alt="Promotions Dashboard" class="w-full rounded-2xl shadow-2xl border border-gray-200">
+                    <img src="https://cdn.prod.website-files.com/67f7da4f68be22e1ab93fbfe/684323cc5de8d423ef04f9e2_IMG%20Desktop.png" alt="Promotions Dashboard" class="w-full rounded-2xl shadow-2xl border border-gray-200">
                 </div>
 
                 <!-- Right: Feature Cards -->
@@ -654,10 +726,10 @@
                             </div> -->
                             <div class="flex-1">
                                 <h3 class="text-xl font-display font-bold mb-2">Expiration Deals</h3>
-                                <p class="text-gray-600 text-lg mb-3">
+                                <p class="text-gray-600 text-sm mb-3">
                                     Auto-create short deals for items nearing expiry to cut waste and recover cost.
                                 </p>
-                                <!-- <ul class="space-y-1 text-lg text-gray-700">
+                                <ul class="space-y-1 text-xs text-gray-700">
                                     <li class="flex items-start">
                                         <span class="text-primary mr-2">•</span>
                                         <span>Trigger by inventory age</span>
@@ -670,7 +742,7 @@
                                         <span class="text-primary mr-2">•</span>
                                         <span>Enforce minimum margins</span>
                                     </li>
-                                </ul> -->
+                                </ul>
                             </div>
                         </div>
                     </div>
@@ -688,7 +760,7 @@
                                 <p class="text-gray-600 text-sm mb-3">
                                     Run smart happy hours when they will bring customers in.
                                 </p>
-                                <!-- <ul class="space-y-1 text-lg text-gray-700">
+                                <ul class="space-y-1 text-xs text-gray-700">
                                     <li class="flex items-start">
                                         <span class="text-primary mr-2">•</span>
                                         <span>Time-based or demand-triggered</span>
@@ -701,7 +773,7 @@
                                         <span class="text-primary mr-2">•</span>
                                         <span>Auto-disable at capacity</span>
                                     </li>
-                                </ul> -->
+                                </ul>
                             </div>
                         </div>
                     </div>
@@ -719,7 +791,7 @@
                                 <p class="text-gray-600 text-sm mb-3">
                                     Create weekend or event offers that activate automatically to drive footfall.
                                 </p>
-                                <!-- <ul class="space-y-1 text-lg text-gray-700">
+                                <ul class="space-y-1 text-xs text-gray-700">
                                     <li class="flex items-start">
                                         <span class="text-primary mr-2">•</span>
                                         <span>Scheduled campaigns</span>
@@ -732,7 +804,7 @@
                                         <span class="text-primary mr-2">•</span>
                                         <span>Channel targeting (QR, app, web)</span>
                                     </li>
-                                </ul> -->
+                                </ul>
                             </div>
                         </div>
                     </div>
@@ -786,86 +858,32 @@
         </div>
     </section>
 
-
-        <!-- FREE TOOL SECTION - KEPT AS IS -->
-    <section class="py-20 px-4 bg-gradient-to-br from-primary via-red-500 to-orange-500 relative overflow-hidden">
-        <div class="absolute inset-0 opacity-10">
-            <div class="absolute top-10 right-10 w-64 h-64 bg-white rounded-full blur-3xl"></div>
-            <div class="absolute bottom-10 left-10 w-64 h-64 bg-white rounded-full blur-3xl"></div>
-        </div>
-
-        <div class="max-w-6xl mx-auto relative z-10">
-            <div class="grid gap-8 md:grid-cols-2 items-center">
-                <!-- Left: explanatory text -->
-                <div class="text-left text-white">
-                    <h2 class="text-4xl md:text-5xl font-display font-bold mb-4">Free Menu Analysis Tool</h2>
-                    <p class="text-xl text-white/90 mb-6 max-w-xl">
-                        Upload your menu and get instant recommendations on tests to run and revenue opportunities.
-                    </p>
-                    <!-- <ul class="text-white/90 space-y-2 text-sm">
-                        <li>• Quick, actionable test suggestions (images, pricing, layout)</li>
-                        <li>• Estimated revenue opportunity and expected lift</li>
-                        <li>• Report sent to your email with next steps</li>
-                    </ul> -->
+    <!-- Use Cases - Condensed -->
+    <section class="py-20 px-4 bg-white">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16 scroll-animate">
+                <h2 class="text-4xl font-display font-bold mb-4">Adapts to seasons & cultural moments</h2>
+                <p class="text-xl text-gray-600">Automatically adjust for holidays, weather, and special events</p>
+            </div>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="bg-lightgray rounded-xl p-6 text-center scroll-animate scroll-animate-stagger">
+                    <h3 class="text-xl font-display font-bold mb-3">🌱 Veganuary</h3>
+                    <p class="text-gray-600 text-sm">Highlight vegan dishes and adjust pricing as demand spikes</p>
                 </div>
-
-                <!-- Right: form (right-aligned) -->
-                <div class="flex justify-end">
-                    <form id="menu-upload-form" class="bg-white rounded-2xl p-8 shadow-2xl w-full max-w-md">
-                        <!-- <div class="mb-4">
-                            <label for="menu-type" class="block text-left font-bold text-gray-800 mb-2">Menu type</label>
-                            <select id="menu-type" name="menu-type" required
-                                    class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary">
-                                <option value="printed">Printed / Physical</option>
-                                <option value="online">Online / Digital</option>
-                            </select>
-                        </div> -->
-
-                        <div class="mb-6">
-                            <label for="menu-image" class="block text-left font-bold text-gray-800 mb-3">Upload Your Menu</label>
-                            <div class="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-primary transition cursor-pointer" id="upload-area">
-                                <input type="file" id="menu-image" name="menu-image" accept="image/*" class="hidden" required>
-                                <div id="upload-prompt">
-                                    <!-- <div class="text-5xl mb-3">📸</div> -->
-                                    <p class="text-gray-600 mb-2">Click to upload or drag and drop</p>
-                                    <p class="text-sm text-gray-500">PNG, JPG up to 10MB</p>
-                                </div>
-                                <div id="upload-preview" class="hidden">
-                                    <img id="preview-image" class="max-h-48 mx-auto rounded-lg mb-3" alt="Menu preview">
-                                    <p class="text-sm text-gray-600" id="file-name"></p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="mb-6">
-                            <label for="restaurant-name" class="block text-left font-bold text-gray-800 mb-2">Restaurant Name</label>
-                            <input type="text" id="restaurant-name" name="restaurant-name"
-                                   class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary"
-                                   placeholder="e.g. Mario's Italian Kitchen" required>
-                        </div>
-
-                        <div class="mb-6">
-                            <label for="email" class="block text-left font-bold text-gray-800 mb-2">Email (to receive full report)</label>
-                            <input type="email" id="email" name="email"
-                                   class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary"
-                                   placeholder="your@email.com" required>
-                        </div>
-
-                        <button type="submit" class="w-full bg-primary text-white px-8 py-4 rounded-xl text-lg font-bold hover:bg-red-600 transition shadow-lg transform hover:scale-105">
-                            Analyze My Menu (Free) →
-                        </button>
-
-                        <!-- <p class="text-xs text-gray-500 mt-4">No credit card required • Results in 30 seconds</p> -->
-                    </form>
+                <div class="bg-lightgray rounded-xl p-6 text-center scroll-animate scroll-animate-stagger">
+                    <h3 class="text-xl font-display font-bold mb-3">🌙 Ramadan</h3>
+                    <p class="text-gray-600 text-sm">Surface Iftar bundles and adjust peak window prices</p>
+                </div>
+                <div class="bg-lightgray rounded-xl p-6 text-center scroll-animate scroll-animate-stagger">
+                    <h3 class="text-xl font-display font-bold mb-3">☀️ Weather</h3>
+                    <p class="text-gray-600 text-sm">Promote items that match current weather conditions</p>
                 </div>
             </div>
         </div>
     </section>
 
-
-
     <!-- Social Proof -->
-    <section class="py-20 px-4 bg-white">
+    <section class="py-20 px-4 bg-lightgray">
         <div class="max-w-5xl mx-auto text-center">
             <h2 class="text-4xl font-display font-bold mb-12 scroll-animate">Built for restaurants of all sizes</h2>
             <div class="grid md:grid-cols-4 gap-6">
@@ -907,7 +925,7 @@
             <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
                 <!-- Off-Peak Discounts -->
                 <div class="bg-white/10 backdrop-blur-lg rounded-2xl p-8 shadow-xl hover:shadow-2xl transition transform hover:scale-105 border-2 border-white/20 hover:border-primary">
-                    <!-- <div class="text-5xl mb-6 text-center">⏰</div> -->
+                    <div class="text-5xl mb-6 text-center">⏰</div>
                     <h3 class="text-2xl font-bold mb-4 text-center text-white">Off-Peak Savings</h3>
                     <p class="text-gray-200 text-center leading-relaxed">
                         Get great deals during quieter hours - enjoy the same quality food at a fraction of the price
@@ -916,7 +934,7 @@
 
                 <!-- Flash Deals -->
                 <div class="bg-white/10 backdrop-blur-lg rounded-2xl p-8 shadow-xl hover:shadow-2xl transition transform hover:scale-105 border-2 border-white/20 hover:border-primary">
-                    <!-- <div class="text-5xl mb-6 text-center">⚡</div> -->
+                    <div class="text-5xl mb-6 text-center">⚡</div>
                     <h3 class="text-2xl font-bold mb-4 text-center text-white">Flash Promotions</h3>
                     <p class="text-gray-200 text-center leading-relaxed">
                         Be the first to grab limited-time deals and surprise discounts throughout the day
@@ -925,7 +943,7 @@
 
                 <!-- Happy Hour -->
                 <div class="bg-white/10 backdrop-blur-lg rounded-2xl p-8 shadow-xl hover:shadow-2xl transition transform hover:scale-105 border-2 border-white/20 hover:border-primary">
-                    <!-- <div class="text-5xl mb-6 text-center">🍹</div> -->
+                    <div class="text-5xl mb-6 text-center">🍹</div>
                     <h3 class="text-2xl font-bold mb-4 text-center text-white">Smart Happy Hours</h3>
                     <p class="text-gray-200 text-center leading-relaxed">
                         Automated happy hour pricing means more opportunities to save on your favorites
@@ -934,7 +952,7 @@
 
                 <!-- Fight Waste -->
                 <div class="bg-white/10 backdrop-blur-lg rounded-2xl p-8 shadow-xl hover:shadow-2xl transition transform hover:scale-105 border-2 border-white/20 hover:border-primary">
-                    <!-- <div class="text-5xl mb-6 text-center">🌍</div> -->
+                    <div class="text-5xl mb-6 text-center">🌍</div>
                     <h3 class="text-2xl font-bold mb-4 text-center text-white">Fight Food Waste</h3>
                     <p class="text-gray-200 text-center leading-relaxed">
                         Save money while helping reduce food waste - it's good for your wallet and the planet
@@ -943,7 +961,7 @@
 
                 <!-- Discovery -->
                 <div class="bg-white/10 backdrop-blur-lg rounded-2xl p-8 shadow-xl hover:shadow-2xl transition transform hover:scale-105 border-2 border-white/20 hover:border-primary">
-                    <!-- <div class="text-5xl mb-6 text-center">🔍</div> -->
+                    <div class="text-5xl mb-6 text-center">🔍</div>
                     <h3 class="text-2xl font-bold mb-4 text-center text-white">Discover New Spots</h3>
                     <p class="text-gray-200 text-center leading-relaxed">
                         Try restaurants you've been curious about without breaking the bank
@@ -952,7 +970,7 @@
 
                 <!-- Seasonal Specials -->
                 <div class="bg-white/10 backdrop-blur-lg rounded-2xl p-8 shadow-xl hover:shadow-2xl transition transform hover:scale-105 border-2 border-white/20 hover:border-primary">
-                    <!-- <div class="text-5xl mb-6 text-center">🎉</div> -->
+                    <div class="text-5xl mb-6 text-center">🎉</div>
                     <h3 class="text-2xl font-bold mb-4 text-center text-white">Seasonal Specials</h3>
                     <p class="text-gray-200 text-center leading-relaxed">
                         Access exclusive seasonal bundles and cultural celebration menus at better prices
