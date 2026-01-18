@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>A/Bite – Grab a/bite</title>
+    <link rel="icon" type="image/png" href="{% static 'abite-favicon.png' %}">
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link href="https://api.fontshare.com/v2/css?f[]=general-sans@200,300,400,500,600,700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -212,8 +213,8 @@
 
                 <!-- Right: Image -->
                 <div class="scroll-animate-right">
-                    <div class="rounded-2xl overflow-hidden shadow-2xl">
-                        <img src="https://cdn.prod.website-files.com/67f7da4f68be22e1ab93fbfe/684020521830d136e86955d4_Placeholder%20Image.png" 
+                    <div class="rounded-2xl overflow-hidden shadow-0xl">
+                        <img src="{% static 'abite-dashboard-ui.png' %}" 
                              alt="Restaurant manager using A/Bite on tablet" 
                              class="w-full h-full object-cover">
                     </div>
@@ -263,7 +264,7 @@
                 </div>
                 <div class="scroll-animate-right">
                     <!-- A/B Testing UI Mockup -->
-                    <div class="bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden">
+                    <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-0xl">
                         <div class="bg-gray-50 px-6 py-4 border-b border-gray-200">
                             <h3 class="font-bold text-lg">Burger Price Point Test</h3>
                             <p class="text-sm text-gray-600">Testing £13.00 vs £14.50 for Classic Burger</p>
@@ -348,8 +349,8 @@
                     </div>
 
                     <!-- Printed Menu Visual -->
-                    <div id="printed-visual" class="bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
-                        <img src="https://cdn.prod.website-files.com/67f7da4f68be22e1ab93fbfe/6843246d702934b8a0b6a42b_IMG%20Desktop.png" 
+                    <div id="printed-visual" class="bg-white rounded-2xl shadow-0xl border border-gray-200 overflow-hidden">
+                        <img src="https://images.pexels.com/photos/14267464/pexels-photo-14267464.jpeg" 
                              alt="Printed restaurant menu" 
                              class="w-full h-80 object-cover">
                         <!-- <div class="bg-gradient-to-br from-gray-50 to-white p-6">
@@ -382,7 +383,7 @@
                     </div>
 
                     <!-- Digital Menu Visual -->
-                    <div id="digital-visual" class="bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden hidden">
+                    <div id="digital-visual" class="bg-white rounded-2xl shadow-0xl border border-gray-200 overflow-hidden hidden">
                         <div class="bg-gradient-to-br from-gray-50 to-white p-6">
                             <div class="bg-gray-800 rounded-lg p-4 font-mono text-xs">
                                 <div class="text-green-400 mb-2">// Add to your website's &lt;head&gt;</div>
@@ -554,7 +555,7 @@
                 </div>
                 <div class="scroll-animate-right">
                     <!-- Dynamic Pricing Dashboard Mockup -->
-                    <div class="bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden">
+                    <div class="bg-white rounded-2xl shadow-0xl border border-gray-200 overflow-hidden">
                         <div class="bg-gray-50 px-6 py-4 border-b border-gray-200 flex items-center justify-between">
                             <div>
                                 <h3 class="font-bold text-lg">Live Pricing Dashboard</h3>
@@ -639,7 +640,7 @@
             <div class="grid md:grid-cols-2 gap-12 items-start mb-12">
                 <!-- Left: Promotions Dashboard Preview -->
                 <div class="scroll-animate-left">
-                    <img src="https://cdn.prod.website-files.com/67f7da4f68be22e1ab93fbfe/68077d83a9b66dba59d5cf12_image.webp" alt="Promotions Dashboard" class="w-full rounded-2xl shadow-2xl border border-gray-200">
+                    <img src="https://images.pexels.com/photos/9961870/pexels-photo-9961870.jpeg" alt="Promotions Dashboard" class="w-full rounded-2xl shadow-0xl border border-gray-200">
                 </div>
 
                 <!-- Right: Feature Cards -->
@@ -961,13 +962,13 @@
             </div>
 
             <!-- CTA for Diners -->
-            <div class="bg-white/10 backdrop-blur-md rounded-3xl p-10 text-center border-2 border-white/20">
+            <!-- <div class="bg-white/10 backdrop-blur-md rounded-3xl p-10 text-center border-2 border-white/20">
                 <h3 class="text-3xl font-bold mb-4 text-white">Want to be notified of deals near you?</h3>
                 <p class="text-xl text-gray-200 mb-6">Join our waitlist for early access to diner features</p>
                 <button class="bg-white text-primary px-10 py-4 rounded-xl text-lg font-bold hover:bg-gray-100 transition shadow-xl transform hover:scale-105">
                     Join Diner Waitlist →
                 </button>
-            </div>
+            </div> -->
         </div>
     </section>
 
