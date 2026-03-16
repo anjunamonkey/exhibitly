@@ -1,2 +1,2 @@
-web: gunicorn abite.wsgi --timeout 20 --log-file -
+web: gunicorn exhibitly.wsgi --timeout 20 --log-file -
 release: python manage.py migrate
