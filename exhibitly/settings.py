@@ -23,7 +23,7 @@ SECRET_KEY = 'django-insecure-2d5%0un1g1jp@#oyermkr_gs*lx$*1!mj(ysj_9#nt*=v+h2qs
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['abite-a502a74b0578.herokuapp.com', 'localhost', '127.0.0.1', 'abite.food', 'www.abite.food']
+ALLOWED_HOSTS = ['exhibitly-a502a74b0578.herokuapp.com', 'localhost', '127.0.0.1', 'exhibitly.food', 'www.exhibitly.food']
 
 
 # Application definition
@@ -48,7 +48,7 @@ MIDDLEWARE = [
         'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'abite.urls'
+ROOT_URLCONF = 'exhibitly.urls'
 
 TEMPLATES = [
     {
@@ -65,7 +65,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'abite.wsgi.application'
+WSGI_APPLICATION = 'exhibitly.wsgi.application'
 
 
 # Database

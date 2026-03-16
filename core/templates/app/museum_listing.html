@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Museums — Exhibitly</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Cormorant Garamond', 'serif'],
+                    },
+                    colors: {
+                        gold: '#C9A96E',
+                        'gold-light': '#E8D5B0',
+                        'gold-dark': '#A07840',
+                        charcoal: '#0D0D0D',
+                        'charcoal-green': '#111512',
+                        'charcoal-2': '#141414',
+                        'charcoal-3': '#1C1C1C',
+                        cream: '#F5F0E8',
+                    },
+                    keyframes: {
+                        fadeUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                    },
+                    animation: {
+                        'fade-up': 'fadeUp 0.7s ease-out both',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        html { scroll-behavior: smooth; }
+
+        /* ── Search input ── */
+        #search-input {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(201,169,110,0.2);
+            border-radius: 12px;
+            color: #F5F0E8;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.875rem;
+            transition: border-color 0.2s, background 0.2s;
+            outline: none;
+        }
+        #search-input:focus {
+            border-color: rgba(201,169,110,0.55);
+            background: rgba(255,255,255,0.06);
+        }
+        #search-input::placeholder { color: rgba(245,240,232,0.28); }
+
+        /* ── Filter pills ── */
+        .filter-pill {
+            display: inline-flex; align-items: center;
+            padding: 6px 14px; border-radius: 20px;
+            font-size: 0.78rem; font-weight: 500; letter-spacing: 0.01em;
+            border: 1px solid rgba(201,169,110,0.18);
+            color: rgba(245,240,232,0.5);
+            background: transparent;
+            cursor: pointer;
+            transition: color 0.18s, background 0.18s, border-color 0.18s;
+            white-space: nowrap;
+            user-select: none;
+        }
+        .filter-pill:hover { color: #F5F0E8; border-color: rgba(201,169,110,0.4); background: rgba(201,169,110,0.05); }
+        .filter-pill.active {
+            color: #0D0D0D; background: #C9A96E;
+            border-color: #C9A96E; font-weight: 600;
+        }
+
+        /* ── City select ── */
+        .filter-select {
+            appearance: none;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(201,169,110,0.18);
+            border-radius: 20px;
+            color: rgba(245,240,232,0.55);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.78rem;
+            font-weight: 500;
+            padding: 6px 32px 6px 14px;
+            cursor: pointer;
+            outline: none;
+            transition: border-color 0.18s, color 0.18s;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 20 20' fill='none'%3E%3Cpath d='M6 8l4 4 4-4' stroke='%23C9A96E' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+        }
+        .filter-select:focus, .filter-select:hover { border-color: rgba(201,169,110,0.45); color: #F5F0E8; }
+        .filter-select option { background: #1C1C1C; color: #F5F0E8; }
+
+        /* ── Museum card ── */
+        .museum-card {
+            background: #1C1C1C;
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 16px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: border-color 0.28s ease, transform 0.28s ease, box-shadow 0.28s ease;
+        }
+        .museum-card:hover {
+            border-color: rgba(201,169,110,0.3);
+            transform: translateY(-4px);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.55);
+        }
+        .museum-card-thumb {
+            width: 100%; height: 160px;
+            position: relative; overflow: hidden;
+        }
+        .museum-card-thumb-overlay {
+            position: absolute; inset: 0;
+            background: linear-gradient(to top, rgba(28,28,28,1) 0%, rgba(28,28,28,0.2) 55%, transparent 100%);
+        }
+        .museum-card-body { padding: 18px 20px 20px; }
+        .museum-card-type {
+            display: inline-block;
+            font-size: 8px; text-transform: uppercase; letter-spacing: 0.14em; font-weight: 600;
+            color: #0D0D0D; background: rgba(201,169,110,0.9);
+            padding: 2px 8px; border-radius: 3px; margin-bottom: 10px;
+        }
+        .museum-card-name {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.2rem; font-weight: 500; color: #F5F0E8;
+            line-height: 1.25; margin-bottom: 6px;
+        }
+        .museum-card-location {
+            font-size: 0.75rem; color: rgba(245,240,232,0.38);
+            display: flex; align-items: center; gap: 5px; margin-bottom: 14px;
+        }
+        .museum-card-meta {
+            display: flex; align-items: center; justify-content: space-between;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            padding-top: 12px; margin-top: 2px;
+        }
+        .museum-card-excount {
+            font-size: 0.73rem; color: rgba(201,169,110,0.65);
+        }
+        .museum-card-cta {
+            font-size: 0.72rem; font-weight: 500; color: rgba(245,240,232,0.28);
+            display: flex; align-items: center; gap-4px;
+            transition: color 0.18s;
+        }
+        .museum-card:hover .museum-card-cta { color: #C9A96E; }
+
+        /* ── No results ── */
+        #no-results { display: none; }
+        #no-results.visible { display: flex; }
+
+        /* ── Result count ── */
+        .results-count-num {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.5rem; color: #C9A96E; font-weight: 300;
+        }
+    </style>
+</head>
+<body class="bg-charcoal-green text-cream font-sans overflow-x-hidden">
+
+    {% include 'app/header.html' with scroll_lock=9999 %}
+
+    <!-- ══ HERO ════════════════════════════════ -->
+    <section class="relative pt-36 pb-12 overflow-hidden">
+        <div class="absolute inset-0" style="background:linear-gradient(160deg,#0A0E0B 0%,#111512 55%,#0D0D0D 100%);"></div>
+        <div class="absolute inset-0 pointer-events-none" style="background:radial-gradient(ellipse 60% 55% at 30% 60%, rgba(201,169,110,0.08) 0%, transparent 65%), radial-gradient(ellipse 35% 40% at 80% 25%, rgba(201,169,110,0.04) 0%, transparent 60%);"></div>
+        <div class="absolute inset-0 pointer-events-none" style="background-image:linear-gradient(rgba(201,169,110,0.022) 1px,transparent 1px),linear-gradient(90deg,rgba(201,169,110,0.022) 1px,transparent 1px);background-size:70px 70px;"></div>
+        <div class="absolute bottom-0 left-0 right-0 h-20 pointer-events-none" style="background:linear-gradient(to bottom,transparent,#141414);"></div>
+
+        <div class="relative z-10 max-w-7xl mx-auto px-6">
+            <p class="text-gold/50 text-[10px] tracking-[0.3em] uppercase mb-3 animate-fade-up" style="animation-delay:0.05s;">Explore</p>
+            <h1 class="font-display text-5xl md:text-[3.4rem] font-light text-cream leading-tight mb-4 animate-fade-up" style="animation-delay:0.1s;">
+                The World's Museums
+            </h1>
+            <p class="text-cream/40 text-sm font-light mb-10 animate-fade-up max-w-md" style="animation-delay:0.15s;">
+                Discover institutions from every corner of the globe and explore their exhibitions online.
+            </p>
+
+            <!-- Search bar -->
+            <div class="relative max-w-xl animate-fade-up" style="animation-delay:0.2s;">
+                <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style="color:rgba(201,169,110,0.45);" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
+                </svg>
+                <input
+                    id="search-input"
+                    type="text"
+                    placeholder="Search by museum name, city, or country…"
+                    class="w-full py-3.5 pl-11 pr-5"
+                    autocomplete="off"
+                    spellcheck="false"
+                    aria-label="Search museums"
+                >
+            </div>
+        </div>
+    </section>
+
+    <!-- ══ FILTERS + GRID ════════════════════════════════ -->
+    <section class="bg-charcoal-2 pb-20 pt-10">
+        <div class="max-w-7xl mx-auto px-6">
+
+            <!-- Filter bar -->
+            <div class="flex flex-wrap items-center gap-3 mb-10">
+                <span class="text-cream/25 text-[9px] tracking-[0.25em] uppercase mr-1 self-center">Country</span>
+
+                <!-- Country pills — generated from JS -->
+                <div id="country-filters" class="flex flex-wrap gap-2">
+                    <!-- populated by JS -->
+                </div>
+
+                <div class="w-px h-5 bg-white/10 mx-1 hidden sm:block"></div>
+
+                <span class="text-cream/25 text-[9px] tracking-[0.25em] uppercase mr-1 self-center">City</span>
+                <select id="city-filter" class="filter-select" aria-label="Filter by city">
+                    <option value="">All Cities</option>
+                </select>
+
+                <div class="w-px h-5 bg-white/10 mx-1 hidden sm:block"></div>
+
+                <span class="text-cream/25 text-[9px] tracking-[0.25em] uppercase mr-1 self-center">Type</span>
+                <div id="type-filters" class="flex flex-wrap gap-2">
+                    <!-- populated by JS -->
+                </div>
+
+                <!-- Clear all -->
+                <button id="clear-filters" class="ml-auto text-[10px] text-gold/40 hover:text-gold transition-colors duration-200 tracking-widest uppercase hidden">
+                    Clear filters
+                </button>
+            </div>
+
+            <!-- Result count -->
+            <div class="flex items-baseline gap-3 mb-8">
+                <span id="result-count" class="results-count-num">20</span>
+                <span class="text-cream/30 text-sm">museums found</span>
+            </div>
+
+            <!-- Grid -->
+            <div id="museum-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+                <!-- populated by JS -->
+            </div>
+
+            <!-- No results -->
+            <div id="no-results" class="flex-col items-center justify-center py-24 text-center">
+                <svg class="w-10 h-10 mb-5" style="color:rgba(201,169,110,0.3);" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                    <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
+                </svg>
+                <p class="font-display text-2xl font-light text-cream/50 mb-2">No museums found</p>
+                <p class="text-sm text-cream/25">Try adjusting your search or filters.</p>
+                <button onclick="clearAll()" class="mt-6 px-6 py-2 rounded-lg border border-gold/25 text-gold/60 hover:text-gold hover:border-gold/50 text-sm transition-colors duration-200">
+                    Clear all filters
+                </button>
+            </div>
+
+        </div>
+    </section>
+
+    {% include 'core/footer.html' %}
+
+    <script>
+    // ── Museum data ──────────────────────────────────────────
+    const MUSEUMS = [
+        { id: 1,  name: "Louvre",                        city: "Paris",           country: "France",       type: "Art",          exhibitions: 24, gradient: "linear-gradient(135deg,#7F5539,#4A2C2A,#1E0E08)" },
+        { id: 2,  name: "British Museum",                city: "London",          country: "UK",            type: "History",      exhibitions: 18, gradient: "linear-gradient(135deg,#1A3A4A,#0D2535,#050F18)" },
+        { id: 3,  name: "Metropolitan Museum of Art",    city: "New York",        country: "USA",           type: "Art",          exhibitions: 31, gradient: "linear-gradient(135deg,#3A2A1A,#22180A,#0E0C04)" },
+        { id: 4,  name: "Rijksmuseum",                   city: "Amsterdam",       country: "Netherlands",   type: "Art",          exhibitions: 9,  gradient: "linear-gradient(135deg,#1A3A1A,#0D2210,#050F06)" },
+        { id: 5,  name: "Musée d'Orsay",                 city: "Paris",           country: "France",        type: "Art",          exhibitions: 12, gradient: "linear-gradient(135deg,#2A1A3A,#16103A,#080520)" },
+        { id: 6,  name: "Tate Modern",                   city: "London",          country: "UK",            type: "Art",          exhibitions: 15, gradient: "linear-gradient(135deg,#3A1A1A,#200D0D,#0F0606)" },
+        { id: 7,  name: "MoMA",                          city: "New York",        country: "USA",           type: "Art",          exhibitions: 22, gradient: "linear-gradient(135deg,#1A2A3A,#0D1822,#060C14)" },
+        { id: 8,  name: "Smithsonian Institution",       city: "Washington D.C.", country: "USA",           type: "Science",      exhibitions: 28, gradient: "linear-gradient(135deg,#2A3820,#162212,#0A0E08)" },
+        { id: 9,  name: "Tokyo National Museum",         city: "Tokyo",           country: "Japan",         type: "History",      exhibitions: 11, gradient: "linear-gradient(135deg,#2A1A4A,#180D2C,#0A0618)" },
+        { id: 10, name: "Uffizi Gallery",                city: "Florence",        country: "Italy",         type: "Art",          exhibitions: 8,  gradient: "linear-gradient(135deg,#38281A,#22160A,#0E0804)" },
+        { id: 11, name: "Prado Museum",                  city: "Madrid",          country: "Spain",         type: "Art",          exhibitions: 14, gradient: "linear-gradient(135deg,#1A1A3A,#0D0D22,#06060E)" },
+        { id: 12, name: "Reina Sofía",                   city: "Madrid",          country: "Spain",         type: "Art",          exhibitions: 7,  gradient: "linear-gradient(135deg,#3A3A1A,#22220D,#0E0E06)" },
+        { id: 13, name: "Centre Pompidou",               city: "Paris",           country: "France",        type: "Art",          exhibitions: 16, gradient: "linear-gradient(135deg,#1A3A3A,#0D2222,#060E0E)" },
+        { id: 14, name: "Guggenheim Bilbao",             city: "Bilbao",          country: "Spain",         type: "Art",          exhibitions: 6,  gradient: "linear-gradient(135deg,#1A1A4A,#0D0D2C,#060618)" },
+        { id: 15, name: "Vatican Museums",               city: "Rome",            country: "Italy",         type: "Art",          exhibitions: 19, gradient: "linear-gradient(135deg,#2A1A2A,#18101A,#0C080C)" },
+        { id: 16, name: "National Museum of Denmark",    city: "Copenhagen",      country: "Denmark",       type: "History",      exhibitions: 8,  gradient: "linear-gradient(135deg,#1A2A4A,#0D1828,#060C18)" },
+        { id: 17, name: "National Gallery",              city: "London",          country: "UK",            type: "Art",          exhibitions: 13, gradient: "linear-gradient(135deg,#4A2A1A,#2C180D,#150C06)" },
+        { id: 18, name: "Saatchi Gallery",               city: "London",          country: "UK",            type: "Art",          exhibitions: 9,  gradient: "linear-gradient(135deg,#3D2645,#1E0F2E,#0A0512)" },
+        { id: 19, name: "Orangerie",                     city: "Paris",           country: "France",        type: "Art",          exhibitions: 5,  gradient: "linear-gradient(135deg,#1A3A2A,#0D2218,#05100C)" },
+        { id: 20, name: "Natural History Museum",        city: "London",          country: "UK",            type: "Natural History", exhibitions: 20, gradient: "linear-gradient(135deg,#1A3A1A,#162212,#0A0E08)" },
+    ];
+
+    // ── State ──────────────────────────────────────────────
+    let activeCountry = "";
+    let activeCity    = "";
+    let activeType    = "";
+    let searchQuery   = "";
+
+    // ── Derived filter lists ───────────────────────────────
+    const countries = [...new Set(MUSEUMS.map(m => m.country))].sort();
+    const types     = [...new Set(MUSEUMS.map(m => m.type))].sort();
+
+    // ── Build country pills ────────────────────────────────
+    const countryWrap = document.getElementById("country-filters");
+    const allPill = document.createElement("button");
+    allPill.className = "filter-pill active";
+    allPill.dataset.value = "";
+    allPill.textContent = "All";
+    allPill.addEventListener("click", () => setCountry(""));
+    countryWrap.appendChild(allPill);
+
+    countries.forEach(c => {
+        const btn = document.createElement("button");
+        btn.className = "filter-pill";
+        btn.dataset.value = c;
+        btn.textContent = c;
+        btn.addEventListener("click", () => setCountry(c));
+        countryWrap.appendChild(btn);
+    });
+
+    // ── Build type pills ─────────────────────────────────
+    const typeWrap = document.getElementById("type-filters");
+    const allTypePill = document.createElement("button");
+    allTypePill.className = "filter-pill active";
+    allTypePill.dataset.value = "";
+    allTypePill.textContent = "All";
+    allTypePill.addEventListener("click", () => setType(""));
+    typeWrap.appendChild(allTypePill);
+
+    types.forEach(t => {
+        const btn = document.createElement("button");
+        btn.className = "filter-pill";
+        btn.dataset.value = t;
+        btn.textContent = t;
+        btn.addEventListener("click", () => setType(t));
+        typeWrap.appendChild(btn);
+    });
+
+    // ── Populate city dropdown (dynamic based on country) ──
+    function populateCities() {
+        const cityEl = document.getElementById("city-filter");
+        const current = cityEl.value;
+        const source = activeCountry
+            ? MUSEUMS.filter(m => m.country === activeCountry)
+            : MUSEUMS;
+        const cities = [...new Set(source.map(m => m.city))].sort();
+
+        cityEl.innerHTML = '<option value="">All Cities</option>';
+        cities.forEach(c => {
+            const opt = document.createElement("option");
+            opt.value = c;
+            opt.textContent = c;
+            if (c === current) opt.selected = true;
+            cityEl.appendChild(opt);
+        });
+
+        // if current city not available in new country, reset
+        if (activeCity && !cities.includes(activeCity)) {
+            activeCity = "";
+        }
+        cityEl.value = activeCity;
+    }
+
+    document.getElementById("city-filter").addEventListener("change", e => {
+        activeCity = e.target.value;
+        render();
+    });
+
+    // ── Search ────────────────────────────────────────────
+    document.getElementById("search-input").addEventListener("input", e => {
+        searchQuery = e.target.value.trim().toLowerCase();
+        render();
+    });
+
+    // ── Setters ───────────────────────────────────────────
+    function setCountry(val) {
+        activeCountry = val;
+        activeCity = "";
+        populateCities();
+        document.querySelectorAll("#country-filters .filter-pill").forEach(el => {
+            el.classList.toggle("active", el.dataset.value === val);
+        });
+        render();
+    }
+
+    function setType(val) {
+        activeType = val;
+        document.querySelectorAll("#type-filters .filter-pill").forEach(el => {
+            el.classList.toggle("active", el.dataset.value === val);
+        });
+        render();
+    }
+
+    function clearAll() {
+        searchQuery = "";
+        document.getElementById("search-input").value = "";
+        setCountry("");
+        setType("");
+    }
+
+    // ── Render grid ───────────────────────────────────────
+    function render() {
+        const q = searchQuery;
+        const filtered = MUSEUMS.filter(m => {
+            if (activeCountry && m.country !== activeCountry) return false;
+            if (activeCity    && m.city    !== activeCity)    return false;
+            if (activeType    && m.type    !== activeType)    return false;
+            if (q && !(
+                m.name.toLowerCase().includes(q)    ||
+                m.city.toLowerCase().includes(q)    ||
+                m.country.toLowerCase().includes(q) ||
+                m.type.toLowerCase().includes(q)
+            )) return false;
+            return true;
+        });
+
+        const grid = document.getElementById("museum-grid");
+        const noRes = document.getElementById("no-results");
+        const countEl = document.getElementById("result-count");
+        const clearBtn = document.getElementById("clear-filters");
+
+        const hasFilters = activeCountry || activeCity || activeType || q;
+        clearBtn.classList.toggle("hidden", !hasFilters);
+
+        countEl.textContent = filtered.length;
+
+        if (filtered.length === 0) {
+            grid.innerHTML = "";
+            noRes.classList.add("visible");
+        } else {
+            noRes.classList.remove("visible");
+            grid.innerHTML = filtered.map(m => `
+                <a href="/museum/${m.id}/" class="museum-card group block no-underline" data-id="${m.id}">
+                    <div class="museum-card-thumb" style="background:${m.gradient};">
+                        <div class="museum-card-thumb-overlay"></div>
+                    </div>
+                    <div class="museum-card-body">
+                        <span class="museum-card-type">${m.type}</span>
+                        <p class="museum-card-name">${m.name}</p>
+                        <p class="museum-card-location">
+                            <svg class="w-3 h-3 flex-shrink-0" style="color:rgba(201,169,110,0.4);" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 21c-4.418 0-8-5.373-8-9a8 8 0 1116 0c0 3.627-3.582 9-8 9z"/>
+                                <circle cx="12" cy="12" r="2.5" fill="currentColor" stroke="none"/>
+                            </svg>
+                            ${m.city}, ${m.country}
+                        </p>
+                        <div class="museum-card-meta">
+                            <span class="museum-card-excount">${m.exhibitions} exhibition${m.exhibitions !== 1 ? 's' : ''}</span>
+                            <span class="museum-card-cta flex items-center gap-1">
+                                View
+                                <svg class="w-3 h-3 transition-transform duration-200 group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+                                </svg>
+                            </span>
+                        </div>
+                    </div>
+                </a>
+            `).join("");
+        }
+    }
+
+    // ── Init ─────────────────────────────────────────────
+    populateCities();
+    render();
+    </script>
+
+</body>
+</html>

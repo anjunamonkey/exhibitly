@@ -1,0 +1,402 @@
+{% load static %}
+
+<style>
+    .app-nav-link {
+        color: rgba(245,240,232,0.65);
+        font-size: 0.8125rem;
+        font-weight: 500;
+        padding: 6px 11px;
+        border-radius: 8px;
+        transition: color 0.2s, background 0.2s;
+        white-space: nowrap;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+    }
+    .app-nav-link:hover { color: #F5F0E8; background: rgba(255,255,255,0.06); }
+    .app-nav-link.active { color: #C9A96E; }
+
+    /* ── Exhibitions mega-menu ── */
+    #ex-mega {
+        position: absolute;
+        top: calc(100% + 10px);
+        left: -16px;
+        width: 660px;
+        background: #141414;
+        border: 1px solid rgba(201,169,110,0.18);
+        border-radius: 16px;
+        padding: 22px;
+        opacity: 0;
+        pointer-events: none;
+        transform: translateY(-6px);
+        transition: opacity 0.22s ease, transform 0.22s ease;
+        z-index: 200;
+        box-shadow: 0 28px 70px rgba(0,0,0,0.85);
+    }
+    #ex-mega.open { opacity: 1; pointer-events: all; transform: translateY(0); }
+
+    .mega-cat {
+        display: flex;
+        flex-direction: column;
+        padding: 10px 12px;
+        border-radius: 10px;
+        text-decoration: none;
+        transition: background 0.18s;
+        gap: 2px;
+    }
+    .mega-cat:hover { background: rgba(255,255,255,0.05); }
+    .mega-cat:hover .mega-cat-title { color: #C9A96E; }
+    .mega-cat-title {
+        font-size: 0.8125rem;
+        font-weight: 500;
+        color: #F5F0E8;
+        transition: color 0.18s;
+    }
+    .mega-cat-sub {
+        font-size: 0.7rem;
+        color: rgba(245,240,232,0.32);
+        line-height: 1.4;
+    }
+    .mega-inst {
+        display: block;
+        padding: 6px 10px;
+        font-size: 0.8rem;
+        color: rgba(245,240,232,0.55);
+        border-radius: 8px;
+        text-decoration: none;
+        transition: color 0.18s, background 0.18s;
+    }
+    .mega-inst:hover { color: #F5F0E8; background: rgba(255,255,255,0.05); }
+
+    /* ── Search ── */
+    #app-search-input {
+        width: 0;
+        max-width: 0;
+        opacity: 0;
+        padding: 0;
+        border: none;
+        outline: none;
+        background: rgba(255,255,255,0.07);
+        border-radius: 8px;
+        color: #F5F0E8;
+        font-size: 0.8125rem;
+        font-family: 'Inter', sans-serif;
+        transition: max-width 0.3s ease, opacity 0.25s ease, padding 0.3s ease, border 0.3s ease;
+        overflow: hidden;
+    }
+    #app-search-input::placeholder { color: rgba(245,240,232,0.3); }
+    #app-search-input.open {
+        max-width: 200px;
+        opacity: 1;
+        padding: 6px 12px;
+        border: 1px solid rgba(201,169,110,0.25);
+    }
+
+    /* ── Profile dropdown ── */
+    #profile-menu {
+        position: absolute;
+        top: calc(100% + 10px);
+        right: 0;
+        width: 220px;
+        background: #1C1C1C;
+        border: 1px solid rgba(201,169,110,0.15);
+        border-radius: 14px;
+        padding: 6px 0;
+        opacity: 0;
+        pointer-events: none;
+        transform: translateY(-6px);
+        transition: opacity 0.2s ease, transform 0.2s ease;
+        z-index: 200;
+        box-shadow: 0 20px 55px rgba(0,0,0,0.85);
+    }
+    #profile-menu.open { opacity: 1; pointer-events: all; transform: translateY(0); }
+
+    .pmenu-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 9px 14px;
+        font-size: 0.8rem;
+        color: rgba(245,240,232,0.65);
+        text-decoration: none;
+        transition: color 0.15s, background 0.15s;
+        cursor: pointer;
+    }
+    .pmenu-item:hover { color: #F5F0E8; background: rgba(255,255,255,0.05); }
+    .pmenu-item.signout { color: rgba(245,240,232,0.35); }
+    .pmenu-item.signout:hover { color: #C9A96E; background: rgba(201,169,110,0.06); }
+    .pmenu-icon { width: 15px; height: 15px; flex-shrink: 0; color: rgba(245,240,232,0.25); }
+    .pmenu-divider { height: 1px; background: rgba(255,255,255,0.06); margin: 5px 0; }
+
+    .app-icon-btn {
+        width: 34px; height: 34px;
+        display: flex; align-items: center; justify-content: center;
+        border-radius: 9px;
+        color: rgba(245,240,232,0.55);
+        transition: color 0.18s, background 0.18s;
+        cursor: pointer;
+        background: none;
+        border: none;
+        padding: 0;
+    }
+    .app-icon-btn:hover { color: #F5F0E8; background: rgba(255,255,255,0.07); }
+
+    /* ── Light mode ── */
+    body.app-light-mode {
+        background-color: rgba(232,213,176,0.3) !important;
+    }
+    body.app-light-mode .bg-charcoal-green,
+    body.app-light-mode .bg-charcoal-2,
+    body.app-light-mode .bg-charcoal {
+        background-color: rgba(232,213,176,0.18) !important;
+    }
+
+    /* Toggle pill */
+    #theme-toggle {
+        display: flex; align-items: center; gap: 5px;
+        height: 28px; padding: 0 10px;
+        border-radius: 20px;
+        border: 1px solid rgba(201,169,110,0.28);
+        color: rgba(245,240,232,0.55);
+        background: none;
+        cursor: pointer;
+        font-size: 0.72rem; font-weight: 500; letter-spacing: 0.02em;
+        transition: color 0.2s, background 0.2s, border-color 0.2s;
+    }
+    #theme-toggle:hover { color: #F5F0E8; background: rgba(255,255,255,0.06); border-color: rgba(201,169,110,0.5); }
+    body.app-light-mode #theme-toggle { color: #6B5226; border-color: rgba(107,82,38,0.35); background: rgba(232,213,176,0.25); }
+    body.app-light-mode #theme-toggle:hover { background: rgba(232,213,176,0.45); }
+</style>
+
+<!-- ══ APP HEADER ════════════════════════════════════════════ -->
+<nav id="app-header" class="fixed top-4 z-50 left-1/2 -translate-x-1/2 w-full max-w-7xl px-4" aria-label="App navigation">
+    <div class="flex items-center justify-between px-4 rounded-xl border border-gold/40 backdrop-blur-md" style="height:62px; background:rgba(13,13,13,0.9);">
+
+        <!-- ── LEFT: Logo + Nav ── -->
+        <div class="flex items-center gap-5">
+
+            <!-- Logo -->
+            <a href="/dashboard/" class="flex-shrink-0 flex items-center h-9">
+              <h1 class="font-display font-light text-cream leading-none animate-fade-up text-xl" style="letter-spacing:-0.01em; animation-delay:0.2s">
+                Exhibitly
+              </h1>
+                <!-- <img src="{% static 'logo.png' %}" alt="Exhibitly" class="h-9"> -->
+            </a>
+
+            <!-- Primary nav -->
+            <div class="hidden lg:flex items-center">
+
+                <!-- Exhibitions dropdown -->
+                <div class="relative" id="ex-dropdown-wrap">
+                    <button id="ex-dropdown-trigger" class="app-nav-link gap-1" aria-haspopup="true" aria-expanded="false">
+                        Categories
+                        <svg id="ex-chevron" class="w-3.5 h-3.5 mt-px transition-transform duration-200 flex-shrink-0" fill="none" viewBox="0 0 20 20">
+                            <path stroke="currentColor" stroke-width="2.2" d="M6 8l4 4 4-4"/>
+                        </svg>
+                    </button>
+
+                    <!-- Mega-menu -->
+                    <div id="ex-mega" role="menu">
+                        <div class="flex gap-5">
+
+                            <!-- Main categories (left) -->
+                            <div class="flex-1 min-w-0">
+                                <p class="text-[10px] tracking-[0.2em] uppercase font-semibold mb-3" style="color:rgba(201,169,110,0.45);">Browse by Type</p>
+                                <a href="#" class="mega-cat">
+                                    <span class="mega-cat-title">Art</span>
+                                    <span class="mega-cat-sub">Fine art, contemporary, photography &amp; sculpture</span>
+                                </a>
+                                <a href="#" class="mega-cat">
+                                    <span class="mega-cat-title">History</span>
+                                    <span class="mega-cat-sub">National, local, war &amp; archaeology</span>
+                                </a>
+                                <a href="#" class="mega-cat">
+                                    <span class="mega-cat-title">Science</span>
+                                    <span class="mega-cat-sub">Technology, innovation, space &amp; engineering</span>
+                                </a>
+                                <a href="#" class="mega-cat">
+                                    <span class="mega-cat-title">Natural History</span>
+                                    <span class="mega-cat-sub">Palaeontology, ecology &amp; geology</span>
+                                </a>
+                                <a href="#" class="mega-cat">
+                                    <span class="mega-cat-title">Culture &amp; Anthropology</span>
+                                    <span class="mega-cat-sub">World cultures, ethnography &amp; social history</span>
+                                </a>
+                            </div>
+
+                            <!-- Divider -->
+                            <div style="width:1px; background:rgba(201,169,110,0.1); align-self:stretch;"></div>
+
+                            <!-- Specialist Institutions (right) -->
+                            <div style="width:170px; flex-shrink:0;">
+                                <p class="text-[10px] tracking-[0.2em] uppercase font-semibold mb-3" style="color:rgba(201,169,110,0.45);">Specialist</p>
+                                <a href="#" class="mega-inst">Transport</a>
+                                <a href="#" class="mega-inst">Maritime</a>
+                                <a href="#" class="mega-inst">Aviation</a>
+                                <a href="#" class="mega-inst">Film &amp; Media</a>
+                                <a href="#" class="mega-inst">Sports</a>
+                                <a href="#" class="mega-inst">Music</a>
+                                <a href="#" class="mega-inst">Medical</a>
+                                <a href="#" class="mega-inst">Architecture</a>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <a href="/dashboard/" class="app-nav-link">Home</a>
+                <a href="/new/" class="app-nav-link">New &amp; Popular</a>
+                <a href="/my-exhibitions/" class="app-nav-link">My Exhibitions</a>
+                <a href="/browse/" class="app-nav-link">Museums</a>
+            </div>
+        </div>
+
+        <!-- ── RIGHT: Search, Kids, Notifications, Profile ── -->
+        <div class="flex items-center gap-1.5">
+
+            <!-- Search -->
+            <div class="flex items-center gap-1.5">
+                <input id="app-search-input" type="text" placeholder="Search exhibitions…" autocomplete="off" spellcheck="false">
+                <button id="search-toggle" class="app-icon-btn" aria-label="Toggle search">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="7.5"/>
+                        <path stroke-linecap="round" d="M21 21l-4.35-4.35"/>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Light/Dark toggle -->
+            <button id="theme-toggle" aria-label="Toggle light/dark mode">
+                <!-- Moon icon (dark mode active) -->
+                <svg id="theme-icon-moon" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 12.79A9 9 0 1111.21 3a7 7 0 009.79 9.79z"/>
+                </svg>
+                <!-- Sun icon (light mode active) -->
+                <svg id="theme-icon-sun" class="w-3.5 h-3.5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="4"/>
+                    <path stroke-linecap="round" d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>
+                </svg>
+                <!-- <span id="theme-label">Light</span> -->
+            </button>
+
+            <!-- Kids -->
+            <a href="/kids/" class="flex items-center gap-1.5 px-3 h-8 rounded-lg text-gold text-xs font-semibold tracking-wide transition" style="border:1px solid rgba(201,169,110,0.3);" onmouseover="this.style.background='rgba(201,169,110,0.1)'" onmouseout="this.style.background=''" aria-label="Kids mode">
+                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+                </svg>
+                Kids
+            </a>
+
+            <!-- Notifications -->
+            <div class="relative">
+                <button id="notif-btn" class="app-icon-btn relative" aria-label="Notifications">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                    </svg>
+                    <span class="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full" style="background:#C9A96E;"></span>
+                </button>
+            </div>
+
+            <!-- Profile -->
+            <div class="relative" id="profile-wrap">
+                <button id="profile-btn" class="flex items-center gap-1 pl-1 pr-2 rounded-lg transition group" style="height:34px;" aria-haspopup="true" aria-expanded="false" onmouseover="this.style.background='rgba(255,255,255,0.07)'" onmouseout="this.style.background=''">
+                    <!-- Avatar -->
+                    <div class="w-7 h-7 rounded-lg flex items-center justify-center text-charcoal text-xs font-bold flex-shrink-0" style="background:linear-gradient(135deg,rgba(201,169,110,0.8),rgba(160,120,64,0.9));">
+                        O
+                    </div>
+                    <svg class="w-3.5 h-3.5 transition-transform duration-200 flex-shrink-0" id="profile-chevron" fill="none" viewBox="0 0 20 20" style="color:rgba(245,240,232,0.35);">
+                        <path stroke="currentColor" stroke-width="2.2" d="M6 8l4 4 4-4"/>
+                    </svg>
+                </button>
+
+                <!-- Profile dropdown -->
+                <div id="profile-menu" role="menu" aria-label="User menu">
+                    <!-- User info -->
+                    <div style="padding:12px 14px 11px; border-bottom:1px solid rgba(255,255,255,0.06);">
+                        <div class="flex items-center gap-3">
+                            <div class="w-9 h-9 rounded-lg flex items-center justify-center text-charcoal text-sm font-bold flex-shrink-0" style="background:linear-gradient(135deg,rgba(201,169,110,0.8),rgba(160,120,64,0.9));">O</div>
+                            <div>
+                                <p style="font-size:0.8125rem; color:#F5F0E8; font-weight:500; line-height:1.2;">Oliver</p>
+                                <p style="font-size:0.7rem; color:rgba(245,240,232,0.35); margin-top:1px;">Free Plan</p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Menu items -->
+                    <div style="padding:5px 0;">
+                        <a href="#" class="pmenu-item">
+                            <svg class="pmenu-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+                            Manage Profiles
+                        </a>
+                        <a href="#" class="pmenu-item">
+                            <svg class="pmenu-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z"/><circle cx="12" cy="12" r="3"/></svg>
+                            Account
+                        </a>
+                        <a href="#" class="pmenu-item">
+                            <svg class="pmenu-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path stroke-linecap="round" d="M12 16v-4m0-4h.01"/></svg>
+                            Help
+                        </a>
+                    </div>
+                    <div class="pmenu-divider"></div>
+                    <div style="padding:5px 0 3px;">
+                        <a href="/accounts/logout/" class="pmenu-item signout">
+                            <svg class="pmenu-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75"/></svg>
+                            Sign Out
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</nav>
+
+<script>
+(function () {
+    // ── Exhibitions mega-menu ──
+    var exTrigger  = document.getElementById('ex-dropdown-trigger');
+    var exMega     = document.getElementById('ex-mega');
+    var exChevron  = document.getElementById('ex-chevron');
+
+    function openEx()  { exMega.classList.add('open'); exChevron.style.transform = 'rotate(180deg)'; exTrigger.setAttribute('aria-expanded','true'); }
+    function closeEx() { exMega.classList.remove('open'); exChevron.style.transform = ''; exTrigger.setAttribute('aria-expanded','false'); }
+    exTrigger.addEventListener('click', function(e) { e.stopPropagation(); exMega.classList.contains('open') ? closeEx() : openEx(); });
+    exMega.addEventListener('click', function(e) { e.stopPropagation(); });
+
+    // ── Search ──
+    var searchToggle = document.getElementById('search-toggle');
+    var searchInput  = document.getElementById('app-search-input');
+    var searchOpen   = false;
+    searchToggle.addEventListener('click', function() {
+        searchOpen = !searchOpen;
+        searchInput.classList.toggle('open', searchOpen);
+        if (searchOpen) searchInput.focus();
+    });
+    searchInput.addEventListener('keydown', function(e) { if (e.key === 'Escape') { searchOpen = false; searchInput.classList.remove('open'); } });
+
+    // ── Profile dropdown ──
+    var profileBtn     = document.getElementById('profile-btn');
+    var profileMenu    = document.getElementById('profile-menu');
+    var profileChevron = document.getElementById('profile-chevron');
+
+    function openProfile()  { profileMenu.classList.add('open'); profileChevron.style.transform = 'rotate(180deg)'; profileBtn.setAttribute('aria-expanded','true'); }
+    function closeProfile() { profileMenu.classList.remove('open'); profileChevron.style.transform = ''; profileBtn.setAttribute('aria-expanded','false'); }
+    profileBtn.addEventListener('click', function(e)  { e.stopPropagation(); profileMenu.classList.contains('open') ? closeProfile() : openProfile(); });
+    profileMenu.addEventListener('click', function(e) { e.stopPropagation(); });
+
+    // ── Close all on outside click ──
+    document.addEventListener('click', function() { closeEx(); closeProfile(); });
+
+    // ── Light / Dark mode toggle ──
+    var themeToggle   = document.getElementById('theme-toggle');
+    var themeIconMoon = document.getElementById('theme-icon-moon');
+    var themeIconSun  = document.getElementById('theme-icon-sun');
+    var isLight = false;
+
+    themeToggle.addEventListener('click', function() {
+        isLight = !isLight;
+        document.body.classList.toggle('app-light-mode', isLight);
+        themeIconMoon.classList.toggle('hidden', isLight);
+        themeIconSun.classList.toggle('hidden', !isLight);
+    });
+})();
+</script>

@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>British Museum — Exhibitly</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Cormorant Garamond', 'serif'],
+                    },
+                    colors: {
+                        gold: '#C9A96E',
+                        'gold-light': '#E8D5B0',
+                        'gold-dark': '#A07840',
+                        charcoal: '#0D0D0D',
+                        'charcoal-green': '#111512',
+                        'charcoal-2': '#141414',
+                        'charcoal-3': '#1C1C1C',
+                        cream: '#F5F0E8',
+                    },
+                    keyframes: {
+                        fadeUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                    },
+                    animation: {
+                        'fade-up': 'fadeUp 0.8s ease-out both',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        html { scroll-behavior: smooth; }
+
+        /* ── Stat tiles ── */
+        .stat-tile {
+            background: rgba(255,255,255,0.025);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 16px; padding: 20px 22px;
+            transition: border-color 0.25s;
+        }
+        .stat-tile:hover { border-color: rgba(201,169,110,0.2); }
+
+        /* ── Tab nav ── */
+        .tab-btn {
+            padding: 9px 18px; border-radius: 8px;
+            font-size: 0.82rem; font-weight: 500;
+            color: rgba(245,240,232,0.45);
+            cursor: pointer; border: none; background: none;
+            transition: color 0.18s, background 0.18s;
+            white-space: nowrap;
+        }
+        .tab-btn:hover { color: #F5F0E8; background: rgba(255,255,255,0.05); }
+        .tab-btn.active { color: #C9A96E; background: rgba(201,169,110,0.1); }
+
+        /* ── Filter pills ── */
+        .ex-filter-pill {
+            padding: 5px 14px; border-radius: 20px;
+            font-size: 0.75rem; font-weight: 500;
+            border: 1px solid rgba(201,169,110,0.18);
+            color: rgba(245,240,232,0.45);
+            cursor: pointer; background: transparent;
+            transition: color 0.18s, background 0.18s, border-color 0.18s;
+            white-space: nowrap; user-select: none;
+        }
+        .ex-filter-pill:hover { color: #F5F0E8; border-color: rgba(201,169,110,0.4); background: rgba(201,169,110,0.05); }
+        .ex-filter-pill.active { color: #0D0D0D; background: #C9A96E; border-color: #C9A96E; font-weight: 600; }
+
+        /* ── Exhibition row card ── */
+        .ex-row {
+            display: flex; align-items: center; gap: 18px;
+            padding: 16px 18px; border-radius: 14px;
+            border: 1px solid rgba(255,255,255,0.05);
+            background: rgba(255,255,255,0.02);
+            cursor: pointer; text-decoration: none;
+            transition: border-color 0.25s, background 0.25s, transform 0.25s;
+        }
+        .ex-row:hover {
+            border-color: rgba(201,169,110,0.25);
+            background: rgba(201,169,110,0.04);
+            transform: translateX(4px);
+        }
+        .ex-row-thumb {
+            width: 80px; height: 58px; border-radius: 8px;
+            flex-shrink: 0; overflow: hidden; position: relative;
+        }
+        .ex-row-badge {
+            position: absolute; top: 5px; right: 5px;
+            font-size: 7.5px; letter-spacing: 0.1em; text-transform: uppercase;
+            background: rgba(201,169,110,0.92); color: #0D0D0D;
+            padding: 1px 6px; border-radius: 3px; font-weight: 600;
+        }
+        .ex-row-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.05rem; font-weight: 500; color: #F5F0E8;
+            line-height: 1.25; margin-bottom: 4px;
+        }
+        .ex-row-meta {
+            font-size: 0.72rem; color: rgba(245,240,232,0.35);
+            display: flex; align-items: center; gap: 10px;
+        }
+        .ex-row-meta-dot { width: 3px; height: 3px; border-radius: 50%; background: rgba(245,240,232,0.2); flex-shrink: 0; }
+        .ex-row-arrow {
+            margin-left: auto; flex-shrink: 0;
+            color: rgba(201,169,110,0.3);
+            transition: color 0.2s, transform 0.2s;
+        }
+        .ex-row:hover .ex-row-arrow { color: #C9A96E; transform: translateX(3px); }
+
+        /* ── Progress pill inside row ── */
+        .progress-pill {
+            display: inline-flex; align-items: center; gap: 6px;
+            font-size: 0.7rem; color: rgba(201,169,110,0.7);
+        }
+        .progress-bar-mini {
+            width: 44px; height: 3px; border-radius: 99px;
+            background: rgba(255,255,255,0.1); overflow: hidden; flex-shrink: 0;
+        }
+        .progress-bar-mini-fill {
+            height: 100%; border-radius: 99px;
+            background: linear-gradient(to right, #A07840, #C9A96E);
+        }
+
+        /* ── About tab ── */
+        .info-row {
+            display: flex; align-items: flex-start; gap: 14px;
+            padding: 14px 0; border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .info-row:last-child { border-bottom: none; }
+        .info-label {
+            font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.15em;
+            color: rgba(245,240,232,0.28); width: 110px; flex-shrink: 0; padding-top: 1px;
+        }
+        .info-value { font-size: 0.875rem; color: rgba(245,240,232,0.75); line-height: 1.55; }
+
+        /* ── Tab panels ── */
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; }
+
+        /* ── No results ── */
+        #no-ex-results { display: none; }
+        #no-ex-results.visible { display: flex; }
+    </style>
+</head>
+<body class="bg-charcoal-green text-cream font-sans overflow-x-hidden">
+
+    {% include 'app/header.html' with scroll_lock=9999 %}
+
+    <!-- ══ HERO ════════════════════════════════════════════ -->
+    <section class="relative overflow-hidden pt-36 pb-16">
+        <!-- Background -->
+        <div class="absolute inset-0" style="background:linear-gradient(160deg,#0A0E0B 0%,#111512 55%,#0D0D0D 100%);"></div>
+        <div class="absolute inset-0 pointer-events-none" style="background:radial-gradient(ellipse 55% 65% at 15% 55%, rgba(201,169,110,0.09) 0%, transparent 65%), radial-gradient(ellipse 38% 45% at 82% 28%, rgba(201,169,110,0.05) 0%, transparent 60%);"></div>
+        <div class="absolute inset-0 pointer-events-none" style="background-image:linear-gradient(rgba(201,169,110,0.022) 1px,transparent 1px),linear-gradient(90deg,rgba(201,169,110,0.022) 1px,transparent 1px);background-size:70px 70px;"></div>
+        <div class="absolute bottom-0 left-0 right-0 h-24 pointer-events-none" style="background:linear-gradient(to bottom,transparent,#141414);"></div>
+
+        <div class="relative z-10 max-w-7xl mx-auto px-6">
+
+            <!-- Breadcrumb -->
+            <div class="flex items-center gap-2 text-[10px] tracking-[0.25em] uppercase text-gold/40 mb-8 animate-fade-up" style="animation-delay:0.04s;">
+                <a href="/museums/" class="hover:text-gold/70 transition-colors">Museums</a>
+                <svg class="w-2.5 h-2.5 opacity-40" fill="none" viewBox="0 0 20 20" stroke="currentColor" stroke-width="2.5"><path d="M8 5l5 5-5 5"/></svg>
+                <span class="text-gold/65">British Museum</span>
+            </div>
+
+            <div class="grid lg:grid-cols-[1fr_340px] gap-14 items-start">
+
+                <!-- ── Left: Identity ── -->
+                <div>
+                    <!-- Type badge -->
+                    <span class="inline-block text-[9px] tracking-[0.18em] uppercase font-semibold px-3 py-1 rounded mb-5 animate-fade-up" style="animation-delay:0.06s;background:rgba(201,169,110,0.12);color:#C9A96E;border:1px solid rgba(201,169,110,0.22);">History Museum</span>
+
+                    <h1 class="font-display font-light text-cream leading-[1.05] mb-4 animate-fade-up" style="font-size:clamp(2.8rem,5.5vw,4.2rem);animation-delay:0.1s;">
+                        British Museum
+                    </h1>
+
+                    <div class="flex items-center gap-2 text-cream/40 text-sm mb-6 animate-fade-up" style="animation-delay:0.14s;">
+                        <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:rgba(201,169,110,0.5);" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 21c-4.418 0-8-5.373-8-9a8 8 0 1116 0c0 3.627-3.582 9-8 9z"/>
+                            <circle cx="12" cy="12" r="2.5" fill="currentColor" stroke="none"/>
+                        </svg>
+                        <span>London, United Kingdom</span>
+                    </div>
+
+                    <p class="text-cream/50 font-light leading-relaxed max-w-2xl mb-8 animate-fade-up" style="font-size:0.9375rem;animation-delay:0.18s;">
+                        Founded in 1753, the British Museum holds one of the world's greatest collections of art and antiquity — over eight million objects spanning two million years of human history. From Mesopotamian cuneiform tablets to the Lewis Chessmen, it tells the story of human culture in its entirety.
+                    </p>
+
+                    <!-- Tags -->
+                    <div class="flex flex-wrap gap-2 mb-8 animate-fade-up" style="animation-delay:0.22s;">
+                        <span class="px-3 py-1 rounded-full text-[10px] tracking-widest uppercase border border-gold/25 text-gold/65">History</span>
+                        <span class="px-3 py-1 rounded-full text-[10px] tracking-widest uppercase border border-gold/25 text-gold/65">Archaeology</span>
+                        <span class="px-3 py-1 rounded-full text-[10px] tracking-widest uppercase border border-gold/25 text-gold/65">Anthropology</span>
+                        <span class="px-3 py-1 rounded-full text-[10px] tracking-widest uppercase border border-white/10 text-cream/30">Founded 1753</span>
+                        <span class="px-3 py-1 rounded-full text-[10px] tracking-widest uppercase border border-white/10 text-cream/30">Free Entry</span>
+                    </div>
+
+                    <!-- CTA row -->
+                    <div class="flex items-center gap-3 animate-fade-up" style="animation-delay:0.26s;">
+                        <a href="https://www.britishmuseum.org" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold text-charcoal transition-all hover:shadow-lg hover:shadow-gold/20 hover:-translate-y-0.5" style="background:#C9A96E;">
+                            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6m0 0v6m0-6L10 14"/>
+                            </svg>
+                            Visit Website
+                        </a>
+                        <button class="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-medium text-cream/60 border border-white/10 hover:border-gold/30 hover:text-cream/85 transition-all">
+                            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 016.364 0L12 7.636l1.318-1.318a4.5 4.5 0 116.364 6.364L12 20.364l-7.682-7.682a4.5 4.5 0 010-6.364z"/>
+                            </svg>
+                            Save Museum
+                        </button>
+                    </div>
+                </div>
+
+                <!-- ── Right: Stats ── -->
+                <div class="animate-fade-up" style="animation-delay:0.28s;">
+
+                    <!-- Hero image placeholder -->
+                    <div class="rounded-2xl mb-5 overflow-hidden" style="height:180px;background:linear-gradient(135deg,#1A3A4A,#0D2535,#050F18);">
+                        <div class="w-full h-full" style="background:linear-gradient(to top,rgba(13,13,13,0.7) 0%,transparent 60%);"></div>
+                    </div>
+
+                    <!-- Stats grid -->
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="stat-tile">
+                            <p class="text-cream/28 text-[9px] tracking-[0.22em] uppercase mb-1.5">Exhibitions</p>
+                            <p class="font-display font-light leading-none" style="font-size:2.4rem;color:#C9A96E;">18</p>
+                        </div>
+                        <div class="stat-tile">
+                            <p class="text-cream/28 text-[9px] tracking-[0.22em] uppercase mb-1.5">Collection Items</p>
+                            <p class="font-display font-light leading-none" style="font-size:2.4rem;color:#C9A96E;">8M<span class="text-cream/20 text-sm font-sans">+</span></p>
+                        </div>
+                        <div class="stat-tile">
+                            <p class="text-cream/28 text-[9px] tracking-[0.22em] uppercase mb-1.5">Viewers</p>
+                            <p class="font-display font-light leading-none" style="font-size:2.4rem;color:#C9A96E;">124k</p>
+                        </div>
+                        <div class="stat-tile">
+                            <p class="text-cream/28 text-[9px] tracking-[0.22em] uppercase mb-1.5">Avg. Rating</p>
+                            <p class="font-display font-light leading-none flex items-baseline gap-1" style="font-size:2.4rem;color:#C9A96E;">4.8<span class="text-cream/20 text-sm font-sans">/5</span></p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ══ TABS + CONTENT ══════════════════════════════════════ -->
+    <section class="bg-charcoal-2 pb-24 pt-2">
+        <div class="max-w-7xl mx-auto px-6">
+
+            <!-- Tab nav -->
+            <div class="flex items-center gap-1 border-b border-white/[0.07] mb-10 overflow-x-auto scrollbar-hide pb-px">
+                <button class="tab-btn active" data-tab="exhibitions">Exhibitions</button>
+                <button class="tab-btn" data-tab="about">About</button>
+                <button class="tab-btn" data-tab="location">Location</button>
+            </div>
+
+            <!-- ── EXHIBITIONS TAB ── -->
+            <div id="tab-exhibitions" class="tab-panel active">
+
+                <!-- Filter + search row -->
+                <div class="flex flex-wrap items-center gap-3 mb-8">
+                    <div class="relative flex-1 min-w-[180px] max-w-xs">
+                        <svg class="absolute left-3.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 pointer-events-none" style="color:rgba(201,169,110,0.4);" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
+                        </svg>
+                        <input
+                            id="ex-search"
+                            type="text"
+                            placeholder="Search exhibitions…"
+                            autocomplete="off"
+                            class="w-full py-2.5 pl-9 pr-4 text-sm outline-none rounded-xl"
+                            style="background:rgba(255,255,255,0.04);border:1px solid rgba(201,169,110,0.18);color:#F5F0E8;font-family:'Inter',sans-serif;transition:border-color .2s;"
+                            onfocus="this.style.borderColor='rgba(201,169,110,0.5)'"
+                            onblur="this.style.borderColor='rgba(201,169,110,0.18)'"
+                        >
+                    </div>
+
+                    <div id="ex-status-filters" class="flex gap-2 flex-wrap">
+                        <button class="ex-filter-pill active" data-status="">All</button>
+                        <button class="ex-filter-pill" data-status="Current">Current</button>
+                        <button class="ex-filter-pill" data-status="New">New</button>
+                        <button class="ex-filter-pill" data-status="Archived">Archived</button>
+                    </div>
+
+                    <span id="ex-count" class="ml-auto text-[10px] tracking-widest uppercase text-cream/25 whitespace-nowrap">18 exhibitions</span>
+                </div>
+
+                <!-- Exhibition list -->
+                <div id="ex-list" class="flex flex-col gap-3">
+                    <!-- rendered by JS -->
+                </div>
+
+                <!-- No results -->
+                <div id="no-ex-results" class="flex-col items-center justify-center py-20 text-center">
+                    <p class="font-display text-2xl font-light text-cream/40 mb-2">No exhibitions found</p>
+                    <p class="text-sm text-cream/22">Try a different search term or status filter.</p>
+                </div>
+
+            </div>
+
+            <!-- ── ABOUT TAB ── -->
+            <div id="tab-about" class="tab-panel">
+                <div class="grid lg:grid-cols-[1fr_320px] gap-12">
+                    <div>
+                        <p class="text-cream/25 text-[9px] tracking-[0.25em] uppercase mb-5">About the Museum</p>
+                        <div class="space-y-4 text-cream/60 font-light leading-relaxed" style="font-size:0.9375rem;">
+                            <p>The British Museum was established by Act of Parliament in 1753, initially funded by a public lottery. It opened to the public on 15 January 1759 and has never closed since, except during World War II.</p>
+                            <p>The museum's collection spans over two million years of human history, from ancient tools to contemporary art. Its most famous objects include the Rosetta Stone, the Elgin Marbles, and the Lewis Chessmen. Admission to the permanent collection is free.</p>
+                            <p>Over six million visitors pass through its doors each year, making it one of the most-visited museums in the world and the most-visited attraction in the UK.</p>
+                        </div>
+
+                        <div class="mt-10 pt-8 border-t border-white/[0.06]">
+                            <p class="text-cream/25 text-[9px] tracking-[0.25em] uppercase mb-5">Details</p>
+                            <div>
+                                <div class="info-row">
+                                    <span class="info-label">Founded</span>
+                                    <span class="info-value">1753</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">Address</span>
+                                    <span class="info-value">Great Russell Street, London WC1B 3DG, United Kingdom</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">Opening hours</span>
+                                    <span class="info-value">Daily 10:00 – 17:00 (Fri until 20:30)</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">Admission</span>
+                                    <span class="info-value">Free (some special exhibitions are ticketed)</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">Director</span>
+                                    <span class="info-value">Nicholas Cullinan</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">Website</span>
+                                    <a href="https://www.britishmuseum.org" target="_blank" rel="noopener noreferrer" class="info-value hover:text-gold transition-colors" style="color:rgba(201,169,110,0.6);">britishmuseum.org ↗</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sidebar: Highlights -->
+                    <div>
+                        <p class="text-cream/25 text-[9px] tracking-[0.25em] uppercase mb-5">Collection Highlights</p>
+                        <div class="flex flex-col gap-3">
+                            <div class="flex items-center gap-4 p-4 rounded-14 border border-white/[0.05]" style="background:rgba(255,255,255,0.02);border-radius:12px;">
+                                <div class="w-12 h-12 rounded-lg flex-shrink-0" style="background:linear-gradient(135deg,#3A2A1A,#22180A);"></div>
+                                <div>
+                                    <p class="text-sm text-cream/75 font-light leading-tight">Rosetta Stone</p>
+                                    <p class="text-[10px] text-cream/30 mt-0.5">196 BC · Egyptian</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-4 p-4 border border-white/[0.05]" style="background:rgba(255,255,255,0.02);border-radius:12px;">
+                                <div class="w-12 h-12 rounded-lg flex-shrink-0" style="background:linear-gradient(135deg,#1A2A3A,#0D1B28);"></div>
+                                <div>
+                                    <p class="text-sm text-cream/75 font-light leading-tight">Elgin Marbles</p>
+                                    <p class="text-[10px] text-cream/30 mt-0.5">447–432 BC · Greek</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-4 p-4 border border-white/[0.05]" style="background:rgba(255,255,255,0.02);border-radius:12px;">
+                                <div class="w-12 h-12 rounded-lg flex-shrink-0" style="background:linear-gradient(135deg,#2A1A0A,#180E04);"></div>
+                                <div>
+                                    <p class="text-sm text-cream/75 font-light leading-tight">Lewis Chessmen</p>
+                                    <p class="text-[10px] text-cream/30 mt-0.5">c. 1150–1200 · Norse</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-4 p-4 border border-white/[0.05]" style="background:rgba(255,255,255,0.02);border-radius:12px;">
+                                <div class="w-12 h-12 rounded-lg flex-shrink-0" style="background:linear-gradient(135deg,#1A3A1A,#0D2210);"></div>
+                                <div>
+                                    <p class="text-sm text-cream/75 font-light leading-tight">Sutton Hoo Helmet</p>
+                                    <p class="text-[10px] text-cream/30 mt-0.5">c. 625 AD · Anglo-Saxon</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── LOCATION TAB ── -->
+            <div id="tab-location" class="tab-panel">
+                <div class="grid lg:grid-cols-[1fr_280px] gap-10">
+                    <!-- Map placeholder -->
+                    <div class="rounded-2xl overflow-hidden flex items-center justify-center" style="height:380px;background:linear-gradient(145deg,#141414,#1C1C1C);border:1px solid rgba(255,255,255,0.06);">
+                        <div class="text-center">
+                            <svg class="w-10 h-10 mx-auto mb-3" style="color:rgba(201,169,110,0.25);" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/>
+                            </svg>
+                            <p class="text-cream/30 text-sm">Map integration coming soon</p>
+                            <a href="https://maps.google.com/?q=British+Museum+London" target="_blank" rel="noopener noreferrer" class="inline-block mt-4 px-5 py-2 rounded-lg text-xs font-medium text-gold/60 border border-gold/20 hover:border-gold/40 hover:text-gold transition-colors">
+                                Open in Google Maps ↗
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Address info -->
+                    <div class="flex flex-col gap-4">
+                        <div>
+                            <p class="text-cream/25 text-[9px] tracking-[0.25em] uppercase mb-3">Address</p>
+                            <p class="text-cream/65 text-sm leading-relaxed">Great Russell Street<br>London WC1B 3DG<br>United Kingdom</p>
+                        </div>
+                        <div class="border-t border-white/[0.06] pt-4">
+                            <p class="text-cream/25 text-[9px] tracking-[0.25em] uppercase mb-3">Opening Hours</p>
+                            <div class="flex flex-col gap-1.5 text-sm text-cream/50">
+                                <div class="flex justify-between"><span>Mon – Thu</span><span>10:00 – 17:00</span></div>
+                                <div class="flex justify-between"><span>Friday</span><span class="text-gold/60">10:00 – 20:30</span></div>
+                                <div class="flex justify-between"><span>Sat – Sun</span><span>10:00 – 17:00</span></div>
+                            </div>
+                        </div>
+                        <div class="border-t border-white/[0.06] pt-4">
+                            <p class="text-cream/25 text-[9px] tracking-[0.25em] uppercase mb-3">Getting There</p>
+                            <div class="flex flex-col gap-2 text-sm text-cream/50">
+                                <div class="flex items-center gap-2">
+                                    <span class="w-5 h-5 rounded flex-shrink-0 text-[9px] font-bold flex items-center justify-center" style="background:#E32017;color:white;">C</span>
+                                    <span>Central line — Holborn</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="w-5 h-5 rounded flex-shrink-0 text-[9px] font-bold flex items-center justify-center" style="background:#003688;color:white;">P</span>
+                                    <span>Piccadilly line — Russell Sq.</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    {% include 'core/footer.html' %}
+
+    <script>
+    // ── Exhibition data ───────────────────────────────────────
+    const EXHIBITIONS = [
+        {
+            id: 1, title: "Ancient Egypt: Life After Death",
+            category: "History", duration: "45 min", status: "Current",
+            progress: 31,
+            gradient: "linear-gradient(135deg,#3D2645,#1E0F2E,#0A0512)"
+        },
+        {
+            id: 2, title: "Wonders of the Ancient World",
+            category: "History", duration: "60 min", status: "Archived",
+            progress: 100,
+            gradient: "linear-gradient(135deg,#1A2A4A,#0D1828,#060C18)"
+        },
+        {
+            id: 3, title: "African Kingdoms Unearthed",
+            category: "Archaeology", duration: "35 min", status: "New",
+            progress: 0,
+            gradient: "linear-gradient(135deg,#2A1A0A,#180D04,#0C0602)"
+        },
+        {
+            id: 4, title: "The Silk Road: Crossroads of Civilisations",
+            category: "History", duration: "50 min", status: "Archived",
+            progress: 100,
+            gradient: "linear-gradient(135deg,#4A3800,#2C2200,#150F00)"
+        },
+        {
+            id: 5, title: "Greece: From Myth to Reality",
+            category: "Archaeology", duration: "40 min", status: "Current",
+            progress: 0,
+            gradient: "linear-gradient(135deg,#1A3A4A,#0D2535,#050F18)"
+        },
+        {
+            id: 6, title: "The Roman Empire at its Height",
+            category: "History", duration: "55 min", status: "Archived",
+            progress: 100,
+            gradient: "linear-gradient(135deg,#3A2A1A,#22180A,#0E0C04)"
+        },
+        {
+            id: 7, title: "Assyria: Palace Art of the Ancient Near East",
+            category: "Art", duration: "30 min", status: "Current",
+            progress: 0,
+            gradient: "linear-gradient(135deg,#2A1A3A,#16103A,#080520)"
+        },
+        {
+            id: 8, title: "Mummies of the World",
+            category: "Archaeology", duration: "45 min", status: "New",
+            progress: 0,
+            gradient: "linear-gradient(135deg,#3A1A1A,#200D0D,#0F0606)"
+        },
+    ];
+
+    // ── State ──────────────────────────────────────────────────
+    let activeStatus = "";
+    let exQuery = "";
+
+    // ── Filter pills ───────────────────────────────────────────
+    document.querySelectorAll("#ex-status-filters .ex-filter-pill").forEach(btn => {
+        btn.addEventListener("click", () => {
+            activeStatus = btn.dataset.status;
+            document.querySelectorAll("#ex-status-filters .ex-filter-pill").forEach(b =>
+                b.classList.toggle("active", b === btn)
+            );
+            renderExhibitions();
+        });
+    });
+
+    // ── Search ─────────────────────────────────────────────────
+    document.getElementById("ex-search").addEventListener("input", e => {
+        exQuery = e.target.value.trim().toLowerCase();
+        renderExhibitions();
+    });
+
+    // ── Render ─────────────────────────────────────────────────
+    function renderExhibitions() {
+        const filtered = EXHIBITIONS.filter(ex => {
+            if (activeStatus && ex.status !== activeStatus) return false;
+            if (exQuery && !(
+                ex.title.toLowerCase().includes(exQuery) ||
+                ex.category.toLowerCase().includes(exQuery)
+            )) return false;
+            return true;
+        });
+
+        const list = document.getElementById("ex-list");
+        const noRes = document.getElementById("no-ex-results");
+        const countEl = document.getElementById("ex-count");
+
+        countEl.textContent = `${filtered.length} exhibition${filtered.length !== 1 ? "s" : ""}`;
+
+        if (filtered.length === 0) {
+            list.innerHTML = "";
+            noRes.classList.add("visible");
+            return;
+        }
+        noRes.classList.remove("visible");
+
+        list.innerHTML = filtered.map(ex => {
+            const progressHtml = ex.progress > 0 && ex.progress < 100
+                ? `<span class="progress-pill">
+                       <span class="progress-bar-mini"><span class="progress-bar-mini-fill" style="width:${ex.progress}%;"></span></span>
+                       ${ex.progress}%
+                   </span>`
+                : ex.progress === 100
+                    ? `<span class="text-[10px] text-cream/25 uppercase tracking-widest">Completed</span>`
+                    : "";
+
+            return `
+            <a href="/exhibition/${ex.id}/" class="ex-row" aria-label="${ex.title}">
+                <div class="ex-row-thumb" style="background:${ex.gradient};">
+                    <span class="ex-row-badge">${ex.status}</span>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p class="ex-row-title">${ex.title}</p>
+                    <div class="ex-row-meta">
+                        <span>${ex.category}</span>
+                        <span class="ex-row-meta-dot"></span>
+                        <span>${ex.duration}</span>
+                        ${ex.progress > 0 ? `<span class="ex-row-meta-dot"></span>${progressHtml}` : ""}
+                    </div>
+                </div>
+                <svg class="ex-row-arrow w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+                </svg>
+            </a>`;
+        }).join("");
+    }
+
+    // ── Tab switching ──────────────────────────────────────────
+    document.querySelectorAll(".tab-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+            document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+            document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
+            btn.classList.add("active");
+            document.getElementById("tab-" + btn.dataset.tab).classList.add("active");
+        });
+    });
+
+    // ── Init ───────────────────────────────────────────────────
+    renderExhibitions();
+    </script>
+
+</body>
+</html>

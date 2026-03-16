@@ -1,0 +1,1062 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ancient Egypt: Life After Death — British Museum · Exhibitly</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Cormorant Garamond', 'serif'],
+                    },
+                    colors: {
+                        gold: '#C9A96E',
+                        'gold-light': '#E8D5B0',
+                        'gold-dark': '#A07840',
+                        charcoal: '#0D0D0D',
+                        'charcoal-green': '#111512',
+                        'charcoal-2': '#141414',
+                        'charcoal-3': '#1C1C1C',
+                        cream: '#F5F0E8',
+                    },
+                    keyframes: {
+                        fadeUp: {
+                            '0%': { opacity: '0', transform: 'translateY(24px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                    },
+                    animation: {
+                        'fade-up': 'fadeUp 0.9s ease-out both',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        html { scroll-behavior: smooth; }
+
+        /* ── Progress bar ── */
+        #reading-bar {
+            position: fixed; top: 0; left: 0; height: 3px; width: 0%;
+            background: linear-gradient(to right, #A07840, #C9A96E, #E8D5B0);
+            z-index: 9999; transition: width 0.1s linear;
+        }
+
+        /* ── Exhibit section ── */
+        .exhibit-section {
+            opacity: 0; transform: translateY(32px);
+            transition: opacity 0.7s ease, transform 0.7s ease;
+        }
+        .exhibit-section.visible { opacity: 1; transform: translateY(0); }
+
+        /* ── Audio player ── */
+        .audio-player {
+            display: flex; align-items: center; gap: 12px;
+            background: rgba(201,169,110,0.08); border: 1px solid rgba(201,169,110,0.2);
+            border-radius: 12px; padding: 12px 16px;
+        }
+        .audio-btn {
+            width: 38px; height: 38px; border-radius: 50%; flex-shrink: 0;
+            background: rgba(201,169,110,0.15); border: 1px solid rgba(201,169,110,0.35);
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: background 0.2s;
+        }
+        .audio-btn:hover { background: rgba(201,169,110,0.28); }
+        .audio-btn.playing { background: rgba(201,169,110,0.9); }
+        .audio-btn.playing svg { fill: #0D0D0D; }
+        .audio-progress-wrap {
+            flex: 1; height: 4px; background: rgba(255,255,255,0.1);
+            border-radius: 99px; cursor: pointer; position: relative;
+        }
+        .audio-progress-fill {
+            height: 100%; border-radius: 99px; width: 0%;
+            background: linear-gradient(to right, #A07840, #C9A96E);
+            transition: width 0.25s linear;
+            pointer-events: none;
+        }
+
+        /* ── Zoom overlay ── */
+        #zoom-overlay {
+            position: fixed; inset: 0; z-index: 9000;
+            background: rgba(0,0,0,0.92);
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0; pointer-events: none; transition: opacity 0.25s;
+        }
+        #zoom-overlay.open { opacity: 1; pointer-events: all; }
+        #zoom-img { max-width: 90vw; max-height: 88vh; border-radius: 10px; box-shadow: 0 40px 100px rgba(0,0,0,0.9); }
+
+        /* ── Quiz ── */
+        .quiz-option {
+            border: 1px solid rgba(255,255,255,0.1); border-radius: 10px;
+            padding: 13px 18px; cursor: pointer; font-size: 0.875rem;
+            color: rgba(245,240,232,0.7); transition: border-color 0.2s, background 0.2s, color 0.2s;
+            text-align: left; width: 100%;
+        }
+        .quiz-option:hover:not(:disabled) { border-color: rgba(201,169,110,0.4); color: #F5F0E8; background: rgba(201,169,110,0.06); }
+        .quiz-option.correct { border-color: #4ade80; background: rgba(74,222,128,0.1); color: #4ade80; }
+        .quiz-option.wrong { border-color: #f87171; background: rgba(248,113,113,0.1); color: #f87171; }
+        .quiz-option:disabled { cursor: default; }
+
+        /* ── Timeline ── */
+        .timeline-item::before {
+            content: ''; position: absolute; left: -25px; top: 6px;
+            width: 10px; height: 10px; border-radius: 50%;
+            background: #C9A96E; border: 2px solid #0D0D0D;
+            box-shadow: 0 0 0 3px rgba(201,169,110,0.3);
+        }
+
+        /* ── Hotspot map ── */
+        .hotspot {
+            position: absolute; width: 28px; height: 28px; border-radius: 50%;
+            background: rgba(201,169,110,0.25); border: 2px solid rgba(201,169,110,0.8);
+            cursor: pointer; transform: translate(-50%,-50%);
+            transition: background 0.2s, transform 0.2s;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .hotspot:hover { background: rgba(201,169,110,0.55); transform: translate(-50%,-50%) scale(1.2); }
+        .hotspot::after {
+            content: ''; width: 28px; height: 28px; border-radius: 50%;
+            border: 2px solid rgba(201,169,110,0.4); position: absolute;
+            animation: ping 2s ease-in-out infinite;
+        }
+        @keyframes ping {
+            0%   { transform: scale(1); opacity: 0.7; }
+            100% { transform: scale(2); opacity: 0; }
+        }
+        .hotspot-tooltip {
+            position: absolute; bottom: 38px; left: 50%; transform: translateX(-50%);
+            background: #1C1C1C; border: 1px solid rgba(201,169,110,0.3);
+            border-radius: 8px; padding: 8px 12px; white-space: nowrap;
+            font-size: 0.75rem; color: #F5F0E8; pointer-events: none;
+            opacity: 0; transition: opacity 0.2s;
+        }
+        .hotspot:hover .hotspot-tooltip { opacity: 1; }
+
+        /* ── Lightbox caption ── */
+        #zoom-caption {
+            position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%);
+            background: rgba(13,13,13,0.85); border: 1px solid rgba(201,169,110,0.2);
+            border-radius: 8px; padding: 8px 20px;
+            font-size: 0.8rem; color: rgba(245,240,232,0.7);
+            white-space: nowrap;
+        }
+    </style>
+</head>
+<body class="bg-charcoal text-cream font-sans overflow-x-hidden">
+
+    <!-- Reading progress bar -->
+    <div id="reading-bar"></div>
+
+    {% include 'app/header.html' with scroll_lock=9999 %}
+
+    <!-- ══ HERO ════════════════════════════════════════════════ -->
+    <section class="relative overflow-hidden" style="min-height:92vh;" data-header-theme="dark">
+        <!-- Simulated exhibit poster background -->
+        <div class="absolute inset-0" style="background:linear-gradient(160deg,#1A0E04 0%,#2A1208 30%,#0D0A06 65%,#050304 100%);"></div>
+        <div class="absolute inset-0 pointer-events-none" style="background:radial-gradient(ellipse 60% 70% at 30% 40%, rgba(184,138,68,0.18) 0%, transparent 65%), radial-gradient(ellipse 40% 50% at 80% 70%, rgba(201,169,110,0.06) 0%, transparent 60%);"></div>
+        <!-- Subtle hieroglyph-pattern overlay via CSS -->
+        <div class="absolute inset-0 pointer-events-none opacity-[0.03]" style="background-image:repeating-linear-gradient(0deg,rgba(201,169,110,1) 0px,rgba(201,169,110,1) 1px,transparent 1px,transparent 48px),repeating-linear-gradient(90deg,rgba(201,169,110,1) 0px,rgba(201,169,110,1) 1px,transparent 1px,transparent 48px);"></div>
+        <div class="absolute bottom-0 left-0 right-0 h-40 pointer-events-none" style="background:linear-gradient(to bottom,transparent,#0D0D0D);"></div>
+
+        <div class="relative z-10 max-w-7xl mx-auto px-6 pt-36 pb-24">
+            <div class="grid lg:grid-cols-[1fr_380px] gap-16 items-center">
+                <!-- Left -->
+                <div>
+                    <!-- Breadcrumb -->
+                    <div class="flex items-center gap-2 text-[10px] tracking-[0.25em] uppercase text-gold/40 mb-8 animate-fade-up" style="animation-delay:0.05s;">
+                        <a href="#" class="hover:text-gold/70 transition-colors">Exhibitions</a>
+                        <span>/</span>
+                        <a href="#" class="hover:text-gold/70 transition-colors">History</a>
+                        <span>/</span>
+                        <span class="text-gold/65">Ancient Egypt</span>
+                    </div>
+
+                    <p class="text-gold/60 text-[11px] tracking-[0.3em] uppercase mb-4 animate-fade-up" style="animation-delay:0.08s;">British Museum · London</p>
+
+                    <h1 class="font-display font-light text-cream leading-[1.08] mb-6 animate-fade-up" style="font-size:clamp(2.8rem,6vw,5rem);animation-delay:0.12s;">
+                        Ancient Egypt:<br><em style="color:#C9A96E;">Life After Death</em>
+                    </h1>
+
+                    <p class="text-cream/55 font-light leading-relaxed max-w-xl mb-8 animate-fade-up" style="font-size:0.95rem;animation-delay:0.18s;">
+                        Journey through 3,000 years of Egyptian civilisation and explore how one of history's greatest cultures understood death, the afterlife, and the eternal soul. Spanning mummies, papyri, amulets, and monumental sculpture, this exhibition tells the intimate stories of people who lived — and died — along the Nile.
+                    </p>
+
+                    <!-- Tags -->
+                    <div class="flex flex-wrap gap-2 mb-10 animate-fade-up" style="animation-delay:0.22s;">
+                        <span class="px-3 py-1 rounded-full text-[10px] tracking-widest uppercase border border-gold/25 text-gold/70">History</span>
+                        <span class="px-3 py-1 rounded-full text-[10px] tracking-widest uppercase border border-gold/25 text-gold/70">Archaeology</span>
+                        <span class="px-3 py-1 rounded-full text-[10px] tracking-widest uppercase border border-gold/25 text-gold/70">Religion</span>
+                        <span class="px-3 py-1 rounded-full text-[10px] tracking-widest uppercase border border-white/10 text-cream/30">~45 min</span>
+                    </div>
+
+                    <!-- CTA -->
+                    <div class="flex items-center gap-4 animate-fade-up" style="animation-delay:0.26s;">
+                        <a href="#room-1" class="inline-flex items-center gap-3 px-7 py-3.5 rounded-xl font-semibold text-charcoal text-sm transition-all hover:shadow-lg hover:shadow-gold/20 hover:-translate-y-0.5" style="background:#C9A96E;">
+                            <svg class="w-4 h-4 ml-px" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                            Begin Exhibition
+                        </a>
+                        <button onclick="toggleBookmark(this)" class="inline-flex items-center gap-2 px-5 py-3.5 rounded-xl text-sm text-cream/60 border border-white/10 hover:border-gold/30 hover:text-cream transition-all">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
+                            Save
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Right: meta card -->
+                <div class="animate-fade-up" style="animation-delay:0.30s;">
+                    <div class="rounded-2xl p-7 border border-white/6" style="background:rgba(255,255,255,0.025);">
+                        <p class="text-[9px] tracking-[0.25em] uppercase text-cream/30 mb-6">Exhibition Details</p>
+
+                        <div class="flex flex-col gap-5">
+                            <div class="flex justify-between items-start">
+                                <span class="text-cream/40 text-xs uppercase tracking-widest">Venue</span>
+                                <span class="text-cream/85 text-sm text-right">British Museum<br><span class="text-gold/60 text-[11px]">Great Russell St, London</span></span>
+                            </div>
+                            <div class="flex justify-between items-start">
+                                <span class="text-cream/40 text-xs uppercase tracking-widest">Dates</span>
+                                <span class="text-cream/85 text-sm text-right">8 Nov 2025 –<br>20 Jul 2026</span>
+                            </div>
+                            <div class="flex justify-between items-start">
+                                <span class="text-cream/40 text-xs uppercase tracking-widest">Curator</span>
+                                <span class="text-cream/85 text-sm text-right">Dr. Helen Strudwick<br><span class="text-gold/60 text-[11px]">Dept. of Ancient Egypt &amp; Sudan</span></span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-cream/40 text-xs uppercase tracking-widest">Rooms</span>
+                                <span class="text-cream/85 text-sm">5 galleries · 47 objects</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-cream/40 text-xs uppercase tracking-widest">Audio Guide</span>
+                                <span class="text-cream/85 text-sm">Included</span>
+                            </div>
+                        </div>
+
+                        <!-- Your progress -->
+                        <div class="mt-7 pt-6 border-t border-white/5">
+                            <div class="flex justify-between items-baseline mb-2">
+                                <span class="text-[10px] tracking-widest uppercase text-cream/30">Your Progress</span>
+                                <span class="text-xs text-gold/60" id="progress-label">31%</span>
+                            </div>
+                            <div class="h-1.5 rounded-full overflow-hidden" style="background:rgba(255,255,255,0.07);">
+                                <div class="h-full rounded-full" id="progress-fill" style="width:31%;background:linear-gradient(to right,#A07840,#C9A96E,#E8D5B0);transition:width 0.6s ease;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ══ ABOUT THE GALLERY ══════════════════════════════════ -->
+    <section class="py-20 border-t border-white/5 exhibit-section" style="background:#0D0D0D;">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid lg:grid-cols-[280px_1fr] gap-14 items-start">
+                <!-- Gallery logo/mark -->
+                <div class="flex flex-col items-start gap-5">
+                    <div class="w-16 h-16 rounded-2xl flex items-center justify-center border border-gold/20" style="background:rgba(201,169,110,0.07);">
+                        <svg class="w-8 h-8" viewBox="0 0 32 32" fill="none">
+                            <path d="M4 28h24M7 28V14l9-8 9 8v14M12 28v-7h8v7" stroke="#C9A96E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="font-display text-xl font-light text-cream leading-tight">The British<br>Museum</p>
+                        <p class="text-gold/55 text-[10px] tracking-widest uppercase mt-1">Est. 1753 · London</p>
+                    </div>
+                    <a href="#" class="text-[11px] tracking-widest uppercase text-gold/60 underline underline-offset-4 decoration-gold/30 hover:text-gold transition-colors">Visit Website ↗</a>
+                </div>
+
+                <!-- About text -->
+                <div>
+                    <p class="text-gold text-xs tracking-[0.25em] uppercase mb-3">About the Institution</p>
+                    <h2 class="font-display text-3xl md:text-4xl font-light text-cream mb-6">One of the world's oldest and most comprehensive museums</h2>
+                    <div class="grid md:grid-cols-2 gap-6 text-cream/55 font-light leading-relaxed text-sm">
+                        <p>Founded in 1753, the British Museum holds a permanent collection of around 8 million objects — among the largest and most comprehensive in existence — representing human history, culture and art from across the globe and throughout time.</p>
+                        <p>The museum's Department of Ancient Egypt and Sudan oversees one of the world's leading collections of Egyptian antiquities, with over 100,000 objects spanning more than three millennia of pharaonic history, from the pre-Dynastic period through to the Roman era.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ══ ROOM 1: THE JOURNEY BEGINS ════════════════════════ -->
+    <section id="room-1" class="py-20 exhibit-section" style="background:#111512;">
+        <div class="max-w-7xl mx-auto px-6">
+            <!-- Room header -->
+            <div class="flex items-center gap-5 mb-12">
+                <div class="flex-shrink-0 w-10 h-10 rounded-full border border-gold/30 flex items-center justify-center">
+                    <span class="font-display text-gold font-light">1</span>
+                </div>
+                <div class="h-px flex-1" style="background:rgba(255,255,255,0.06);"></div>
+                <div>
+                    <p class="text-gold text-[10px] tracking-[0.3em] uppercase mb-0.5">Gallery One</p>
+                    <h2 class="font-display text-2xl md:text-3xl font-light text-cream">The Journey Begins: Death &amp; the Soul</h2>
+                </div>
+            </div>
+
+            <!-- Two-column: image + text -->
+            <div class="grid lg:grid-cols-2 gap-10 mb-10">
+                <!-- Zoomable image -->
+                <div class="relative rounded-2xl overflow-hidden cursor-zoom-in group" style="aspect-ratio:4/3;background:linear-gradient(160deg,#3A200A,#1C0E04,#080402);"
+                     onclick="openZoom(this)" data-caption="Book of the Dead of Ani, c.1275 BCE — British Museum, EA10470">
+                    <!-- Placeholder art using CSS shapes -->
+                    <div class="absolute inset-0 flex items-center justify-center">
+                        <div style="width:70%;height:70%;position:relative;">
+                            <!-- Simulated papyrus scene -->
+                            <div class="absolute inset-0 rounded" style="background:linear-gradient(135deg,#8B6914,#6B4F10,#4A340A);opacity:0.7;"></div>
+                            <div class="absolute inset-0 flex flex-col items-center justify-center gap-3 opacity-60">
+                                <div style="width:2px;height:40%;background:#C9A96E;opacity:0.5;"></div>
+                                <div class="rounded-full" style="width:24px;height:24px;border:2px solid #C9A96E;opacity:0.5;"></div>
+                                <div style="width:60%;height:2px;background:#C9A96E;opacity:0.3;"></div>
+                            </div>
+                            <p class="absolute inset-0 flex items-center justify-center font-display text-gold/40 text-center text-sm px-4 leading-relaxed">Book of the Dead<br>of Ani<br><span style="font-size:10px;letter-spacing:0.15em;" class="uppercase tracking-widest">c. 1275 BCE</span></p>
+                        </div>
+                    </div>
+                    <!-- Zoom hint -->
+                    <div class="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                        <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:rgba(0,0,0,0.6);border:1px solid rgba(255,255,255,0.15);">
+                            <svg class="w-4 h-4 text-cream/70" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 11A6 6 0 115 11a6 6 0 0112 0zm-3 0v-2m0 4h.01"/><path stroke-linecap="round" stroke-linejoin="round" d="M10 8v6M7 11h6"/></svg>
+                        </div>
+                    </div>
+                    <div class="absolute bottom-0 left-0 right-0 p-4" style="background:linear-gradient(to top,rgba(0,0,0,0.85),transparent);">
+                        <p class="text-cream/70 text-xs">Book of the Dead of Ani · c.1275 BCE</p>
+                    </div>
+                </div>
+
+                <!-- Text + audio -->
+                <div class="flex flex-col justify-center gap-6">
+                    <p class="text-cream/55 font-light leading-relaxed text-sm">
+                        The ancient Egyptians were profoundly concerned with what happened after death. They believed the soul — the <em class="text-gold/80">ka</em> and <em class="text-gold/80">ba</em> — could continue to exist in the afterlife, provided the body was preserved and the correct rituals were performed. The <strong class="text-cream/80 font-medium">Book of the Dead</strong> was a collection of magical spells written on papyrus scrolls and placed in tombs to guide the deceased through the underworld.
+                    </p>
+                    <p class="text-cream/45 font-light leading-relaxed text-sm">
+                        Ani's copy, created around 1275 BCE, is considered the most illustrated and among the most beautiful examples in existence. At nearly 24 metres long, it charts the soul's dangerous journey through the <em class="text-gold/70">Duat</em> — the realm of the dead — and the critical weighing of the heart against the feather of Ma'at, goddess of truth.
+                    </p>
+
+                    <!-- Audio guide -->
+                    <div>
+                        <p class="text-[10px] tracking-[0.25em] uppercase text-gold/50 mb-3">Audio Guide · 3 min 42 sec</p>
+                        <div class="audio-player" data-audio-id="audio-1">
+                            <button class="audio-btn" onclick="toggleAudio('audio-1', this)" aria-label="Play audio guide">
+                                <svg class="w-4 h-4 ml-px" id="audio-1-icon" fill="#C9A96E" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                            </button>
+                            <div class="flex flex-col flex-1 gap-1.5">
+                                <div class="flex justify-between items-baseline">
+                                    <span class="text-xs text-cream/60">The Soul's Journey</span>
+                                    <span class="text-[10px] text-cream/30" id="audio-1-time">0:00 / 3:42</span>
+                                </div>
+                                <div class="audio-progress-wrap" onclick="seekAudio('audio-1', event, this)">
+                                    <div class="audio-progress-fill" id="audio-1-prog"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Fact pill -->
+                    <div class="flex items-start gap-3 p-4 rounded-xl border border-gold/15" style="background:rgba(201,169,110,0.05);">
+                        <div class="flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center" style="background:rgba(201,169,110,0.12);">
+                            <svg class="w-3.5 h-3.5" fill="#C9A96E" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/></svg>
+                        </div>
+                        <div>
+                            <p class="text-[10px] tracking-widest uppercase text-gold/55 mb-0.5">Did You Know?</p>
+                            <p class="text-cream/55 text-xs leading-relaxed">There are over 200 known spells in the Book of the Dead — but no single papyrus contains them all. Scribes would select relevant spells based on the purchaser's wealth and needs.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ══ ROOM 2: MUMMIFICATION ══════════════════════════════ -->
+    <section id="room-2" class="py-20 exhibit-section" style="background:#0D0D0D;">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex items-center gap-5 mb-12">
+                <div class="flex-shrink-0 w-10 h-10 rounded-full border border-gold/30 flex items-center justify-center">
+                    <span class="font-display text-gold font-light">2</span>
+                </div>
+                <div class="h-px flex-1" style="background:rgba(255,255,255,0.06);"></div>
+                <div>
+                    <p class="text-gold text-[10px] tracking-[0.3em] uppercase mb-0.5">Gallery Two</p>
+                    <h2 class="font-display text-2xl md:text-3xl font-light text-cream">Preserving the Body: The Art of Mummification</h2>
+                </div>
+            </div>
+
+            <!-- 3-image grid -->
+            <div class="grid md:grid-cols-3 gap-4 mb-10">
+                <!-- Image 1 -->
+                <div class="relative rounded-2xl overflow-hidden cursor-zoom-in group" style="aspect-ratio:3/4;background:linear-gradient(160deg,#2A1A0A,#160C04);"
+                     onclick="openZoom(this)" data-caption="Mummy of Katebet, c.1300 BCE — British Museum, EA6665">
+                    <div class="absolute inset-0 flex items-center justify-center opacity-40">
+                        <div style="width:40%;height:70%;background:linear-gradient(to bottom,#C9A96E,#8B6914);border-radius:20px 20px 8px 8px;opacity:0.6;"></div>
+                    </div>
+                    <p class="absolute inset-0 flex items-end p-4 font-display text-cream/70 text-sm">Mummy of Katebet<br><span class="text-gold/50 text-[10px] uppercase tracking-wider">c.1300 BCE</span></p>
+                    <div class="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:rgba(0,0,0,0.6);border:1px solid rgba(255,255,255,0.12);">
+                            <svg class="w-4 h-4 text-cream/70" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 11A6 6 0 115 11a6 6 0 0112 0zm-3 0v-2m0 4h.01"/><path stroke-linecap="round" stroke-linejoin="round" d="M10 8v6M7 11h6"/></svg>
+                        </div>
+                    </div>
+                </div>
+                <!-- Image 2 -->
+                <div class="relative rounded-2xl overflow-hidden cursor-zoom-in group" style="aspect-ratio:3/4;background:linear-gradient(160deg,#0A2A1A,#041610);"
+                     onclick="openZoom(this)" data-caption="Canopic Jars of Neskhons, c.1050 BCE — British Museum, EA59194">
+                    <div class="absolute inset-0 flex items-center justify-center opacity-40 gap-3">
+                        <div style="width:16%;height:50%;background:#C9A96E;border-radius:50% 50% 8px 8px;opacity:0.5;"></div>
+                        <div style="width:16%;height:55%;background:#A07840;border-radius:50% 50% 8px 8px;opacity:0.5;"></div>
+                        <div style="width:16%;height:48%;background:#C9A96E;border-radius:50% 50% 8px 8px;opacity:0.4;"></div>
+                        <div style="width:16%;height:52%;background:#A07840;border-radius:50% 50% 8px 8px;opacity:0.5;"></div>
+                    </div>
+                    <p class="absolute inset-0 flex items-end p-4 font-display text-cream/70 text-sm">Canopic Jars of Neskhons<br><span class="text-gold/50 text-[10px] uppercase tracking-wider">c.1050 BCE</span></p>
+                    <div class="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:rgba(0,0,0,0.6);border:1px solid rgba(255,255,255,0.12);">
+                            <svg class="w-4 h-4 text-cream/70" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 11A6 6 0 115 11a6 6 0 0112 0zm-3 0v-2m0 4h.01"/><path stroke-linecap="round" stroke-linejoin="round" d="M10 8v6M7 11h6"/></svg>
+                        </div>
+                    </div>
+                </div>
+                <!-- Image 3: text overlay only -->
+                <div class="relative rounded-2xl overflow-hidden cursor-zoom-in group" style="aspect-ratio:3/4;background:linear-gradient(160deg,#3A2800,#1C1400);"
+                     onclick="openZoom(this)" data-caption="Gilded coffin mask, c.900 BCE — British Museum, EA22812">
+                    <div class="absolute inset-0 flex items-center justify-center opacity-50">
+                        <div class="rounded-full" style="width:45%;height:55%;border:3px solid #C9A96E;background:linear-gradient(to bottom,#C9A96E22,transparent);"></div>
+                    </div>
+                    <p class="absolute inset-0 flex items-end p-4 font-display text-cream/70 text-sm">Gilded Coffin Mask<br><span class="text-gold/50 text-[10px] uppercase tracking-wider">c.900 BCE</span></p>
+                    <div class="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:rgba(0,0,0,0.6);border:1px solid rgba(255,255,255,0.12);">
+                            <svg class="w-4 h-4 text-cream/70" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 11A6 6 0 115 11a6 6 0 0112 0zm-3 0v-2m0 4h.01"/><path stroke-linecap="round" stroke-linejoin="round" d="M10 8v6M7 11h6"/></svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Steps explainer -->
+            <div class="rounded-2xl p-8 border border-white/5" style="background:rgba(255,255,255,0.02);">
+                <p class="text-gold text-[10px] tracking-[0.3em] uppercase mb-5">The 70-Day Process</p>
+                <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                    <div class="flex flex-col gap-2">
+                        <div class="w-8 h-8 rounded-full border border-gold/30 flex items-center justify-center text-gold/70 font-display text-lg font-light">1</div>
+                        <p class="text-sm font-medium text-cream/80">Removal of Organs</p>
+                        <p class="text-xs text-cream/40 leading-relaxed">The brain was removed via the nostrils. The liver, lungs, stomach, and intestines were stored in canopic jars.</p>
+                    </div>
+                    <div class="flex flex-col gap-2">
+                        <div class="w-8 h-8 rounded-full border border-gold/30 flex items-center justify-center text-gold/70 font-display text-lg font-light">2</div>
+                        <p class="text-sm font-medium text-cream/80">Natron Drying</p>
+                        <p class="text-xs text-cream/40 leading-relaxed">The body was packed in natron salt for 40 days to draw out all moisture and prevent decay.</p>
+                    </div>
+                    <div class="flex flex-col gap-2">
+                        <div class="w-8 h-8 rounded-full border border-gold/30 flex items-center justify-center text-gold/70 font-display text-lg font-light">3</div>
+                        <p class="text-sm font-medium text-cream/80">Wrapping</p>
+                        <p class="text-xs text-cream/40 leading-relaxed">Hundreds of metres of linen were used, with protective amulets placed between each layer.</p>
+                    </div>
+                    <div class="flex flex-col gap-2">
+                        <div class="w-8 h-8 rounded-full border border-gold/30 flex items-center justify-center text-gold/70 font-display text-lg font-light">4</div>
+                        <p class="text-sm font-medium text-cream/80">The Opening of the Mouth</p>
+                        <p class="text-xs text-cream/40 leading-relaxed">A final ritual ceremony to restore the mummy's senses and allow the soul to use the body in the afterlife.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Audio guide 2 -->
+            <div class="mt-8">
+                <p class="text-[10px] tracking-[0.25em] uppercase text-gold/50 mb-3">Audio Guide · 4 min 15 sec</p>
+                <div class="audio-player max-w-lg" data-audio-id="audio-2">
+                    <button class="audio-btn" onclick="toggleAudio('audio-2', this)" aria-label="Play audio guide">
+                        <svg class="w-4 h-4 ml-px" id="audio-2-icon" fill="#C9A96E" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                    </button>
+                    <div class="flex flex-col flex-1 gap-1.5">
+                        <div class="flex justify-between items-baseline">
+                            <span class="text-xs text-cream/60">Secrets of Mummification</span>
+                            <span class="text-[10px] text-cream/30" id="audio-2-time">0:00 / 4:15</span>
+                        </div>
+                        <div class="audio-progress-wrap" onclick="seekAudio('audio-2', event, this)">
+                            <div class="audio-progress-fill" id="audio-2-prog"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ══ ROOM 3: GODS & MYTHOLOGY ══════════════════════════ -->
+    <section id="room-3" class="py-20 exhibit-section" style="background:#111512;">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex items-center gap-5 mb-12">
+                <div class="flex-shrink-0 w-10 h-10 rounded-full border border-gold/30 flex items-center justify-center">
+                    <span class="font-display text-gold font-light">3</span>
+                </div>
+                <div class="h-px flex-1" style="background:rgba(255,255,255,0.06);"></div>
+                <div>
+                    <p class="text-gold text-[10px] tracking-[0.3em] uppercase mb-0.5">Gallery Three</p>
+                    <h2 class="font-display text-2xl md:text-3xl font-light text-cream">Gods of the Afterlife</h2>
+                </div>
+            </div>
+
+            <!-- Interactive Hotspot Map -->
+            <div class="mb-12">
+                <p class="text-cream/40 text-sm mb-5">Explore the key deities — hover over the glowing points to learn more.</p>
+                <div class="relative rounded-2xl overflow-hidden" style="aspect-ratio:16/7;background:linear-gradient(160deg,#1A0E04 0%,#2A1605 40%,#0A0804 100%);">
+                    <!-- Decorative horizon line -->
+                    <div class="absolute" style="bottom:30%;left:0;right:0;height:1px;background:rgba(201,169,110,0.1);"></div>
+                    <!-- Fake sky gradient -->
+                    <div class="absolute inset-0 pointer-events-none" style="background:radial-gradient(ellipse 80% 40% at 50% 10%,rgba(201,169,110,0.08) 0%,transparent 70%);"></div>
+
+                    <!-- Hotspot: Osiris -->
+                    <div class="hotspot" style="left:18%;top:45%;" tabindex="0">
+                        <div class="hotspot-tooltip">Osiris — God of the Afterlife &amp; Resurrection</div>
+                    </div>
+                    <!-- Hotspot: Anubis -->
+                    <div class="hotspot" style="left:38%;top:55%;" tabindex="0">
+                        <div class="hotspot-tooltip">Anubis — Guardian of the Dead &amp; Embalming</div>
+                    </div>
+                    <!-- Hotspot: Ra -->
+                    <div class="hotspot" style="left:58%;top:30%;" tabindex="0">
+                        <div class="hotspot-tooltip">Ra — Sun God, Ruler of the Sky &amp; Creation</div>
+                    </div>
+                    <!-- Hotspot: Ma'at -->
+                    <div class="hotspot" style="left:75%;top:48%;" tabindex="0">
+                        <div class="hotspot-tooltip">Ma'at — Goddess of Truth, Justice &amp; Order</div>
+                    </div>
+                    <!-- Hotspot: Thoth -->
+                    <div class="hotspot" style="left:88%;top:40%;" tabindex="0">
+                        <div class="hotspot-tooltip">Thoth — God of Writing, Wisdom &amp; the Moon</div>
+                    </div>
+
+                    <p class="absolute bottom-4 left-5 text-cream/25 text-[10px] tracking-widest uppercase">The Egyptian Pantheon · Hover to explore</p>
+                </div>
+            </div>
+
+            <!-- God cards -->
+            <div class="grid sm:grid-cols-2 lg:grid-cols-5 gap-4">
+                <div class="rounded-xl p-5 border border-white/5 hover:border-gold/20 transition-all duration-300 hover:-translate-y-1 cursor-default" style="background:rgba(255,255,255,0.025);">
+                    <div class="w-10 h-10 rounded-xl flex items-center justify-center mb-4" style="background:rgba(201,169,110,0.1);border:1px solid rgba(201,169,110,0.2);">
+                        <span class="font-display text-gold text-lg">𓁛</span>
+                    </div>
+                    <p class="text-sm font-medium text-cream/85 mb-1">Osiris</p>
+                    <p class="text-xs text-cream/38 leading-relaxed">Lord of the dead and ruler of the underworld. He judged whether the dead were worthy of eternal life.</p>
+                </div>
+                <div class="rounded-xl p-5 border border-white/5 hover:border-gold/20 transition-all duration-300 hover:-translate-y-1 cursor-default" style="background:rgba(255,255,255,0.025);">
+                    <div class="w-10 h-10 rounded-xl flex items-center justify-center mb-4" style="background:rgba(201,169,110,0.1);border:1px solid rgba(201,169,110,0.2);">
+                        <span class="font-display text-gold text-lg">𓁢</span>
+                    </div>
+                    <p class="text-sm font-medium text-cream/85 mb-1">Anubis</p>
+                    <p class="text-xs text-cream/38 leading-relaxed">Jackal-headed god of mummification who guided souls through the Duat and oversaw the weighing of the heart.</p>
+                </div>
+                <div class="rounded-xl p-5 border border-white/5 hover:border-gold/20 transition-all duration-300 hover:-translate-y-1 cursor-default" style="background:rgba(255,255,255,0.025);">
+                    <div class="w-10 h-10 rounded-xl flex items-center justify-center mb-4" style="background:rgba(201,169,110,0.1);border:1px solid rgba(201,169,110,0.2);">
+                        <span class="font-display text-gold text-lg">☀</span>
+                    </div>
+                    <p class="text-sm font-medium text-cream/85 mb-1">Ra</p>
+                    <p class="text-xs text-cream/38 leading-relaxed">The supreme sun god whose nightly journey through the underworld mirrored the soul's own passage to rebirth.</p>
+                </div>
+                <div class="rounded-xl p-5 border border-white/5 hover:border-gold/20 transition-all duration-300 hover:-translate-y-1 cursor-default" style="background:rgba(255,255,255,0.025);">
+                    <div class="w-10 h-10 rounded-xl flex items-center justify-center mb-4" style="background:rgba(201,169,110,0.1);border:1px solid rgba(201,169,110,0.2);">
+                        <span class="font-display text-gold text-lg">𓆄</span>
+                    </div>
+                    <p class="text-sm font-medium text-cream/85 mb-1">Ma'at</p>
+                    <p class="text-xs text-cream/38 leading-relaxed">Goddess of truth and cosmic order. Her feather was placed on the scales against the heart of the dead.</p>
+                </div>
+                <div class="rounded-xl p-5 border border-white/5 hover:border-gold/20 transition-all duration-300 hover:-translate-y-1 cursor-default" style="background:rgba(255,255,255,0.025);">
+                    <div class="w-10 h-10 rounded-xl flex items-center justify-center mb-4" style="background:rgba(201,169,110,0.1);border:1px solid rgba(201,169,110,0.2);">
+                        <span class="font-display text-gold text-lg">𓅂</span>
+                    </div>
+                    <p class="text-sm font-medium text-cream/85 mb-1">Thoth</p>
+                    <p class="text-xs text-cream/38 leading-relaxed">Ibis-headed scribe of the gods who recorded the verdict of the heart-weighing ceremony in the Hall of Two Truths.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ══ INTERACTIVE QUIZ ═══════════════════════════════════ -->
+    <section id="quiz" class="py-20 exhibit-section border-y border-white/5" style="background:#141414;">
+        <div class="max-w-3xl mx-auto px-6">
+            <p class="text-gold text-xs tracking-[0.25em] uppercase text-center mb-3">Test Your Knowledge</p>
+            <h2 class="font-display text-3xl md:text-4xl font-light text-cream text-center mb-2">Exhibition Quiz</h2>
+            <p class="text-cream/40 text-sm text-center mb-12">Five questions · Instant feedback · Earn your curator's badge</p>
+
+            <!-- Quiz container -->
+            <div id="quiz-container">
+                <!-- Questions rendered by JS below -->
+            </div>
+
+            <!-- Final score (hidden until complete) -->
+            <div id="quiz-result" class="hidden text-center py-10">
+                <div class="w-20 h-20 rounded-full mx-auto mb-5 flex items-center justify-center border-2 border-gold" style="background:rgba(201,169,110,0.1);">
+                    <span class="font-display text-gold text-3xl font-light" id="score-display">0/5</span>
+                </div>
+                <p class="font-display text-2xl text-cream mb-2" id="score-title">Well done!</p>
+                <p class="text-cream/45 text-sm mb-8" id="score-msg"></p>
+                <button onclick="restartQuiz()" class="px-8 py-3 rounded-xl text-charcoal text-sm font-semibold transition-all hover:shadow-lg hover:shadow-gold/20 hover:-translate-y-0.5" style="background:#C9A96E;">
+                    Try Again
+                </button>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ══ ROOM 4: TIMELINE ═══════════════════════════════════ -->
+    <section id="room-4" class="py-20 exhibit-section" style="background:#0D0D0D;">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex items-center gap-5 mb-12">
+                <div class="flex-shrink-0 w-10 h-10 rounded-full border border-gold/30 flex items-center justify-center">
+                    <span class="font-display text-gold font-light">4</span>
+                </div>
+                <div class="h-px flex-1" style="background:rgba(255,255,255,0.06);"></div>
+                <div>
+                    <p class="text-gold text-[10px] tracking-[0.3em] uppercase mb-0.5">Gallery Four</p>
+                    <h2 class="font-display text-2xl md:text-3xl font-light text-cream">3,000 Years of Civilisation</h2>
+                </div>
+            </div>
+
+            <!-- Interactive timeline -->
+            <div class="relative pl-8 border-l border-white/8 flex flex-col gap-0">
+                <div class="relative timeline-item pb-10 cursor-pointer group" onclick="expandTimeline(this)">
+                    <div class="flex items-start gap-6">
+                        <div class="flex-shrink-0">
+                            <p class="text-gold/50 text-[10px] tracking-widest uppercase">c.3100 BCE</p>
+                            <p class="font-display text-lg font-light text-cream group-hover:text-gold transition-colors">Unification of Egypt</p>
+                        </div>
+                        <p class="text-cream/40 text-sm leading-relaxed hidden group-[.open]:block pt-0.5 max-w-lg">
+                            King Narmer unites Upper and Lower Egypt, founding the First Dynasty. The double crown — the <em>pschent</em> — becomes the symbol of unified rule. Writing, hieroglyphs, and monumental architecture emerge almost simultaneously.
+                        </p>
+                    </div>
+                    <svg class="absolute right-0 top-1 w-4 h-4 text-cream/25 group-hover:text-gold/50 transition-all group-[.open]:rotate-90 duration-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                </div>
+                <div class="relative timeline-item pb-10 cursor-pointer group" onclick="expandTimeline(this)">
+                    <div class="flex items-start gap-6">
+                        <div class="flex-shrink-0">
+                            <p class="text-gold/50 text-[10px] tracking-widest uppercase">c.2560 BCE</p>
+                            <p class="font-display text-lg font-light text-cream group-hover:text-gold transition-colors">Great Pyramid of Giza</p>
+                        </div>
+                        <p class="text-cream/40 text-sm leading-relaxed hidden group-[.open]:block pt-0.5 max-w-lg">
+                            The Great Pyramid, built for Pharaoh Khufu, stands 146 metres tall and is constructed from over 2.3 million stone blocks. It remains the oldest of the Seven Wonders of the Ancient World and the only one still largely intact.
+                        </p>
+                    </div>
+                    <svg class="absolute right-0 top-1 w-4 h-4 text-cream/25 group-hover:text-gold/50 transition-all group-[.open]:rotate-90 duration-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                </div>
+                <div class="relative timeline-item pb-10 cursor-pointer group" onclick="expandTimeline(this)">
+                    <div class="flex items-start gap-6">
+                        <div class="flex-shrink-0">
+                            <p class="text-gold/50 text-[10px] tracking-widest uppercase">c.1353 BCE</p>
+                            <p class="font-display text-lg font-light text-cream group-hover:text-gold transition-colors">The Amarna Revolution</p>
+                        </div>
+                        <p class="text-cream/40 text-sm leading-relaxed hidden group-[.open]:block pt-0.5 max-w-lg">
+                            Pharaoh Akhenaten abandons the traditional pantheon and institutes worship of the Aten (sun disc) alone — the world's first known monotheistic state religion. His queen, Nefertiti, plays an unprecedented role in state and religious affairs.
+                        </p>
+                    </div>
+                    <svg class="absolute right-0 top-1 w-4 h-4 text-cream/25 group-hover:text-gold/50 transition-all group-[.open]:rotate-90 duration-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                </div>
+                <div class="relative timeline-item pb-10 cursor-pointer group" onclick="expandTimeline(this)">
+                    <div class="flex items-start gap-6">
+                        <div class="flex-shrink-0">
+                            <p class="text-gold/50 text-[10px] tracking-widest uppercase">c.1279 BCE</p>
+                            <p class="font-display text-lg font-light text-cream group-hover:text-gold transition-colors">Reign of Ramesses II</p>
+                        </div>
+                        <p class="text-cream/40 text-sm leading-relaxed hidden group-[.open]:block pt-0.5 max-w-lg">
+                            The longest-ruling and most celebrated pharaoh, Ramesses the Great reigns for 66 years, commissioning more temples and statues than any other ruler. His mummy is one of the best-preserved ever discovered.
+                        </p>
+                    </div>
+                    <svg class="absolute right-0 top-1 w-4 h-4 text-cream/25 group-hover:text-gold/50 transition-all group-[.open]:rotate-90 duration-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                </div>
+                <div class="relative timeline-item pb-10 cursor-pointer group" onclick="expandTimeline(this)">
+                    <div class="flex items-start gap-6">
+                        <div class="flex-shrink-0">
+                            <p class="text-gold/50 text-[10px] tracking-widest uppercase">30 BCE</p>
+                            <p class="font-display text-lg font-light text-cream group-hover:text-gold transition-colors">Fall of the Ptolemaic Kingdom</p>
+                        </div>
+                        <p class="text-cream/40 text-sm leading-relaxed hidden group-[.open]:block pt-0.5 max-w-lg">
+                            After the death of Cleopatra VII and the suicide of Mark Antony, Egypt becomes a province of Rome. Three thousand years of pharaonic civilisation come to an end, though Egyptian religious practices persist for centuries more.
+                        </p>
+                    </div>
+                    <svg class="absolute right-0 top-1 w-4 h-4 text-cream/25 group-hover:text-gold/50 transition-all group-[.open]:rotate-90 duration-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ══ ROOM 5: FINAL ARTEFACT ─ ROSETTA STONE ════════════ -->
+    <section id="room-5" class="py-20 exhibit-section" style="background:#111512;">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex items-center gap-5 mb-12">
+                <div class="flex-shrink-0 w-10 h-10 rounded-full border border-gold/30 flex items-center justify-center">
+                    <span class="font-display text-gold font-light">5</span>
+                </div>
+                <div class="h-px flex-1" style="background:rgba(255,255,255,0.06);"></div>
+                <div>
+                    <p class="text-gold text-[10px] tracking-[0.3em] uppercase mb-0.5">Gallery Five — Feature Object</p>
+                    <h2 class="font-display text-2xl md:text-3xl font-light text-cream">The Rosetta Stone</h2>
+                </div>
+            </div>
+
+            <div class="grid lg:grid-cols-[1fr_420px] gap-14 items-start">
+                <!-- Text -->
+                <div class="flex flex-col gap-6">
+                    <p class="text-cream/55 font-light leading-relaxed">
+                        Discovered in 1799 near the town of Rosetta (Rashid) in northern Egypt by soldiers in Napoleon's expedition, the Rosetta Stone is a granodiorite stele inscribed with three versions of a royal decree issued in 196 BCE during the reign of Ptolemy V. The three scripts — Ancient Egyptian hieroglyphics, Demotic script, and Ancient Greek — allowed linguists to decode hieroglyphics for the first time in over 1,400 years.
+                    </p>
+                    <p class="text-cream/40 font-light leading-relaxed text-sm">
+                        The stone was transferred to British custody after the French surrender to Britain in Egypt in 1801. It has been on public display at the British Museum since 1802 and is the most visited object in the collection.
+                    </p>
+
+                    <!-- Object metadata -->
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                        <div class="rounded-xl p-4 border border-white/5" style="background:rgba(255,255,255,0.02);">
+                            <p class="text-[9px] tracking-widest uppercase text-cream/30 mb-1">Date</p>
+                            <p class="text-sm text-cream/80 font-light">196 BCE</p>
+                        </div>
+                        <div class="rounded-xl p-4 border border-white/5" style="background:rgba(255,255,255,0.02);">
+                            <p class="text-[9px] tracking-widest uppercase text-cream/30 mb-1">Material</p>
+                            <p class="text-sm text-cream/80 font-light">Granodiorite</p>
+                        </div>
+                        <div class="rounded-xl p-4 border border-white/5" style="background:rgba(255,255,255,0.02);">
+                            <p class="text-[9px] tracking-widest uppercase text-cream/30 mb-1">Height</p>
+                            <p class="text-sm text-cream/80 font-light">112.3 cm</p>
+                        </div>
+                        <div class="rounded-xl p-4 border border-white/5" style="background:rgba(255,255,255,0.02);">
+                            <p class="text-[9px] tracking-widest uppercase text-cream/30 mb-1">Scripts</p>
+                            <p class="text-sm text-cream/80 font-light">3 languages</p>
+                        </div>
+                        <div class="rounded-xl p-4 border border-white/5" style="background:rgba(255,255,255,0.02);">
+                            <p class="text-[9px] tracking-widest uppercase text-cream/30 mb-1">Deciphered</p>
+                            <p class="text-sm text-cream/80 font-light">1822 (Champollion)</p>
+                        </div>
+                        <div class="rounded-xl p-4 border border-white/5" style="background:rgba(255,255,255,0.02);">
+                            <p class="text-[9px] tracking-widest uppercase text-cream/30 mb-1">Museum No.</p>
+                            <p class="text-sm text-cream/80 font-light">EA24</p>
+                        </div>
+                    </div>
+
+                    <!-- Audio guide 3 -->
+                    <div>
+                        <p class="text-[10px] tracking-[0.25em] uppercase text-gold/50 mb-3">Audio Guide · 5 min 08 sec</p>
+                        <div class="audio-player max-w-lg" data-audio-id="audio-3">
+                            <button class="audio-btn" onclick="toggleAudio('audio-3', this)" aria-label="Play audio guide">
+                                <svg class="w-4 h-4 ml-px" id="audio-3-icon" fill="#C9A96E" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                            </button>
+                            <div class="flex flex-col flex-1 gap-1.5">
+                                <div class="flex justify-between items-baseline">
+                                    <span class="text-xs text-cream/60">The Rosetta Stone — Unlocking a Lost Language</span>
+                                    <span class="text-[10px] text-cream/30" id="audio-3-time">0:00 / 5:08</span>
+                                </div>
+                                <div class="audio-progress-wrap" onclick="seekAudio('audio-3', event, this)">
+                                    <div class="audio-progress-fill" id="audio-3-prog"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Zoomable stone -->
+                <div class="relative rounded-2xl overflow-hidden cursor-zoom-in group" style="aspect-ratio:3/4;background:linear-gradient(160deg,#2A2620,#18150E,#0A0907);"
+                     onclick="openZoom(this)" data-caption="The Rosetta Stone, 196 BCE — British Museum, EA24">
+                    <!-- Simulated stone texture -->
+                    <div class="absolute inset-0 flex flex-col items-center justify-center gap-1 px-8 opacity-30">
+                        <!-- Lines of "text" -->
+                        <div style="width:90%;height:2px;background:#C9A96E;opacity:0.6;border-radius:1px;"></div>
+                        <div style="width:85%;height:1px;background:#C9A96E;opacity:0.4;margin-bottom:4px;border-radius:1px;"></div>
+                        <div style="width:88%;height:1px;background:#C9A96E;opacity:0.35;border-radius:1px;"></div>
+                        <div style="width:82%;height:1px;background:#C9A96E;opacity:0.35;border-radius:1px;"></div>
+                        <div style="width:86%;height:1px;background:#C9A96E;opacity:0.3;border-radius:1px;"></div>
+                        <div class="my-2" style="width:80%;height:1px;background:rgba(201,169,110,0.2);border-radius:1px;"></div>
+                        <div style="width:90%;height:1px;background:#C9A96E;opacity:0.4;border-radius:1px;"></div>
+                        <div style="width:88%;height:1px;background:#C9A96E;opacity:0.35;border-radius:1px;"></div>
+                        <div style="width:84%;height:1px;background:#C9A96E;opacity:0.3;border-radius:1px;"></div>
+                        <div style="width:87%;height:1px;background:#C9A96E;opacity:0.35;border-radius:1px;"></div>
+                        <div style="width:82%;height:1px;background:#C9A96E;opacity:0.3;border-radius:1px;"></div>
+                        <div class="my-2" style="width:80%;height:1px;background:rgba(201,169,110,0.2);border-radius:1px;"></div>
+                        <div style="width:88%;height:1px;background:#C9A96E;opacity:0.3;border-radius:1px;"></div>
+                        <div style="width:85%;height:1px;background:#C9A96E;opacity:0.28;border-radius:1px;"></div>
+                        <div style="width:86%;height:1px;background:#C9A96E;opacity:0.28;border-radius:1px;"></div>
+                        <div style="width:82%;height:1px;background:#C9A96E;opacity:0.25;border-radius:1px;"></div>
+                    </div>
+                    <p class="absolute inset-0 flex items-center justify-center font-display text-gold/25 text-xl text-center px-8">The<br>Rosetta<br>Stone</p>
+                    <div class="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:rgba(0,0,0,0.6);border:1px solid rgba(255,255,255,0.12);">
+                            <svg class="w-4 h-4 text-cream/70" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 11A6 6 0 115 11a6 6 0 0112 0zm-3 0v-2m0 4h.01"/><path stroke-linecap="round" stroke-linejoin="round" d="M10 8v6M7 11h6"/></svg>
+                        </div>
+                    </div>
+                    <div class="absolute bottom-0 inset-x-0 p-4" style="background:linear-gradient(to top,rgba(0,0,0,0.8),transparent);">
+                        <p class="text-cream/60 text-xs">Rosetta Stone · 196 BCE · Granodiorite</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ══ RELATED EXHIBITIONS ════════════════════════════════ -->
+    <section class="py-20 border-t border-white/5 exhibit-section" style="background:#0D0D0D;">
+        <div class="max-w-7xl mx-auto px-6">
+            <p class="text-gold text-xs tracking-[0.25em] uppercase mb-2">Up Next</p>
+            <h2 class="font-display text-3xl font-light text-cream mb-10">Continue Exploring</h2>
+            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                <a href="#" class="group relative rounded-2xl overflow-hidden block" style="aspect-ratio:16/9;background:linear-gradient(135deg,#1A3A4A,#0D2535,#050F18);">
+                    <div class="absolute inset-0" style="background:linear-gradient(to top,rgba(0,0,0,0.85) 0%,transparent 60%);"></div>
+                    <div class="absolute bottom-0 left-0 right-0 p-5 translate-y-1 group-hover:translate-y-0 transition-transform duration-300">
+                        <p class="text-gold/60 text-[9px] tracking-widest uppercase mb-1">Rijksmuseum · Amsterdam</p>
+                        <p class="font-display text-xl font-light text-cream leading-tight">Masters of the Dutch Golden Age</p>
+                    </div>
+                </a>
+                <a href="#" class="group relative rounded-2xl overflow-hidden block" style="aspect-ratio:16/9;background:linear-gradient(135deg,#3A2A1A,#22180D,#0E0C06);">
+                    <div class="absolute inset-0" style="background:linear-gradient(to top,rgba(0,0,0,0.85) 0%,transparent 60%);"></div>
+                    <div class="absolute bottom-0 left-0 right-0 p-5 translate-y-1 group-hover:translate-y-0 transition-transform duration-300">
+                        <p class="text-gold/60 text-[9px] tracking-widest uppercase mb-1">Hagia Sophia · Istanbul</p>
+                        <p class="font-display text-xl font-light text-cream leading-tight">The Byzantine Empire</p>
+                    </div>
+                </a>
+                <a href="#" class="group relative rounded-2xl overflow-hidden block" style="aspect-ratio:16/9;background:linear-gradient(135deg,#2A1A3A,#16103A,#080520);">
+                    <div class="absolute inset-0" style="background:linear-gradient(to top,rgba(0,0,0,0.85) 0%,transparent 60%);"></div>
+                    <div class="absolute bottom-0 left-0 right-0 p-5 translate-y-1 group-hover:translate-y-0 transition-transform duration-300">
+                        <p class="text-gold/60 text-[9px] tracking-widest uppercase mb-1">Tate Modern · London</p>
+                        <p class="font-display text-xl font-light text-cream leading-tight">Frida Kahlo: Body &amp; Identity</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ══ IMAGE ZOOM OVERLAY ═════════════════════════════════ -->
+    <div id="zoom-overlay" onclick="closeZoom()">
+        <button onclick="closeZoom()" class="absolute top-6 right-6 text-cream/40 hover:text-cream transition-colors z-10" aria-label="Close">
+            <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+        <!-- We show the same gradient as the card in a larger size -->
+        <div id="zoom-inner" class="rounded-2xl overflow-hidden relative flex items-center justify-center" style="max-width:80vw;max-height:80vh;min-width:300px;min-height:300px;"></div>
+        <div id="zoom-caption" class="hidden"></div>
+    </div>
+
+
+    <!-- ══ SCRIPTS ════════════════════════════════════════════ -->
+    <script>
+    // ── Reading progress bar ──────────────────────────────────
+    window.addEventListener('scroll', () => {
+        const el = document.documentElement;
+        const scrolled = el.scrollTop / (el.scrollHeight - el.clientHeight);
+        document.getElementById('reading-bar').style.width = (scrolled * 100) + '%';
+    });
+
+    // ── Scroll-reveal for sections ────────────────────────────
+    const revealObserver = new IntersectionObserver((entries) => {
+        entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
+    }, { threshold: 0.08 });
+    document.querySelectorAll('.exhibit-section').forEach(s => revealObserver.observe(s));
+
+    // ── Zoom overlay ──────────────────────────────────────────
+    function openZoom(el) {
+        const caption = el.dataset.caption || '';
+        const bg = el.style.background || el.style.backgroundImage || el.getAttribute('style') || '';
+        const inner = document.getElementById('zoom-inner');
+        inner.style.cssText = `width:600px;height:450px;${bg.includes('background:') ? bg : 'background:'+bg}`;
+        inner.innerHTML = el.cloneNode(true).innerHTML;
+
+        const cap = document.getElementById('zoom-caption');
+        if (caption) { cap.textContent = caption; cap.classList.remove('hidden'); }
+        else { cap.classList.add('hidden'); }
+
+        document.getElementById('zoom-overlay').classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
+    function closeZoom() {
+        document.getElementById('zoom-overlay').classList.remove('open');
+        document.body.style.overflow = '';
+    }
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeZoom(); });
+
+    // ── Simulated audio players ───────────────────────────────
+    const audioState = {};
+    function toggleAudio(id, btn) {
+        if (!audioState[id]) audioState[id] = { playing: false, pct: 0, interval: null };
+        const state = audioState[id];
+        const icon = document.getElementById(id + '-icon');
+
+        if (state.playing) {
+            clearInterval(state.interval);
+            state.playing = false;
+            btn.classList.remove('playing');
+            icon.innerHTML = '<path d="M8 5v14l11-7z"/>';
+        } else {
+            // Pause all others
+            Object.keys(audioState).forEach(k => {
+                if (k !== id && audioState[k].playing) {
+                    clearInterval(audioState[k].interval);
+                    audioState[k].playing = false;
+                    const otherBtn = document.querySelector(`[data-audio-id="${k}"] .audio-btn`);
+                    if (otherBtn) { otherBtn.classList.remove('playing'); document.getElementById(k+'-icon').innerHTML = '<path d="M8 5v14l11-7z"/>'; }
+                }
+            });
+            state.playing = true;
+            btn.classList.add('playing');
+            icon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
+            const durations = { 'audio-1': 222, 'audio-2': 255, 'audio-3': 308 };
+            const total = durations[id] || 200;
+            state.interval = setInterval(() => {
+                state.pct = Math.min(state.pct + (100 / total), 100);
+                document.getElementById(id + '-prog').style.width = state.pct + '%';
+                const elapsed = Math.round((state.pct / 100) * total);
+                const totalM = Math.floor(total / 60), totalS = total % 60;
+                const elM = Math.floor(elapsed / 60), elS = elapsed % 60;
+                document.getElementById(id + '-time').textContent =
+                    `${elM}:${String(elS).padStart(2,'0')} / ${totalM}:${String(totalS).padStart(2,'0')}`;
+                if (state.pct >= 100) {
+                    clearInterval(state.interval); state.playing = false;
+                    btn.classList.remove('playing');
+                    icon.innerHTML = '<path d="M8 5v14l11-7z"/>';
+                }
+            }, 1000);
+        }
+    }
+    function seekAudio(id, event, bar) {
+        if (!audioState[id]) return;
+        const rect = bar.getBoundingClientRect();
+        const pct = Math.max(0, Math.min(100, (event.clientX - rect.left) / rect.width * 100));
+        audioState[id].pct = pct;
+        document.getElementById(id + '-prog').style.width = pct + '%';
+    }
+
+    // ── Timeline accordion ────────────────────────────────────
+    function expandTimeline(el) {
+        const isOpen = el.classList.contains('open');
+        document.querySelectorAll('.timeline-item').forEach(t => t.classList.remove('open'));
+        if (!isOpen) el.classList.add('open');
+    }
+
+    // ── Bookmark button ───────────────────────────────────────
+    function toggleBookmark(btn) {
+        const saved = btn.dataset.saved === 'true';
+        btn.dataset.saved = (!saved).toString();
+        const svg = btn.querySelector('svg');
+        if (!saved) {
+            svg.setAttribute('fill', '#C9A96E');
+            svg.setAttribute('stroke', '#C9A96E');
+            btn.querySelector('svg + *') ? null : null;
+            btn.innerHTML = `<svg class="w-4 h-4" fill="#C9A96E" stroke="#C9A96E" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg> Saved`;
+        } else {
+            btn.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg> Save`;
+        }
+    }
+
+    // ── Quiz ──────────────────────────────────────────────────
+    const quizData = [
+        {
+            q: "What is the name of the Egyptian magical text placed in tombs to guide the deceased through the underworld?",
+            options: ["The Pyramid Texts", "The Book of the Dead", "The Coffin Texts", "The Amduat"],
+            answer: 1,
+            explanation: "The Book of the Dead (known in Egyptian as 'The Book of Coming Forth by Day') was a collection of spells used from the New Kingdom onward."
+        },
+        {
+            q: "Which goddess's feather was used to weigh the heart of the deceased in the Hall of Two Truths?",
+            options: ["Isis", "Hathor", "Ma'at", "Sekhmet"],
+            answer: 2,
+            explanation: "Ma'at, goddess of truth and cosmic order, represented the ideal of ethical life. If the heart was lighter than her feather, the soul passed to paradise."
+        },
+        {
+            q: "Approximately how long did the ancient Egyptian mummification process take?",
+            options: ["7 days", "30 days", "70 days", "100 days"],
+            answer: 2,
+            explanation: "The entire process took 70 days — 40 days of drying in natron salt, and 30 days for wrapping and ritual ceremonies."
+        },
+        {
+            q: "The Rosetta Stone is inscribed in three scripts. Which of the following is NOT one of them?",
+            options: ["Ancient Greek", "Demotic", "Coptic", "Hieroglyphics"],
+            answer: 2,
+            explanation: "The three scripts on the Rosetta Stone are hieroglyphics, Demotic (a cursive Egyptian script), and Ancient Greek — not Coptic."
+        },
+        {
+            q: "Which pharaoh instituted the world's first known monotheistic religion, worshipping the Aten?",
+            options: ["Ramesses II", "Tutankhamun", "Khufu", "Akhenaten"],
+            answer: 3,
+            explanation: "Akhenaten (born Amenhotep IV) banned the traditional Egyptian pantheon around 1353 BCE, replacing it with sole worship of the Aten, the sun disc."
+        },
+    ];
+
+    let currentQ = 0, score = 0, answered = false;
+
+    function renderQuestion() {
+        const container = document.getElementById('quiz-container');
+        const q = quizData[currentQ];
+        container.innerHTML = `
+            <div class="rounded-2xl p-8 border border-white/7" style="background:rgba(255,255,255,0.025);">
+                <div class="flex justify-between items-center mb-6">
+                    <span class="text-[10px] tracking-widest uppercase text-gold/50">Question ${currentQ+1} of ${quizData.length}</span>
+                    <div class="flex gap-1">${quizData.map((_,i) => `<div class="w-2 h-2 rounded-full ${i < currentQ ? 'bg-gold' : i === currentQ ? 'bg-gold/50' : 'bg-white/10'}"></div>`).join('')}</div>
+                </div>
+                <p class="font-display text-xl md:text-2xl font-light text-cream leading-snug mb-8">${q.q}</p>
+                <div class="flex flex-col gap-3" id="options">
+                    ${q.options.map((opt, i) => `
+                        <button class="quiz-option" onclick="selectAnswer(${i})" id="opt-${i}">${opt}</button>
+                    `).join('')}
+                </div>
+                <div id="explanation" class="hidden mt-5 p-4 rounded-xl border border-gold/15 text-sm text-cream/55 leading-relaxed" style="background:rgba(201,169,110,0.05);">
+                    <span class="text-gold/70 font-medium">Explanation: </span><span id="exp-text"></span>
+                </div>
+                <div id="next-btn-wrap" class="hidden mt-6 flex justify-end">
+                    <button onclick="nextQuestion()" class="px-6 py-2.5 rounded-xl text-sm font-semibold text-charcoal transition-all hover:-translate-y-0.5" style="background:#C9A96E;">
+                        ${currentQ < quizData.length - 1 ? 'Next Question →' : 'See Results'}
+                    </button>
+                </div>
+            </div>
+        `;
+        answered = false;
+    }
+
+    function selectAnswer(idx) {
+        if (answered) return;
+        answered = true;
+        const q = quizData[currentQ];
+        const opts = document.querySelectorAll('.quiz-option');
+        opts.forEach((o, i) => {
+            o.disabled = true;
+            if (i === q.answer) o.classList.add('correct');
+            if (i === idx && idx !== q.answer) o.classList.add('wrong');
+        });
+        if (idx === q.answer) score++;
+        document.getElementById('exp-text').textContent = q.explanation;
+        document.getElementById('explanation').classList.remove('hidden');
+        document.getElementById('next-btn-wrap').classList.remove('hidden');
+        // Update progress
+        const pct = Math.round((currentQ + 1) / quizData.length * 100);
+        document.getElementById('progress-fill').style.width = pct + '%';
+        document.getElementById('progress-label').textContent = pct + '%';
+    }
+
+    function nextQuestion() {
+        currentQ++;
+        if (currentQ >= quizData.length) {
+            document.getElementById('quiz-container').classList.add('hidden');
+            const result = document.getElementById('quiz-result');
+            result.classList.remove('hidden');
+            document.getElementById('score-display').textContent = `${score}/${quizData.length}`;
+            const msgs = [
+                ['Keep Exploring', 'Every great scholar started somewhere. Read through the exhibition again — history rewards curiosity.'],
+                ['Good Start', 'You\'re beginning to grasp the world of ancient Egypt. Try the exhibition a second time!'],
+                ['Well Versed', 'A solid understanding of Egyptian history. You clearly have a passion for the ancient world.'],
+                ['Expert Curator', 'Outstanding! You have mastered the key themes of this exhibition. The museum would be glad to have you.'],
+            ];
+            const tier = score <= 1 ? 0 : score <= 2 ? 1 : score <= 4 ? 2 : 3;
+            document.getElementById('score-title').textContent = msgs[tier][0];
+            document.getElementById('score-msg').textContent = msgs[tier][1];
+        } else {
+            renderQuestion();
+        }
+    }
+
+    function restartQuiz() {
+        currentQ = 0; score = 0;
+        document.getElementById('quiz-result').classList.add('hidden');
+        document.getElementById('quiz-container').classList.remove('hidden');
+        renderQuestion();
+    }
+
+    renderQuestion();
+    </script>
+
+    {% include 'core/footer.html' %}
+</body>
+</html>

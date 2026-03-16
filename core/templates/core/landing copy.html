@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exhibitly — The World's Exhibitions, Everywhere</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Cormorant Garamond', 'serif'],
+                    },
+                    colors: {
+                        gold: '#C9A96E',
+                        'gold-light': '#E8D5B0',
+                        'gold-dark': '#A07840',
+                        charcoal: '#0D0D0D',
+                        'charcoal-2': '#141414',
+                        'charcoal-3': '#1C1C1C',
+                        cream: '#F5F0E8',
+                    },
+                    keyframes: {
+                        fadeUp: {
+                            '0%': { opacity: '0', transform: 'translateY(24px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        glowPulse: {
+                            '0%, 100%': { opacity: '0.4' },
+                            '50%': { opacity: '0.8' },
+                        },
+                    },
+                    animation: {
+                        'fade-up': 'fadeUp 0.9s ease-out both',
+                        'glow-pulse': 'glowPulse 5s ease-in-out infinite',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        html { scroll-behavior: smooth; }
+
+        .hero-glow {
+            background: radial-gradient(ellipse 70% 55% at 50% 25%, rgba(201,169,110,0.16) 0%, transparent 70%);
+        }
+        .grid-overlay {
+            background-image:
+                linear-gradient(rgba(201,169,110,0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(201,169,110,0.04) 1px, transparent 1px);
+            background-size: 80px 80px;
+        }
+
+        .ex-card {
+            flex-shrink: 0; width: 195px; height: 265px;
+            border-radius: 10px; position: relative; overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.35s cubic-bezier(.22,.68,0,1.2), box-shadow 0.35s ease;
+        }
+        .ex-card:hover {
+            transform: scale(1.07) translateY(-6px);
+            box-shadow: 0 28px 56px rgba(0,0,0,0.7), 0 0 0 1px rgba(201,169,110,0.35);
+            z-index: 20;
+        }
+        .ex-card-overlay {
+            position: absolute; inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.1) 55%, transparent 100%);
+        }
+        .ex-card-badge {
+            position: absolute; top: 11px; right: 11px;
+            font-size: 8.5px; letter-spacing: 0.1em; text-transform: uppercase;
+            background: rgba(201,169,110,0.95); color: #0D0D0D;
+            padding: 2px 8px; border-radius: 3px; font-weight: 600;
+        }
+        .ex-card-title {
+            position: absolute; bottom: 20px; left: 14px; right: 14px;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 15px; font-weight: 500; color: #F5F0E8; line-height: 1.3;
+        }
+        .ex-card-museum {
+            position: absolute; bottom: 8px; left: 14px;
+            font-size: 9px; text-transform: uppercase; letter-spacing: 0.13em;
+            color: rgba(201,169,110,0.75);
+        }
+
+        .marquee-track {
+            display: flex; gap: 14px; width: max-content;
+            animation: scrollLeft 55s linear infinite;
+        }
+        @keyframes scrollLeft {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+        .marquee-wrap {
+            overflow: hidden;
+            mask-image: linear-gradient(to right, transparent 0%, black 7%, black 93%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to right, transparent 0%, black 7%, black 93%, transparent 100%);
+        }
+        .marquee-wrap:hover .marquee-track { animation-play-state: paused; }
+
+        .stat-num {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 3.8rem; font-weight: 300; color: #C9A96E; line-height: 1;
+        }
+
+        .feat-card {
+            background: #1C1C1C; border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 18px; padding: 28px 26px;
+            transition: border-color 0.3s ease, transform 0.3s ease;
+        }
+        .feat-card:hover { border-color: rgba(201,169,110,0.25); transform: translateY(-3px); }
+
+        .feat-icon {
+            width: 48px; height: 48px; border-radius: 13px;
+            display: flex; align-items: center; justify-content: center;
+            background: rgba(201,169,110,0.1); border: 1px solid rgba(201,169,110,0.2);
+            margin-bottom: 18px;
+        }
+
+        .price-card {
+            border: 1px solid rgba(255,255,255,0.08); border-radius: 18px;
+            padding: 36px 30px; background: #1C1C1C;
+            transition: border-color 0.3s, transform 0.3s;
+        }
+        .price-card:hover { border-color: rgba(201,169,110,0.3); transform: translateY(-4px); }
+        .price-card.featured {
+            border-color: rgba(201,169,110,0.4);
+            background: linear-gradient(150deg, #1C1C1C 0%, rgba(201,169,110,0.07) 100%);
+        }
+
+        .check-item {
+            display: flex; align-items: center; gap: 10px;
+            font-size: 0.82rem; color: rgba(245,240,232,0.55);
+        }
+        .check-dot {
+            width: 16px; height: 16px; border-radius: 50%;
+            border: 1px solid rgba(201,169,110,0.45);
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .section-rule { width: 44px; height: 1px; background: #C9A96E; margin: 0 auto 18px; }
+        .section-rule-left { width: 44px; height: 1px; background: #C9A96E; margin: 0 0 18px; }
+    </style>
+</head>
+<body class="bg-charcoal text-cream font-sans overflow-x-hidden">
+
+    {% include 'core/header.html' with scroll_lock=9999 %}
+
+    <!-- ══ HERO ══════════════════════════════════════════════ -->
+    <section class="relative min-h-screen flex flex-col items-center justify-center text-center px-6 overflow-hidden">
+        <div class="hero-glow absolute inset-0 pointer-events-none animate-glow-pulse"></div>
+        <div class="grid-overlay absolute inset-0 pointer-events-none"></div>
+
+        <div class="relative z-10 max-w-4xl mx-auto">
+            <p class="text-gold text-xs tracking-[0.35em] uppercase mb-8 animate-fade-up" style="animation-delay:0.1s">
+                The World's Museums &nbsp;·&nbsp; Anywhere &nbsp;·&nbsp; Anytime
+            </p>
+            <h1 class="font-display font-light text-cream leading-none mb-6 animate-fade-up"
+                style="font-size: clamp(5rem, 14vw, 11rem); letter-spacing:-0.01em; animation-delay:0.2s">
+                Exhibitly
+            </h1>
+            <p class="text-base md:text-lg text-cream/55 font-light max-w-lg mx-auto mb-12 leading-relaxed animate-fade-up" style="animation-delay:0.35s">
+                Stream thousands of museum exhibitions worldwide. Past masterpieces, living collections — curated and brought to life wherever you are.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-3 justify-center items-center animate-fade-up" style="animation-delay:0.5s">
+                <a href="#explore" class="bg-gold text-charcoal text-sm font-semibold px-8 py-4 rounded-full hover:bg-gold-light transition-all duration-200 tracking-wide shadow-lg shadow-gold/20">
+                    Start Exploring Free
+                </a>
+                <a href="#how-it-works" class="border border-white/20 text-cream/70 text-sm font-light px-8 py-4 rounded-full hover:border-gold/40 hover:text-cream transition-all duration-200 tracking-wide">
+                    How it works ↓
+                </a>
+            </div>
+        </div>
+
+        <div class="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-40 animate-fade-up" style="animation-delay:0.9s">
+            <span class="text-cream text-[10px] tracking-[0.25em] uppercase">Scroll</span>
+            <div class="w-px h-10 bg-gradient-to-b from-gold to-transparent"></div>
+        </div>
+    </section>
+
+
+    <!-- ══ MARQUEE BROWSE ROW ════════════════════════════════ -->
+    <section id="explore" class="bg-charcoal-2 py-16">
+        <div class="max-w-7xl mx-auto px-6 mb-8">
+            <p class="text-gold text-xs tracking-[0.25em] uppercase mb-2">Now Streaming</p>
+            <h2 class="font-display text-3xl md:text-4xl font-light text-cream">Featured Exhibitions</h2>
+        </div>
+        <div class="marquee-wrap py-2">
+            <div class="marquee-track pl-6">
+                <div class="ex-card" style="background:linear-gradient(135deg,#7F5539,#4A2C2A,#1E0E08)">
+                    <div class="ex-card-overlay"></div><span class="ex-card-badge">Current</span>
+                    <div class="ex-card-title">The Human Form Through the Ages</div>
+                    <div class="ex-card-museum">Louvre · Paris</div>
+                </div>
+                <div class="ex-card" style="background:linear-gradient(135deg,#1A3A4A,#0D2535,#050F18)">
+                    <div class="ex-card-overlay"></div><span class="ex-card-badge">Archived</span>
+                    <div class="ex-card-title">Masters of the Dutch Golden Age</div>
+                    <div class="ex-card-museum">Rijksmuseum · Amsterdam</div>
+                </div>
+                <div class="ex-card" style="background:linear-gradient(135deg,#3D2645,#1E0F2E,#0A0512)">
+                    <div class="ex-card-overlay"></div><span class="ex-card-badge">Current</span>
+                    <div class="ex-card-title">Ancient Egypt: Life After Death</div>
+                    <div class="ex-card-museum">British Museum · London</div>
+                </div>
+                <div class="ex-card" style="background:linear-gradient(135deg,#1A3A1A,#0D2210,#050F06)">
+                    <div class="ex-card-overlay"></div><span class="ex-card-badge">New</span>
+                    <div class="ex-card-title">Impressionism & the Modern Eye</div>
+                    <div class="ex-card-museum">Musée d'Orsay · Paris</div>
+                </div>
+                <div class="ex-card" style="background:linear-gradient(135deg,#4A3800,#2C2200,#150F00)">
+                    <div class="ex-card-overlay"></div><span class="ex-card-badge">Archived</span>
+                    <div class="ex-card-title">The Silk Road: Crossroads of Civilisations</div>
+                    <div class="ex-card-museum">Metropolitan · New York</div>
+                </div>
+                <div class="ex-card" style="background:linear-gradient(135deg,#3A1A1A,#200D0D,#0F0606)">
+                    <div class="ex-card-overlay"></div><span class="ex-card-badge">Current</span>
+                    <div class="ex-card-title">Architecture of Power</div>
+                    <div class="ex-card-museum">MoMA · New York</div>
+                </div>
+                <div class="ex-card" style="background:linear-gradient(135deg,#1A2A3A,#0D1822,#060C14)">
+                    <div class="ex-card-overlay"></div><span class="ex-card-badge">New</span>
+                    <div class="ex-card-title">Photography & the Century of Change</div>
+                    <div class="ex-card-museum">Tate Modern · London</div>
+                </div>
+                <div class="ex-card" style="background:linear-gradient(135deg,#2A1A3A,#16103A,#080520)">
+                    <div class="ex-card-overlay"></div><span class="ex-card-badge">Current</span>
+                    <div class="ex-card-title">Japan: Spirit & Form</div>
+                    <div class="ex-card-museum">Tokyo National Museum</div>
+                </div>
+                <div class="ex-card" style="background:linear-gradient(135deg,#2A3820,#162212,#0A0E08)">
+                    <div class="ex-card-overlay"></div><span class="ex-card-badge">Archived</span>
+                    <div class="ex-card-title">Nature & the Sublime</div>
+                    <div class="ex-card-museum">Smithsonian · Washington D.C.</div>
+                </div>
+                <div class="ex-card" style="background:linear-gradient(135deg,#38281A,#22160A,#0E0804)">
+                    <div class="ex-card-overlay"></div><span class="ex-card-badge">New</span>
+                    <div class="ex-card-title">The Renaissance in Florence</div>
+                    <div class="ex-card-museum">Uffizi Gallery · Florence</div>
+                </div>
+                <!-- Duplicate set for seamless loop -->
+                <div class="ex-card" style="background:linear-gradient(135deg,#7F5539,#4A2C2A,#1E0E08)">
+                    <div class="ex-card-overlay"></div><span class="ex-card-badge">Current</span>
+                    <div class="ex-card-title">The Human Form Through the Ages</div>
+                    <div class="ex-card-museum">Louvre · Paris</div>
+                </div>
+                <div class="ex-card" style="background:linear-gradient(135deg,#1A3A4A,#0D2535,#050F18)">
+                    <div class="ex-card-overlay"></div><span class="ex-card-badge">Archived</span>
+                    <div class="ex-card-title">Masters of the Dutch Golden Age</div>
+                    <div class="ex-card-museum">Rijksmuseum · Amsterdam</div>
+                </div>
+                <div class="ex-card" style="background:linear-gradient(135deg,#3D2645,#1E0F2E,#0A0512)">
+                    <div class="ex-card-overlay"></div><span class="ex-card-badge">Current</span>
+                    <div class="ex-card-title">Ancient Egypt: Life After Death</div>
+                    <div class="ex-card-museum">British Museum · London</div>
+                </div>
+                <div class="ex-card" style="background:linear-gradient(135deg,#1A3A1A,#0D2210,#050F06)">
+                    <div class="ex-card-overlay"></div><span class="ex-card-badge">New</span>
+                    <div class="ex-card-title">Impressionism & the Modern Eye</div>
+                    <div class="ex-card-museum">Musée d'Orsay · Paris</div>
+                </div>
+                <div class="ex-card" style="background:linear-gradient(135deg,#4A3800,#2C2200,#150F00)">
+                    <div class="ex-card-overlay"></div><span class="ex-card-badge">Archived</span>
+                    <div class="ex-card-title">The Silk Road: Crossroads of Civilisations</div>
+                    <div class="ex-card-museum">Metropolitan · New York</div>
+                </div>
+                <div class="ex-card" style="background:linear-gradient(135deg,#3A1A1A,#200D0D,#0F0606)">
+                    <div class="ex-card-overlay"></div><span class="ex-card-badge">Current</span>
+                    <div class="ex-card-title">Architecture of Power</div>
+                    <div class="ex-card-museum">MoMA · New York</div>
+                </div>
+                <div class="ex-card" style="background:linear-gradient(135deg,#1A2A3A,#0D1822,#060C14)">
+                    <div class="ex-card-overlay"></div><span class="ex-card-badge">New</span>
+                    <div class="ex-card-title">Photography & the Century of Change</div>
+                    <div class="ex-card-museum">Tate Modern · London</div>
+                </div>
+                <div class="ex-card" style="background:linear-gradient(135deg,#2A1A3A,#16103A,#080520)">
+                    <div class="ex-card-overlay"></div><span class="ex-card-badge">Current</span>
+                    <div class="ex-card-title">Japan: Spirit & Form</div>
+                    <div class="ex-card-museum">Tokyo National Museum</div>
+                </div>
+                <div class="ex-card" style="background:linear-gradient(135deg,#2A3820,#162212,#0A0E08)">
+                    <div class="ex-card-overlay"></div><span class="ex-card-badge">Archived</span>
+                    <div class="ex-card-title">Nature & the Sublime</div>
+                    <div class="ex-card-museum">Smithsonian · Washington D.C.</div>
+                </div>
+                <div class="ex-card" style="background:linear-gradient(135deg,#38281A,#22160A,#0E0804)">
+                    <div class="ex-card-overlay"></div><span class="ex-card-badge">New</span>
+                    <div class="ex-card-title">The Renaissance in Florence</div>
+                    <div class="ex-card-museum">Uffizi Gallery · Florence</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ══ STATS BAR ══════════════════════════════════════════ -->
+    <section class="bg-charcoal border-y border-white/5 py-16">
+        <div class="max-w-5xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+            <div>
+                <div class="stat-num">500<span class="text-gold/50 text-4xl">+</span></div>
+                <p class="text-cream/35 text-xs tracking-[0.2em] uppercase mt-2">Partner Museums</p>
+            </div>
+            <div>
+                <div class="stat-num">12k<span class="text-gold/50 text-4xl">+</span></div>
+                <p class="text-cream/35 text-xs tracking-[0.2em] uppercase mt-2">Exhibitions</p>
+            </div>
+            <div>
+                <div class="stat-num">90<span class="text-gold/50 text-4xl">+</span></div>
+                <p class="text-cream/35 text-xs tracking-[0.2em] uppercase mt-2">Countries</p>
+            </div>
+            <div>
+                <div class="stat-num">2M<span class="text-gold/50 text-4xl">+</span></div>
+                <p class="text-cream/35 text-xs tracking-[0.2em] uppercase mt-2">Learners</p>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ══ HOW IT WORKS ═══════════════════════════════════════ -->
+    <section id="how-it-works" class="bg-charcoal-2 py-28 px-6">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-20">
+                <div class="section-rule"></div>
+                <p class="text-gold text-xs tracking-[0.25em] uppercase mb-4">The Experience</p>
+                <h2 class="font-display font-light text-cream" style="font-size: clamp(2.5rem, 5vw, 4rem)">How Exhibitly Works</h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-0 relative">
+                <div class="hidden md:block absolute top-8 left-[16%] right-[16%] h-px"
+                     style="background:linear-gradient(to right,transparent,rgba(201,169,110,0.3),transparent)"></div>
+
+                <div class="text-center px-10 pb-16 md:pb-0">
+                    <div class="w-16 h-16 rounded-full border border-gold/35 bg-charcoal-3 flex items-center justify-center mx-auto mb-8 relative z-10">
+                        <span class="font-display text-gold text-2xl font-light">1</span>
+                    </div>
+                    <h3 class="font-display text-2xl font-light text-cream mb-3">Museums Digitise</h3>
+                    <p class="text-cream/40 text-sm leading-relaxed">Partner museums upload exhibitions — from high-res photography to immersive 3D walkthroughs — with full curatorial narrative intact.</p>
+                </div>
+
+                <div class="text-center px-10 border-t border-b border-white/5 md:border-t-0 md:border-b-0 md:border-l md:border-r md:border-white/5 py-16 md:py-0">
+                    <div class="w-16 h-16 rounded-full border border-gold/35 bg-charcoal-3 flex items-center justify-center mx-auto mb-8 relative z-10">
+                        <span class="font-display text-gold text-2xl font-light">2</span>
+                    </div>
+                    <h3 class="font-display text-2xl font-light text-cream mb-3">You Explore</h3>
+                    <p class="text-cream/40 text-sm leading-relaxed">Browse by museum, era, or theme. Curator-led tours, deep-dives into individual pieces, interactive quizzes — all at your own pace.</p>
+                </div>
+
+                <div class="text-center px-10">
+                    <div class="w-16 h-16 rounded-full border border-gold/35 bg-charcoal-3 flex items-center justify-center mx-auto mb-8 relative z-10">
+                        <span class="font-display text-gold text-2xl font-light">3</span>
+                    </div>
+                    <h3 class="font-display text-2xl font-light text-cream mb-3">Visit in Person</h3>
+                    <p class="text-cream/40 text-sm leading-relaxed">Subscribers receive exclusive discounts, early-access tickets, and personalised recommendations for exhibitions near them.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ══ PLATFORM FEATURES ══════════════════════════════════ -->
+    <section class="bg-charcoal py-28 px-6">
+        <div class="max-w-6xl mx-auto">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                <div>
+                    <div class="section-rule-left"></div>
+                    <p class="text-gold text-xs tracking-[0.25em] uppercase mb-4">The Platform</p>
+                    <h2 class="font-display font-light text-cream mb-6 leading-tight" style="font-size: clamp(2.5rem, 5vw, 4rem)">
+                        Built for curiosity.<br><em>Designed for wonder.</em>
+                    </h2>
+                    <p class="text-cream/40 text-sm leading-relaxed mb-10 max-w-md">
+                        Every element of Exhibitly honours the original curatorial vision — while making it accessible, interactive, and endlessly engaging for all ages.
+                    </p>
+                    <a href="#pricing" class="inline-flex items-center gap-2 text-gold text-sm font-medium hover:text-gold-light transition">
+                        View plans
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </a>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="feat-card">
+                        <div class="feat-icon">
+                            <svg width="22" height="22" fill="none" stroke="#C9A96E" stroke-width="1.5" viewBox="0 0 24 24"><path d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/></svg>
+                        </div>
+                        <h4 class="font-display text-xl text-cream mb-2">3D & VR Tours</h4>
+                        <p class="text-cream/38 text-xs leading-relaxed">Walk through exhibitions in immersive 360° environments, room by room.</p>
+                    </div>
+                    <div class="feat-card">
+                        <div class="feat-icon">
+                            <svg width="22" height="22" fill="none" stroke="#C9A96E" stroke-width="1.5" viewBox="0 0 24 24"><path d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4M9.5 10a2.5 2.5 0 005 0V5a2.5 2.5 0 00-5 0v5z"/></svg>
+                        </div>
+                        <h4 class="font-display text-xl text-cream mb-2">Curator Commentary</h4>
+                        <p class="text-cream/38 text-xs leading-relaxed">Hear directly from curators — the story and intention behind every piece.</p>
+                    </div>
+                    <div class="feat-card">
+                        <div class="feat-icon">
+                            <svg width="22" height="22" fill="none" stroke="#C9A96E" stroke-width="1.5" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+                        </div>
+                        <h4 class="font-display text-xl text-cream mb-2">Interactive Quizzes</h4>
+                        <p class="text-cream/38 text-xs leading-relaxed">Learn through play — timed challenges, artwork identification, expert deep-dives.</p>
+                    </div>
+                    <div class="feat-card">
+                        <div class="feat-icon">
+                            <svg width="22" height="22" fill="none" stroke="#C9A96E" stroke-width="1.5" viewBox="0 0 24 24"><path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                        </div>
+                        <h4 class="font-display text-xl text-cream mb-2">Age-Tailored Content</h4>
+                        <p class="text-cream/38 text-xs leading-relaxed">Kid-friendly, teen, and adult editions — safe and thoughtfully adapted for all.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ══ FOR MUSEUMS ════════════════════════════════════════ -->
+    <section id="for-museums" class="bg-charcoal-2 py-28 px-6">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-20">
+                <div class="section-rule"></div>
+                <p class="text-gold text-xs tracking-[0.25em] uppercase mb-4">For Institutions</p>
+                <h2 class="font-display font-light text-cream" style="font-size: clamp(2.5rem, 5vw, 4rem)">Why partner with Exhibitly?</h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                <div class="feat-card md:col-span-2">
+                    <h3 class="font-display text-3xl font-light text-cream mb-3">Global Reach. Local Impact.</h3>
+                    <p class="text-cream/40 text-sm leading-relaxed mb-7 max-w-xl">
+                        Your exhibitions — seen by millions worldwide, while simultaneously driving foot traffic through your doors. Exhibitly is a marketing engine, an education platform, and a preservation archive in one.
+                    </p>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="text-xs px-3 py-1.5 rounded-full border border-gold/30 text-gold/80">Revenue Share</span>
+                        <span class="text-xs px-3 py-1.5 rounded-full border border-white/10 text-cream/45">Audience Analytics</span>
+                        <span class="text-xs px-3 py-1.5 rounded-full border border-white/10 text-cream/45">Digitisation Support</span>
+                        <span class="text-xs px-3 py-1.5 rounded-full border border-white/10 text-cream/45">Content Archive</span>
+                        <span class="text-xs px-3 py-1.5 rounded-full border border-white/10 text-cream/45">Curatorial Control</span>
+                    </div>
+                </div>
+
+                <div class="feat-card flex flex-col justify-between">
+                    <div>
+                        <div class="feat-icon">
+                            <svg width="20" height="20" fill="none" stroke="#C9A96E" stroke-width="1.5" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>
+                        </div>
+                        <h4 class="font-display text-2xl text-cream mb-2">Mission-First</h4>
+                        <p class="text-cream/38 text-xs leading-relaxed">We exist to further cultural education. Every feature is built around the museum's mission — not the algorithm's.</p>
+                    </div>
+                    <a href="#" class="mt-8 text-gold text-sm flex items-center gap-2 hover:text-gold-light transition">
+                        Partner with us
+                        <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </a>
+                </div>
+
+                <div class="feat-card">
+                    <div class="feat-icon">
+                        <svg width="20" height="20" fill="none" stroke="#C9A96E" stroke-width="1.5" viewBox="0 0 24 24"><path d="M12 6.253v13m0-13C10.833 5.083 9.083 5 8 5a7 7 0 00-7 7c0 3.866 2.686 7 6 7h10c3.314 0 6-3.134 6-7a7 7 0 00-7-7c-1.083 0-2.833.083-4 1.253z"/></svg>
+                    </div>
+                    <h4 class="font-display text-2xl text-cream mb-2">Permanent Archive</h4>
+                    <p class="text-cream/38 text-xs leading-relaxed">Every exhibition lives forever. Temporary installations and past shows preserved in stunning digital fidelity for researchers and future generations.</p>
+                </div>
+                <div class="feat-card">
+                    <div class="feat-icon">
+                        <svg width="20" height="20" fill="none" stroke="#C9A96E" stroke-width="1.5" viewBox="0 0 24 24"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                    </div>
+                    <h4 class="font-display text-2xl text-cream mb-2">Data & Insights</h4>
+                    <p class="text-cream/38 text-xs leading-relaxed">Rich audience analytics reveal which works captivate most, informing future curation and funding decisions with real evidence.</p>
+                </div>
+                <div class="feat-card">
+                    <div class="feat-icon">
+                        <svg width="20" height="20" fill="none" stroke="#C9A96E" stroke-width="1.5" viewBox="0 0 24 24"><path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    </div>
+                    <h4 class="font-display text-2xl text-cream mb-2">New Revenue Streams</h4>
+                    <p class="text-cream/38 text-xs leading-relaxed">Earn subscription revenue share, convert global viewers into physical visitors and merchandise buyers, and license to schools and institutions.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ══ PRICING ════════════════════════════════════════════ -->
+    <section id="pricing" class="bg-charcoal py-28 px-6">
+        <div class="max-w-5xl mx-auto">
+            <div class="text-center mb-16">
+                <div class="section-rule"></div>
+                <p class="text-gold text-xs tracking-[0.25em] uppercase mb-4">Subscriptions</p>
+                <h2 class="font-display font-light text-cream" style="font-size: clamp(2.5rem, 5vw, 4rem)">A plan for every audience</h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                <div class="price-card">
+                    <p class="text-gold text-xs tracking-[0.2em] uppercase mb-6">Explorer</p>
+                    <div class="mb-6">
+                        <span class="font-display text-5xl font-light text-cream">Free</span>
+                    </div>
+                    <p class="text-cream/35 text-xs mb-8 leading-relaxed">Access exhibition highlights and introductory content from all partner museums.</p>
+                    <ul class="space-y-3 mb-10">
+                        <li class="check-item"><span class="check-dot"><svg width="8" height="8" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#C9A96E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Exhibition highlights</li>
+                        <li class="check-item"><span class="check-dot"><svg width="8" height="8" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#C9A96E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Educational articles</li>
+                        <li class="check-item"><span class="check-dot"><svg width="8" height="8" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#C9A96E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>500+ museums</li>
+                    </ul>
+                    <a href="#" class="block text-center border border-white/12 text-cream/50 text-sm py-3 rounded-full hover:border-gold/30 hover:text-cream transition">Get Started</a>
+                </div>
+
+                <div class="price-card featured">
+                    <div class="flex items-center justify-between mb-6">
+                        <p class="text-gold text-xs tracking-[0.2em] uppercase">Curator</p>
+                        <span class="text-xs bg-gold text-charcoal px-3 py-1 rounded-full font-semibold tracking-wide">Most Popular</span>
+                    </div>
+                    <div class="mb-6">
+                        <span class="font-display text-5xl font-light text-cream">£9</span>
+                        <span class="text-cream/35 text-sm"> / mo</span>
+                    </div>
+                    <p class="text-cream/35 text-xs mb-8 leading-relaxed">Full access to all exhibitions, curator-led tours, and interactive features.</p>
+                    <ul class="space-y-3 mb-10">
+                        <li class="check-item"><span class="check-dot"><svg width="8" height="8" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#C9A96E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Everything in Explorer</li>
+                        <li class="check-item"><span class="check-dot"><svg width="8" height="8" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#C9A96E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Full exhibition access</li>
+                        <li class="check-item"><span class="check-dot"><svg width="8" height="8" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#C9A96E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Curator-led tours & audio</li>
+                        <li class="check-item"><span class="check-dot"><svg width="8" height="8" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#C9A96E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Museum visit discounts</li>
+                        <li class="check-item"><span class="check-dot"><svg width="8" height="8" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#C9A96E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Interactive quizzes</li>
+                    </ul>
+                    <a href="#" class="block text-center bg-gold text-charcoal text-sm font-semibold py-3 rounded-full hover:bg-gold-light transition shadow-lg shadow-gold/20">Start Free Trial</a>
+                </div>
+
+                <div class="price-card">
+                    <p class="text-gold text-xs tracking-[0.2em] uppercase mb-6">Scholar</p>
+                    <div class="mb-6">
+                        <span class="font-display text-5xl font-light text-cream">£19</span>
+                        <span class="text-cream/35 text-sm"> / mo</span>
+                    </div>
+                    <p class="text-cream/35 text-xs mb-8 leading-relaxed">VR tours, family access, archival research, and institutional features.</p>
+                    <ul class="space-y-3 mb-10">
+                        <li class="check-item"><span class="check-dot"><svg width="8" height="8" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#C9A96E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Everything in Curator</li>
+                        <li class="check-item"><span class="check-dot"><svg width="8" height="8" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#C9A96E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>VR & 3D immersive tours</li>
+                        <li class="check-item"><span class="check-dot"><svg width="8" height="8" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#C9A96E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Family accounts (up to 5)</li>
+                        <li class="check-item"><span class="check-dot"><svg width="8" height="8" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#C9A96E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Archival research access</li>
+                        <li class="check-item"><span class="check-dot"><svg width="8" height="8" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#C9A96E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Priority event early access</li>
+                    </ul>
+                    <a href="#" class="block text-center border border-white/12 text-cream/50 text-sm py-3 rounded-full hover:border-gold/30 hover:text-cream transition">Get Started</a>
+                </div>
+            </div>
+
+            <p class="text-center text-cream/25 text-xs mt-8 tracking-wide">
+                Looking for school or institutional licensing? <a href="#" class="text-gold/60 hover:text-gold transition underline underline-offset-4">Contact us</a>
+            </p>
+        </div>
+    </section>
+
+
+    <!-- ══ CLOSING CTA ════════════════════════════════════════ -->
+    <section class="relative bg-charcoal-2 py-32 px-6 overflow-hidden">
+        <div class="hero-glow absolute inset-0 opacity-60 pointer-events-none animate-glow-pulse"></div>
+        <div class="grid-overlay absolute inset-0 pointer-events-none opacity-50"></div>
+        <div class="relative z-10 max-w-3xl mx-auto text-center">
+            <div class="section-rule"></div>
+            <h2 class="font-display font-light text-cream mb-6 leading-tight" style="font-size: clamp(3rem, 7vw, 5.5rem)">
+                The world's<br>greatest art.<br><em class="text-gold">In your hands.</em>
+            </h2>
+            <p class="text-cream/35 text-sm leading-relaxed mb-12 max-w-md mx-auto">
+                Start for free. Upgrade whenever. Cancel anytime. Culture has never been more accessible.
+            </p>
+            <a href="#" class="inline-flex items-center gap-3 bg-gold text-charcoal text-sm font-semibold px-10 py-4 rounded-full hover:bg-gold-light transition-all shadow-xl shadow-gold/15">
+                Begin Your Free Exploration
+            </a>
+        </div>
+    </section>
+
+    {% include 'core/footer.html' %}
+</body>
+</html>

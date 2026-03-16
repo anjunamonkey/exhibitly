@@ -1,15 +1,20 @@
 <!DOCTYPE html>
 {% load static %}
+
+
     <!-- Navigation -->
 
     <!-- Nav: starts transparent (for hero), becomes blurred + semi-opaque on scroll -->
-    <nav id="site-header" class="fixed top-2 z-50 left-1/2 transform -translate-x-1/2 w-full max-w-7xl rounded-xl transition-colors duration-300 ease backdrop-blur-sm bg-transparent">
+    <nav id="site-header" class="border border-gold fixed top-4 z-50 left-1/2 transform -translate-x-1/2 w-full max-w-7xl rounded-xl transition-colors duration-300 ease backdrop-blur-sm bg-transparent">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-20">
                 <div class="flex flex-col items-center">
-                    <a href="/" class="block"><img src="{% static 'abite.png' %}" alt="A\Bite Logo" class="h-16"></a>
+            <a href="/" class="header-link flex-shrink-0 flex items-center h-9 font-display font-light text-cream leading-none animate-fade-up text-xl">
+                Exhibitly
+                <!-- <img src="{% static 'logo.png' %}" alt="Exhibitly" class="h-9"> -->
+            </a>
                 </div>
-                <div class="hidden md:flex space-x-8">
+                <div class="hidden md:flex space-x-8 nav-links">
                     <div class="relative group" tabindex="0" id="features-dropdown-parent">
                         <a
                             type="button"
@@ -32,12 +37,12 @@
                             <a href="/#promotions-section" class="block px-5 py-3 text-gray-700 hover:bg-primary/10 hover:text-primary rounded-b-xl font-medium">Smart Promotions</a>
                         </div>
                     </div>
-                    <a href="#for-diners" class="header-link text-gray-300 hover:text-primary transition font-medium">Diners</a>
+                    <a href="/museums" class="header-link text-gray-300 hover:text-primary transition font-medium">For Museums</a>
                     <!-- <a href="#use-cases" class="header-link text-gray-300 hover:text-primary transition font-medium">Use Cases</a> -->
-                    <a href="/pricing/" class="header-link text-gray-300 hover:text-primary transition font-medium">Pricing</a>
+                    <a href="/kids/" class="header-link text-gray-300 hover:text-primary transition font-medium">For Kids</a>
                 </div>
-                <a href="/dashboard/">
-                <button id="header-cta" class="header-cta bg-primary text-white px-8 py-3 rounded-lg font-semibold hover:bg-red-600 transition shadow-lg hover:shadow-xl transform hover:scale-105">
+                <a href="/app/">
+                <button id="header-cta" class="header-cta border border-gold bg-primary text-white px-8 py-3 rounded-lg font-semibold hover:bg-gold hover:text-charcoal transition shadow-lg hover:shadow-xl transform hover:scale-105">
                     Get Started
                 </button>
                 </a>
@@ -47,100 +52,47 @@
 
     <!-- Header: wait until hero is scrolled past, then toggle styles -->
     <script>
-    (function () {
-      const header = document.getElementById('site-header');
-      if (!header) return;
-      const links = header.querySelectorAll('.header-link');
-      const cta = header.querySelector('.header-cta');
-    const SCROLL_LOCK = {{ scroll_lock|default:0 }}; // Use context variable with default
+(function () {
+  const header = document.getElementById('site-header');
+  if (!header) return;
+  const links = header.querySelectorAll('.header-link');
 
-
-      function setTransparent() {
-        header.style.backgroundColor = 'transparent';
-        header.classList.remove('shadow-md');
-        links.forEach(a => {
-          a.classList.remove('text-gray-700');
-          a.classList.add('text-gray-300');
-        });
-      }
-
-      function setScrolled() {
-        header.style.backgroundColor = 'rgba(236, 236, 236, 0.95)'; // #ECECEC
-        header.classList.add('shadow-md');
-        links.forEach(a => {
-          a.classList.remove('text-gray-300');
-          a.classList.add('text-gray-700');
-        });
-      }
-
-      function updateHeader() {
-        // strictly enforce the 900px lock: header remains transparent until scrollY > SCROLL_LOCK
-        if (window.scrollY > SCROLL_LOCK) {
-          setScrolled();
-        } else {
-          setTransparent();
-        }
-      }
-
-      document.addEventListener('DOMContentLoaded', function () {
-        updateHeader();
-        window.addEventListener('scroll', updateHeader, { passive: true });
-        window.addEventListener('resize', updateHeader);
+  function applyTheme(theme) {
+    if (theme === 'dark') {
+      header.style.backgroundColor = 'transparent';
+      header.classList.remove('shadow-md');
+      links.forEach(a => {
+        a.classList.remove('text-gray-700');
+        a.classList.add('text-gray-300');
+        document.getElementById('header-cta').classList.remove('text-black');
       });
-    })();
-    </script>
-    <script>
-    // Dropdown open/close logic for click and hover
-    (function() {
-        const parent = document.getElementById('features-dropdown-parent');
-        const trigger = document.getElementById('features-dropdown-trigger');
-        const dropdown = document.getElementById('features-dropdown');
-        let closeTimeout;
+    } else {
+    //   header.style.backgroundColor = 'bg-gold-light/30';
+      header.classList.add('shadow-md');
+      document.getElementById('header-cta').classList.add('text-black');
+      links.forEach(a => {
+        a.classList.remove('text-gray-300');
+        a.classList.add('text-gray-700');
+      });
+    }
+  }
 
-        // Helper to show/hide dropdown
-        function setDropdown(open) {
-            if (open) {
-                dropdown.style.opacity = '1';
-                dropdown.style.pointerEvents = 'auto';
-                trigger.setAttribute('aria-expanded', 'true');
-            } else {
-                dropdown.style.opacity = '0';
-                dropdown.style.pointerEvents = 'none';
-                trigger.setAttribute('aria-expanded', 'false');
-            }
+  applyTheme('dark');
+
+  document.addEventListener('DOMContentLoaded', function () {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          applyTheme(entry.target.dataset.headerTheme);
         }
+      });
+    }, {
+      rootMargin: '-80px 0px -80% 0px',
+      threshold: 0
+    });
 
-        // Mouse hover with timeout to prevent premature close
-        parent.addEventListener('mouseenter', () => {
-            clearTimeout(closeTimeout);
-            setDropdown(true);
-        });
-        parent.addEventListener('mouseleave', () => {
-            closeTimeout = setTimeout(() => setDropdown(false), 150); // 150ms delay
-        });
+    document.querySelectorAll('[data-header-theme]').forEach(el => observer.observe(el));
+  });
+})();
 
-        // Click toggle
-        trigger.addEventListener('click', (e) => {
-            e.stopPropagation();
-            clearTimeout(closeTimeout);
-            setDropdown(dropdown.style.opacity !== '1');
-        });
-
-        // Close dropdown when clicking outside
-        document.addEventListener('click', (e) => {
-            if (!parent.contains(e.target)) {
-                clearTimeout(closeTimeout);
-                setDropdown(false);
-            }
-        });
-
-        // Keyboard accessibility
-        trigger.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                clearTimeout(closeTimeout);
-                setDropdown(false);
-            }
-            if (e.key === 'ArrowDown') setDropdown(true);
-        });
-    })();
-    </script>
+</script>

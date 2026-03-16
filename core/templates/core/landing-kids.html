@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exhibitly Kids - Explore the World's Museums!</title>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700;800&family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Nunito', 'sans-serif'],
+                        display: ['Baloo 2', 'cursive'],
+                    },
+                    colors: {
+                        gold: '#C9A96E',
+                        'gold-light': '#E8D5B0',
+                        'gold-dark': '#A07840',
+                        charcoal: '#0D0D0D',
+                        'charcoal-2': '#141414',
+                        'charcoal-3': '#1C1C1C',
+                        cream: '#F5F0E8',
+                    },
+                    keyframes: {
+                        fadeUp: {
+                            '0%': { opacity: '0', transform: 'translateY(24px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        glowPulse: {
+                            '0%, 100%': { opacity: '0.5' },
+                            '50%': { opacity: '1' },
+                        },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-12px)' },
+                        },
+                        spinSlow: {
+                            '0%': { transform: 'rotate(0deg)' },
+                            '100%': { transform: 'rotate(360deg)' },
+                        },
+                        twinkle: {
+                            '0%, 100%': { opacity: '0.2', transform: 'scale(0.8)' },
+                            '50%': { opacity: '1', transform: 'scale(1.2)' },
+                        }
+                    },
+                    animation: {
+                        'fade-up': 'fadeUp 0.9s ease-out both',
+                        'glow-pulse': 'glowPulse 4s ease-in-out infinite',
+                        'float': 'float 4s ease-in-out infinite',
+                        'spin-slow': 'spinSlow 20s linear infinite',
+                        'twinkle': 'twinkle 2s ease-in-out infinite',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        html { scroll-behavior: smooth; }
+
+        /* Hero glow - warmer, brighter for kids */
+        .hero-glow {
+            background: radial-gradient(ellipse 80% 60% at 50% 20%,
+                rgba(201,169,110,0.22) 0%,
+                rgba(160,100,220,0.08) 45%,
+                transparent 70%);
+        }
+        .grid-overlay {
+            background-image:
+                linear-gradient(rgba(201,169,110,0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(201,169,110,0.05) 1px, transparent 1px);
+            background-size: 60px 60px;
+        }
+
+        /* Floating stars decoration */
+        .star {
+            position: absolute;
+            color: #C9A96E;
+            pointer-events: none;
+            line-height: 1;
+        }
+
+        /* Exhibition cards */
+        .ex-card {
+            flex-shrink: 0; width: 195px; height: 265px;
+            border-radius: 16px; position: relative; overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.35s cubic-bezier(.22,.68,0,1.2), box-shadow 0.35s ease;
+        }
+        .ex-card:hover {
+            transform: scale(1.08) translateY(-8px);
+            box-shadow: 0 28px 56px rgba(0,0,0,0.7), 0 0 0 2px rgba(201,169,110,0.5);
+            z-index: 20;
+        }
+        .ex-card-overlay {
+            position: absolute; inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.1) 55%, transparent 100%);
+        }
+        .ex-card-badge {
+            position: absolute; top: 11px; right: 11px;
+            font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase;
+            background: rgba(201,169,110,0.95); color: #0D0D0D;
+            padding: 3px 9px; border-radius: 20px; font-weight: 700;
+            font-family: 'Nunito', sans-serif;
+        }
+        .ex-card-title {
+            position: absolute; bottom: 22px; left: 14px; right: 14px;
+            font-family: 'Baloo 2', cursive;
+            font-size: 14.5px; font-weight: 600; color: #F5F0E8; line-height: 1.3;
+        }
+        .ex-card-museum {
+            position: absolute; bottom: 8px; left: 14px;
+            font-size: 9px; text-transform: uppercase; letter-spacing: 0.12em;
+            color: rgba(201,169,110,0.8); font-family: 'Nunito', sans-serif;
+        }
+
+        /* Marquee */
+        .marquee-track {
+            display: flex; gap: 14px; width: max-content;
+            animation: scrollLeft 50s linear infinite;
+        }
+        @keyframes scrollLeft {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+        .marquee-wrap {
+            overflow: hidden;
+            mask-image: linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%);
+        }
+        .marquee-wrap:hover .marquee-track { animation-play-state: paused; }
+
+        /* Stats */
+        .stat-num {
+            font-family: 'Baloo 2', cursive;
+            font-size: 3.5rem; font-weight: 700; color: #C9A96E; line-height: 1;
+        }
+
+        /* Feature cards */
+        .feat-card {
+            background: #1C1C1C; border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 22px; padding: 28px 26px;
+            transition: border-color 0.3s ease, transform 0.3s ease;
+        }
+        .feat-card:hover { border-color: rgba(201,169,110,0.3); transform: translateY(-4px); }
+
+        .feat-icon {
+            width: 54px; height: 54px; border-radius: 16px;
+            display: flex; align-items: center; justify-content: center;
+            background: rgba(201,169,110,0.12); border: 1px solid rgba(201,169,110,0.25);
+            margin-bottom: 16px; font-size: 1.6rem;
+        }
+
+        /* Pricing */
+        .price-card {
+            border: 1px solid rgba(255,255,255,0.08); border-radius: 22px;
+            padding: 36px 28px; background: #1C1C1C;
+            transition: border-color 0.3s, transform 0.3s;
+        }
+        .price-card:hover { border-color: rgba(201,169,110,0.3); transform: translateY(-5px); }
+        .price-card.featured {
+            border-color: rgba(201,169,110,0.45);
+            background: linear-gradient(150deg, #1C1C1C 0%, rgba(201,169,110,0.09) 100%);
+        }
+
+        .check-item {
+            display: flex; align-items: center; gap: 10px;
+            font-size: 0.85rem; color: rgba(245,240,232,0.58);
+            font-family: 'Nunito', sans-serif;
+        }
+        .check-dot {
+            width: 18px; height: 18px; border-radius: 50%;
+            border: 1.5px solid rgba(201,169,110,0.5);
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .section-rule { width: 44px; height: 2px; background: #C9A96E; border-radius: 2px; margin: 0 auto 18px; }
+        .section-rule-left { width: 44px; height: 2px; background: #C9A96E; border-radius: 2px; margin: 0 0 18px; }
+
+        /* Badge cards for the achievements section */
+        .badge-card {
+            background: #1C1C1C; border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 20px; padding: 20px;
+            display: flex; flex-direction: column; align-items: center; text-align: center;
+            gap: 10px;
+            transition: border-color 0.3s, transform 0.3s;
+        }
+        .badge-card:hover { border-color: rgba(201,169,110,0.3); transform: translateY(-3px); }
+        .badge-circle {
+            width: 64px; height: 64px; border-radius: 50%;
+            background: rgba(201,169,110,0.12); border: 2px solid rgba(201,169,110,0.3);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.8rem;
+        }
+
+        /* For parents strip */
+        .parent-pill {
+            background: rgba(201,169,110,0.08); border: 1px solid rgba(201,169,110,0.2);
+            border-radius: 12px; padding: 18px 22px;
+            display: flex; align-items: flex-start; gap: 14px;
+        }
+    </style>
+</head>
+<body class="bg-charcoal text-cream font-sans overflow-x-hidden">
+
+    {% include 'core/header.html' with scroll_lock=9999 %}
+
+    <!-- ══ HERO ══════════════════════════════════════════════ -->
+    <section class="relative min-h-screen flex flex-col items-center justify-center text-center px-6 overflow-hidden" style="background: linear-gradient(135deg,#1A3A1A,#0D2210,#050F06)">
+        <div class="hero-glow absolute inset-0 pointer-events-none animate-glow-pulse"></div>
+        <div class="grid-overlay absolute inset-0 pointer-events-none"></div>
+
+        <!-- Floating stars decoration -->
+        <span class="star animate-twinkle text-2xl" style="top:18%;left:8%;animation-delay:0s">✦</span>
+        <span class="star animate-twinkle text-sm" style="top:25%;left:14%;animation-delay:0.4s">✦</span>
+        <span class="star animate-twinkle text-xl" style="top:40%;left:5%;animation-delay:0.8s">✦</span>
+        <span class="star animate-twinkle text-xs" style="top:55%;left:12%;animation-delay:0.2s">✦</span>
+        <span class="star animate-twinkle text-2xl" style="top:18%;right:8%;animation-delay:0.6s">✦</span>
+        <span class="star animate-twinkle text-sm" style="top:32%;right:13%;animation-delay:1s">✦</span>
+        <span class="star animate-twinkle text-xl" style="top:48%;right:6%;animation-delay:0.3s">✦</span>
+        <span class="star animate-twinkle text-xs" style="top:62%;right:11%;animation-delay:0.9s">✦</span>
+
+        <div class="relative z-10 max-w-4xl mx-auto">
+            <div class="inline-flex items-center gap-2 bg-gold/10 border border-gold/25 text-gold text-xs font-semibold tracking-[0.2em] uppercase px-5 py-2 rounded-full mb-8 animate-fade-up" style="animation-delay:0.1s">
+                <span>🎨</span> Made for Young Explorers
+            </div>
+
+            <h1 class="font-display font-bold text-cream leading-none mb-4 animate-fade-up"
+                style="font-size: clamp(4rem, 13vw, 10rem); animation-delay:0.2s">
+                Exhibitly
+            </h1>
+
+            <p class="font-display text-gold font-semibold mb-6 animate-fade-up"
+               style="font-size: clamp(1.3rem, 3.5vw, 2.2rem); animation-delay:0.28s">
+                for Kids
+            </p>
+
+            <p class="text-base md:text-xl text-cream/55 font-light max-w-xl mx-auto mb-12 leading-relaxed animate-fade-up" style="animation-delay:0.38s">
+                Explore dinosaurs, ancient Egypt, outer space, and more.<br>Amazing museum exhibitions made for curious kids. 🦕 🚀🏺
+            </p>
+
+            <div class="flex flex-col sm:flex-row gap-3 justify-center items-center animate-fade-up" style="animation-delay:0.52s">
+                <a href="#explore" class="bg-gold text-charcoal text-sm font-bold px-9 py-4 rounded-full hover:bg-gold-light transition-all duration-200 tracking-wide shadow-lg shadow-gold/25">
+                    Start My Adventure! 🚀
+                </a>
+                <a href="#how-it-works" class="border border-white/20 text-cream/70 text-sm font-semibold px-8 py-4 rounded-full hover:border-gold/40 hover:text-cream transition-all duration-200 tracking-wide">
+                    How it works ↓
+                </a>
+            </div>
+        </div>
+
+        <div class="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-40 animate-fade-up" style="animation-delay:0.9s">
+            <span class="text-cream text-[10px] tracking-[0.25em] uppercase font-semibold">Scroll</span>
+            <div class="w-px h-10 bg-gradient-to-b from-gold to-transparent"></div>
+        </div>
+    </section>
+
+
+    <!-- ══ MARQUEE - KIDS EXHIBITIONS ════════════════════════ -->
+    <section id="explore" class="bg-charcoal-2 py-16">
+        <div class="max-w-7xl mx-auto px-6 mb-8">
+            <p class="text-gold text-xs tracking-[0.25em] uppercase mb-2 font-semibold">Now Streaming</p>
+            <h2 class="font-display text-3xl md:text-4xl font-bold text-cream">Amazing Exhibitions for You</h2>
+        </div>
+        <div class="marquee-wrap py-2">
+            <div class="marquee-track pl-6">
+                <!-- First set -->
+                <div class="ex-card" style="background:linear-gradient(135deg,#2D5A1B,#1A3A0E,#0A1C06)">
+                    <div class="ex-card-overlay"></div><span class="ex-card-badge">🦕 Now On</span>
+                    <div class="ex-card-title">Dinosaurs: Rulers of the Earth</div>
+                    <div class="ex-card-museum">Natural History Museum · London</div>
+                </div>
+                <div class="ex-card" style="background:linear-gradient(135deg,#0C1A4A,#060E2E,#020610)">
+                    <div class="ex-card-overlay"></div><span class="ex-card-badge">🚀 New</span>
+                    <div class="ex-card-title">Space: Beyond Our Solar System</div>
+                    <div class="ex-card-museum">Smithsonian · Washington D.C.</div>
+                </div>
+                <div class="ex-card" style="background:linear-gradient(135deg,#6B4A10,#3D2A08,#1A1204)">
+                    <div class="ex-card-overlay"></div><span class="ex-card-badge">🏺 Popular</span>
+                    <div class="ex-card-title">Ancient Egypt for Kids</div>
+                    <div class="ex-card-museum">British Museum · London</div>
+                </div>
+                <div class="ex-card" style="background:linear-gradient(135deg,#0A2A4A,#051828,#020A14)">
+                    <div class="ex-card-overlay"></div><span class="ex-card-badge">🐙 Now On</span>
+                    <div class="ex-card-title">Ocean Deep: Creatures of the Sea</div>
+                    <div class="ex-card-museum">Monterey Bay Aquarium · California</div>
+                </div>
+                <div class="ex-card" style="background:linear-gradient(135deg,#3A1A2A,#220E18,#100608)">
+                    <div class="ex-card-overlay"></div><span class="ex-card-badge">⚔️ New</span>
+                    <div class="ex-card-title">Knights, Castles & Legends</div>
+                    <div class="ex-card-museum">Tower of London · London</div>
+                </div>
+                <div class="ex-card" style="background:linear-gradient(135deg,#10304A,#081A28,#030C12)">
+                    <div class="ex-card-overlay"></div><span class="ex-card-badge">🎨 Popular</span>
+                    <div class="ex-card-title">The Colour Revolution</div>
+                    <div class="ex-card-museum">Tate Modern · London</div>
+                </div>
+                <div class="ex-card" style="background:linear-gradient(135deg,#1A3A18,#0E2210,#060E06)">
+                    <div class="ex-card-overlay"></div><span class="ex-card-badge">🦁 Now On</span>
+                    <div class="ex-card-title">Wild Animals Up Close</div>
+                    <div class="ex-card-museum">San Diego Zoo Museum · California</div>
+                </div>
+                <div class="ex-card" style="background:linear-gradient(135deg,#2A1A4A,#18102A,#0C0816)">
+                    <div class="ex-card-overlay"></div><span class="ex-card-badge">⚡ New</span>
+                    <div class="ex-card-title">Myths, Gods & Heroes</div>
+                    <div class="ex-card-museum">National Archaeological Museum · Athens</div>
+                </div>
+                <div class="ex-card" style="background:linear-gradient(135deg,#1A2A3A,#0E1820,#060C10)">
+                    <div class="ex-card-overlay"></div><span class="ex-card-badge">🤖 Popular</span>
+                    <div class="ex-card-title">Robots & the Future of Tech</div>
+                    <div class="ex-card-museum">Science Museum · London</div>
+                </div>
+                <div class="ex-card" style="background:linear-gradient(135deg,#1A3A08,#0E2204,#060E02)">
+                    <div class="ex-card-overlay"></div><span class="ex-card-badge">🌿 New</span>
+                    <div class="ex-card-title">Rainforests & Hidden Worlds</div>
+                    <div class="ex-card-museum">Smithsonian · Washington D.C.</div>
+                </div>
+                <!-- Duplicate for seamless loop -->
+                <div class="ex-card" style="background:linear-gradient(135deg,#2D5A1B,#1A3A0E,#0A1C06)">
+                    <div class="ex-card-overlay"></div><span class="ex-card-badge">🦕 Now On</span>
+                    <div class="ex-card-title">Dinosaurs: Rulers of the Earth</div>
+                    <div class="ex-card-museum">Natural History Museum · London</div>
+                </div>
+                <div class="ex-card" style="background:linear-gradient(135deg,#0C1A4A,#060E2E,#020610)">
+                    <div class="ex-card-overlay"></div><span class="ex-card-badge">🚀 New</span>
+                    <div class="ex-card-title">Space: Beyond Our Solar System</div>
+                    <div class="ex-card-museum">Smithsonian · Washington D.C.</div>
+                </div>
+                <div class="ex-card" style="background:linear-gradient(135deg,#6B4A10,#3D2A08,#1A1204)">
+                    <div class="ex-card-overlay"></div><span class="ex-card-badge">🏺 Popular</span>
+                    <div class="ex-card-title">Ancient Egypt for Kids</div>
+                    <div class="ex-card-museum">British Museum · London</div>
+                </div>
+                <div class="ex-card" style="background:linear-gradient(135deg,#0A2A4A,#051828,#020A14)">
+                    <div class="ex-card-overlay"></div><span class="ex-card-badge">🐙 Now On</span>
+                    <div class="ex-card-title">Ocean Deep: Creatures of the Sea</div>
+                    <div class="ex-card-museum">Monterey Bay Aquarium · California</div>
+                </div>
+                <div class="ex-card" style="background:linear-gradient(135deg,#3A1A2A,#220E18,#100608)">
+                    <div class="ex-card-overlay"></div><span class="ex-card-badge">⚔️ New</span>
+                    <div class="ex-card-title">Knights, Castles & Legends</div>
+                    <div class="ex-card-museum">Tower of London · London</div>
+                </div>
+                <div class="ex-card" style="background:linear-gradient(135deg,#10304A,#081A28,#030C12)">
+                    <div class="ex-card-overlay"></div><span class="ex-card-badge">🎨 Popular</span>
+                    <div class="ex-card-title">The Colour Revolution</div>
+                    <div class="ex-card-museum">Tate Modern · London</div>
+                </div>
+                <div class="ex-card" style="background:linear-gradient(135deg,#1A3A18,#0E2210,#060E06)">
+                    <div class="ex-card-overlay"></div><span class="ex-card-badge">🦁 Now On</span>
+                    <div class="ex-card-title">Wild Animals Up Close</div>
+                    <div class="ex-card-museum">San Diego Zoo Museum · California</div>
+                </div>
+                <div class="ex-card" style="background:linear-gradient(135deg,#2A1A4A,#18102A,#0C0816)">
+                    <div class="ex-card-overlay"></div><span class="ex-card-badge">⚡ New</span>
+                    <div class="ex-card-title">Myths, Gods & Heroes</div>
+                    <div class="ex-card-museum">National Archaeological Museum · Athens</div>
+                </div>
+                <div class="ex-card" style="background:linear-gradient(135deg,#1A2A3A,#0E1820,#060C10)">
+                    <div class="ex-card-overlay"></div><span class="ex-card-badge">🤖 Popular</span>
+                    <div class="ex-card-title">Robots & the Future of Tech</div>
+                    <div class="ex-card-museum">Science Museum · London</div>
+                </div>
+                <div class="ex-card" style="background:linear-gradient(135deg,#1A3A08,#0E2204,#060E02)">
+                    <div class="ex-card-overlay"></div><span class="ex-card-badge">🌿 New</span>
+                    <div class="ex-card-title">Rainforests & Hidden Worlds</div>
+                    <div class="ex-card-museum">Smithsonian · Washington D.C.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ══ STATS BAR ══════════════════════════════════════════ -->
+    <section class="bg-charcoal border-y border-white/5 py-16">
+        <div class="max-w-5xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+            <div>
+                <div class="stat-num">500<span class="text-gold/50 text-3xl">+</span></div>
+                <p class="text-cream/40 text-xs tracking-[0.18em] uppercase mt-2 font-semibold">Museums to Explore</p>
+            </div>
+            <div>
+                <div class="stat-num">1,200<span class="text-gold/50 text-3xl">+</span></div>
+                <p class="text-cream/40 text-xs tracking-[0.18em] uppercase mt-2 font-semibold">Kids Exhibitions</p>
+            </div>
+            <div>
+                <div class="stat-num">50<span class="text-gold/50 text-3xl">+</span></div>
+                <p class="text-cream/40 text-xs tracking-[0.18em] uppercase mt-2 font-semibold">Topics & Themes</p>
+            </div>
+            <div>
+                <div class="stat-num">2M<span class="text-gold/50 text-3xl">+</span></div>
+                <p class="text-cream/40 text-xs tracking-[0.18em] uppercase mt-2 font-semibold">Young Explorers</p>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ══ HOW IT WORKS ═══════════════════════════════════════ -->
+    <section id="how-it-works" class="bg-charcoal-2 py-28 px-6">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-20">
+                <div class="section-rule"></div>
+                <p class="text-gold text-xs tracking-[0.25em] uppercase mb-4 font-semibold">Your Adventure Awaits</p>
+                <h2 class="font-display font-bold text-cream" style="font-size: clamp(2.5rem, 5vw, 4rem)">How Do I Start? It's Easy!</h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-0 relative">
+                <div class="hidden md:block absolute top-9 left-[16%] right-[16%] h-px"
+                     style="background:linear-gradient(to right,transparent,rgba(201,169,110,0.35),transparent)"></div>
+
+                <div class="text-center px-10 pb-16 md:pb-0">
+                    <div class="w-18 h-18 rounded-full border-2 border-gold/40 bg-charcoal-3 flex items-center justify-center mx-auto mb-8 relative z-10 w-[72px] h-[72px]">
+                        <span class="font-display text-gold font-bold text-3xl">1</span>
+                    </div>
+                    <h3 class="font-display text-2xl font-bold text-cream mb-3">Pick a Topic You Love</h3>
+                    <p class="text-cream/40 text-sm leading-relaxed">Dinosaurs? Space? Ancient Egypt? Browse hundreds of exhibits and pick whatever excites you the most.</p>
+                </div>
+
+                <div class="text-center px-10 border-t border-b border-white/5 md:border-t-0 md:border-b-0 md:border-l md:border-r md:border-white/5 py-16 md:py-0">
+                    <div class="w-[72px] h-[72px] rounded-full border-2 border-gold/40 bg-charcoal-3 flex items-center justify-center mx-auto mb-8 relative z-10">
+                        <span class="font-display text-gold font-bold text-3xl">2</span>
+                    </div>
+                    <h3 class="font-display text-2xl font-bold text-cream mb-3">Explore & Discover</h3>
+                    <p class="text-cream/40 text-sm leading-relaxed">Watch videos, go on virtual tours, listen to stories, and answer fun quizzes - all at your own pace.</p>
+                </div>
+
+                <div class="text-center px-10">
+                    <div class="w-[72px] h-[72px] rounded-full border-2 border-gold/40 bg-charcoal-3 flex items-center justify-center mx-auto mb-8 relative z-10">
+                        <span class="font-display text-gold font-bold text-3xl">3</span>
+                    </div>
+                    <h3 class="font-display text-2xl font-bold text-cream mb-3">Earn Your Badges!</h3>
+                    <p class="text-cream/40 text-sm leading-relaxed">Complete exhibitions to earn achievement badges. Collect them all and show off what an amazing explorer you are!</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ══ FEATURES FOR KIDS ══════════════════════════════════ -->
+    <section class="bg-charcoal py-28 px-6">
+        <div class="max-w-6xl mx-auto">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                <div>
+                    <div class="section-rule-left"></div>
+                    <p class="text-gold text-xs tracking-[0.25em] uppercase mb-4 font-semibold">What's Inside</p>
+                    <h2 class="font-display font-bold text-cream mb-6 leading-tight" style="font-size: clamp(2.4rem, 5vw, 4rem)">
+                        Learning that feels<br>like <em class="text-gold">a game.</em>
+                    </h2>
+                    <p class="text-cream/40 text-sm leading-relaxed mb-10 max-w-md">
+                        Every exhibition on Exhibitly Kids is designed to be interactive, fun, and just the right level of adventurous - so learning never feels like homework.
+                    </p>
+                    <a href="#pricing" class="inline-flex items-center gap-2 text-gold text-sm font-bold hover:text-gold-light transition rounded-full border border-gold/30 px-5 py-2.5">
+                        See Family Plans
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </a>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="feat-card">
+                        <div class="feat-icon">🗺️</div>
+                        <h4 class="font-display text-xl font-bold text-cream mb-2">Virtual Adventures</h4>
+                        <p class="text-cream/40 text-xs leading-relaxed">Step inside museums with 360° virtual tours - walk through Egyptian tombs, dinosaur halls, and more from your sofa.</p>
+                    </div>
+                    <div class="feat-card">
+                        <div class="feat-icon">🎮</div>
+                        <h4 class="font-display text-xl font-bold text-cream mb-2">Fun Quizzes & Games</h4>
+                        <p class="text-cream/40 text-xs leading-relaxed">Timed challenges, spot-the-difference, and match-the-artwork games make every exhibition an adventure.</p>
+                    </div>
+                    <div class="feat-card">
+                        <div class="feat-icon">🏅</div>
+                        <h4 class="font-display text-xl font-bold text-cream mb-2">Collect Badges</h4>
+                        <p class="text-cream/40 text-xs leading-relaxed">Earn a unique badge for every exhibition you complete. Show off your collection and become a Master Explorer!</p>
+                    </div>
+                    <div class="feat-card">
+                        <div class="feat-icon">🔒</div>
+                        <h4 class="font-display text-xl font-bold text-cream mb-2">Safe for All Ages</h4>
+                        <p class="text-cream/40 text-xs leading-relaxed">Every piece of content is age-reviewed and parent-approved - designed just for young minds, safe and worry-free.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ══ ACHIEVEMENT BADGES SHOWCASE ═══════════════════════ -->
+    <section class="bg-charcoal-2 py-24 px-6">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-14">
+                <div class="section-rule"></div>
+                <p class="text-gold text-xs tracking-[0.25em] uppercase mb-4 font-semibold">Collect Them All</p>
+                <h2 class="font-display font-bold text-cream" style="font-size: clamp(2rem, 4vw, 3.5rem)">Your Badge Collection</h2>
+                <p class="text-cream/35 text-sm mt-4 max-w-sm mx-auto leading-relaxed">Complete exhibitions and earn a badge for every topic you master. How many can you collect?</p>
+            </div>
+
+            <div class="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-6 gap-4">
+                <div class="badge-card">
+                    <div class="badge-circle">🦕</div>
+                    <p class="text-cream/70 text-xs font-semibold">Dino Expert</p>
+                </div>
+                <div class="badge-card">
+                    <div class="badge-circle">🚀</div>
+                    <p class="text-cream/70 text-xs font-semibold">Space Cadet</p>
+                </div>
+                <div class="badge-card">
+                    <div class="badge-circle">🏺</div>
+                    <p class="text-cream/70 text-xs font-semibold">Egypt Scholar</p>
+                </div>
+                <div class="badge-card">
+                    <div class="badge-circle">🐙</div>
+                    <p class="text-cream/70 text-xs font-semibold">Ocean Diver</p>
+                </div>
+                <div class="badge-card">
+                    <div class="badge-circle">⚔️</div>
+                    <p class="text-cream/70 text-xs font-semibold">Knight's Code</p>
+                </div>
+                <div class="badge-card">
+                    <div class="badge-circle">🎨</div>
+                    <p class="text-cream/70 text-xs font-semibold">Art Master</p>
+                </div>
+                <div class="badge-card">
+                    <div class="badge-circle">🦁</div>
+                    <p class="text-cream/70 text-xs font-semibold">Wild Ranger</p>
+                </div>
+                <div class="badge-card">
+                    <div class="badge-circle">⚡</div>
+                    <p class="text-cream/70 text-xs font-semibold">Myth Hunter</p>
+                </div>
+                <div class="badge-card">
+                    <div class="badge-circle">🤖</div>
+                    <p class="text-cream/70 text-xs font-semibold">Tech Pioneer</p>
+                </div>
+                <div class="badge-card">
+                    <div class="badge-circle">🌿</div>
+                    <p class="text-cream/70 text-xs font-semibold">Jungle Guide</p>
+                </div>
+                <div class="badge-card" style="border-style: dashed; opacity: 0.35;">
+                    <div class="badge-circle" style="border-style: dashed;">❓</div>
+                    <p class="text-cream/40 text-xs font-semibold">???</p>
+                </div>
+                <div class="badge-card" style="border-style: dashed; opacity: 0.35;">
+                    <div class="badge-circle" style="border-style: dashed;">❓</div>
+                    <p class="text-cream/40 text-xs font-semibold">???</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ══ FOR PARENTS ════════════════════════════════════════ -->
+    <section class="bg-charcoal py-28 px-6">
+        <div class="max-w-6xl mx-auto">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
+                <div>
+                    <div class="section-rule-left"></div>
+                    <p class="text-gold text-xs tracking-[0.25em] uppercase mb-4 font-semibold">For Parents & Educators</p>
+                    <h2 class="font-display font-bold text-cream mb-6 leading-tight" style="font-size: clamp(2.4rem, 5vw, 4rem)">
+                        Trusted by parents.<br><em class="text-gold">Loved by kids.</em>
+                    </h2>
+                    <p class="text-cream/40 text-sm leading-relaxed mb-8 max-w-md">
+                        Exhibitly Kids is built with safety and education at its core. Every exhibition is reviewed for age-appropriateness, aligned with school curricula, and designed to spark genuine curiosity.
+                    </p>
+                    <a href="#pricing" class="inline-flex items-center gap-2 text-gold text-sm font-bold hover:text-gold-light transition">
+                        View family plans
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </a>
+                </div>
+
+                <div class="space-y-4">
+                    <div class="parent-pill">
+                        <span class="text-2xl mt-0.5">🔒</span>
+                        <div>
+                            <h4 class="font-display text-lg font-bold text-cream mb-1">Safe & Curated</h4>
+                            <p class="text-cream/40 text-xs leading-relaxed">All content is reviewed by child education specialists. No ads, no harmful content - ever.</p>
+                        </div>
+                    </div>
+                    <div class="parent-pill">
+                        <span class="text-2xl mt-0.5">📚</span>
+                        <div>
+                            <h4 class="font-display text-lg font-bold text-cream mb-1">Curriculum Aligned</h4>
+                            <p class="text-cream/40 text-xs leading-relaxed">Exhibitions support school subjects including history, art, science, and geography for ages 5–16.</p>
+                        </div>
+                    </div>
+                    <div class="parent-pill">
+                        <span class="text-2xl mt-0.5">📊</span>
+                        <div>
+                            <h4 class="font-display text-lg font-bold text-cream mb-1">Progress Tracking</h4>
+                            <p class="text-cream/40 text-xs leading-relaxed">See exactly what your child has explored, which badges they've earned, and how much time they've spent learning.</p>
+                        </div>
+                    </div>
+                    <div class="parent-pill">
+                        <span class="text-2xl mt-0.5">👨‍👩‍👧‍👦</span>
+                        <div>
+                            <h4 class="font-display text-lg font-bold text-cream mb-1">Family Accounts</h4>
+                            <p class="text-cream/40 text-xs leading-relaxed">One subscription covers multiple kids. Set individual profiles for each child with their own badge collection and history.</p>
+                        </div>
+                    </div>
+                    <div class="parent-pill">
+                        <span class="text-2xl mt-0.5">🎟️</span>
+                        <div>
+                            <h4 class="font-display text-lg font-bold text-cream mb-1">Real Museum Discounts</h4>
+                            <p class="text-cream/40 text-xs leading-relaxed">Subscribers get family discount tickets and early access for physical visits to partner museums worldwide.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ══ PRICING ════════════════════════════════════════════ -->
+    <section id="pricing" class="bg-charcoal-2 py-28 px-6">
+        <div class="max-w-5xl mx-auto">
+            <div class="text-center mb-16">
+                <div class="section-rule"></div>
+                <p class="text-gold text-xs tracking-[0.25em] uppercase mb-4 font-semibold">Family Plans</p>
+                <h2 class="font-display font-bold text-cream" style="font-size: clamp(2.5rem, 5vw, 4rem)">Start your family's adventure</h2>
+                <p class="text-cream/35 text-sm mt-4 max-w-sm mx-auto">Simple plans for every family - cancel anytime.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                <!-- Explorer -->
+                <div class="price-card">
+                    <p class="text-gold text-xs tracking-[0.2em] uppercase mb-6 font-bold">Explorer</p>
+                    <div class="mb-6">
+                        <span class="font-display text-5xl font-bold text-cream">Free</span>
+                    </div>
+                    <p class="text-cream/35 text-xs mb-8 leading-relaxed">Dip your toes in - access highlights from our top kids exhibitions.</p>
+                    <ul class="space-y-3 mb-10">
+                        <li class="check-item"><span class="check-dot"><svg width="8" height="8" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#C9A96E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Exhibition highlights</li>
+                        <li class="check-item"><span class="check-dot"><svg width="8" height="8" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#C9A96E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>5 free badges to earn</li>
+                        <li class="check-item"><span class="check-dot"><svg width="8" height="8" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#C9A96E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>1 child profile</li>
+                    </ul>
+                    <a href="#" class="block text-center border border-white/12 text-cream/50 text-sm py-3 rounded-full hover:border-gold/30 hover:text-cream transition font-semibold">Get Started Free</a>
+                </div>
+
+                <!-- Family - featured -->
+                <div class="price-card featured">
+                    <div class="flex items-center justify-between mb-6">
+                        <p class="text-gold text-xs tracking-[0.2em] uppercase font-bold">Family</p>
+                        <span class="text-xs bg-gold text-charcoal px-3 py-1 rounded-full font-bold tracking-wide">⭐ Best Value</span>
+                    </div>
+                    <div class="mb-6">
+                        <span class="font-display text-5xl font-bold text-cream">£9</span>
+                        <span class="text-cream/35 text-sm"> / mo</span>
+                    </div>
+                    <p class="text-cream/35 text-xs mb-8 leading-relaxed">Full access for the whole family - all exhibitions, all badges, all the fun.</p>
+                    <ul class="space-y-3 mb-10">
+                        <li class="check-item"><span class="check-dot"><svg width="8" height="8" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#C9A96E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Everything in Explorer</li>
+                        <li class="check-item"><span class="check-dot"><svg width="8" height="8" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#C9A96E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Up to 3 kids' profiles</li>
+                        <li class="check-item"><span class="check-dot"><svg width="8" height="8" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#C9A96E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>All exhibitions & badges</li>
+                        <li class="check-item"><span class="check-dot"><svg width="8" height="8" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#C9A96E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Parent progress dashboard</li>
+                        <li class="check-item"><span class="check-dot"><svg width="8" height="8" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#C9A96E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Museum visit discounts</li>
+                    </ul>
+                    <a href="#" class="block text-center bg-gold text-charcoal text-sm font-bold py-3 rounded-full hover:bg-gold-light transition shadow-lg shadow-gold/20">Start Free Trial 🚀</a>
+                </div>
+
+                <!-- Scholar Family -->
+                <div class="price-card">
+                    <p class="text-gold text-xs tracking-[0.2em] uppercase mb-6 font-bold">Scholar</p>
+                    <div class="mb-6">
+                        <span class="font-display text-5xl font-bold text-cream">£19</span>
+                        <span class="text-cream/35 text-sm"> / mo</span>
+                    </div>
+                    <p class="text-cream/35 text-xs mb-8 leading-relaxed">For bigger families and homeschoolers - plus school curriculum tools.</p>
+                    <ul class="space-y-3 mb-10">
+                        <li class="check-item"><span class="check-dot"><svg width="8" height="8" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#C9A96E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Everything in Family</li>
+                        <li class="check-item"><span class="check-dot"><svg width="8" height="8" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#C9A96E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Up to 5 kids' profiles</li>
+                        <li class="check-item"><span class="check-dot"><svg width="8" height="8" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#C9A96E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>VR & 3D immersive tours</li>
+                        <li class="check-item"><span class="check-dot"><svg width="8" height="8" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#C9A96E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Curriculum notes & guides</li>
+                        <li class="check-item"><span class="check-dot"><svg width="8" height="8" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#C9A96E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Priority early access tickets</li>
+                    </ul>
+                    <a href="#" class="block text-center border border-white/12 text-cream/50 text-sm py-3 rounded-full hover:border-gold/30 hover:text-cream transition font-semibold">Get Started</a>
+                </div>
+            </div>
+
+            <p class="text-center text-cream/25 text-xs mt-8 tracking-wide">
+                School or classroom access? <a href="#" class="text-gold/60 hover:text-gold transition underline underline-offset-4">Contact us for group pricing</a>
+            </p>
+        </div>
+    </section>
+
+
+    <!-- ══ CLOSING CTA ════════════════════════════════════════ -->
+    <section class="relative bg-charcoal py-32 px-6 overflow-hidden">
+        <div class="hero-glow absolute inset-0 opacity-70 pointer-events-none animate-glow-pulse"></div>
+        <div class="grid-overlay absolute inset-0 pointer-events-none opacity-60"></div>
+
+        <span class="star animate-twinkle text-2xl" style="top:20%;left:10%;animation-delay:0.2s">✦</span>
+        <span class="star animate-twinkle text-sm" style="top:35%;left:18%;animation-delay:0.7s">✦</span>
+        <span class="star animate-twinkle text-xl" style="top:20%;right:10%;animation-delay:0.4s">✦</span>
+        <span class="star animate-twinkle text-sm" style="top:40%;right:16%;animation-delay:1s">✦</span>
+
+        <div class="relative z-10 max-w-3xl mx-auto text-center">
+            <div class="section-rule"></div>
+            <h2 class="font-display font-bold text-cream mb-6 leading-tight" style="font-size: clamp(3rem, 7vw, 5.5rem)">
+                The world's greatest<br>museums.<br><em class="text-gold">Made for you.</em>
+            </h2>
+            <p class="text-cream/35 text-sm leading-relaxed mb-12 max-w-md mx-auto">
+                Start for free today. No credit card needed. Your next great adventure is one click away.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-3 justify-center items-center">
+                <a href="#" class="inline-flex items-center gap-3 bg-gold text-charcoal text-sm font-bold px-10 py-4 rounded-full hover:bg-gold-light transition-all shadow-xl shadow-gold/15">
+                    Begin Your Adventure - It's Free! 🚀
+                </a>
+            </div>
+        </div>
+    </section>
+
+    {% include 'core/footer.html' %}
+</body>
+</html>

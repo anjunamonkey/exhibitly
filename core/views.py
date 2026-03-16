@@ -7,76 +7,55 @@ def landing_page(request):
     """
     context = {
     }
-    return render(request, 'core/abite.html', context)
+    return render(request, 'core/landing.html', context)
 
-def diners_page(request):
+def landing_page_kids(request):
     """
-    Diners page view - TooGoodToGo style discount discovery
-    """
-    context = {
-    }
-    return render(request, 'core/diners.html', context)
-
-def menu_analysis_results(request):
-    """
-    View to display menu analysis results
+    Landing page for kids view
     """
     context = {
     }
-    return render(request, 'core/menu_analysis_results.html', context)
+    return render(request, 'core/landing-kids.html', context)
 
-def pricing(request):
-    return render(request, 'core/pricing.html')
+def landing_page_museums(request):
+    """
+    Landing page for museums view
+    """
+    context = {
+    }
+    return render(request, 'core/landing-museums.html', context)
 
-
-def questionnaire(request):
-    return render(request, 'core/questionnaire.html')
 
 def dashboard(request):
     """
-    PostHog-style dashboard with A/B testing insights and AI chatbot
+    Dashboard view for museums
     """
-    return render(request, 'app/dashboard.html')
+    context = {
+    }
+    return render(request, 'app/dashboard.html', context)
 
-# Analytics Pages
-def performance(request):
-    """Performance analytics with revenue trends and KPIs"""
-    return render(request, 'app/performance.html')
+def exhibition_detail(request):
+    """
+    Exhibition detail view
+    """
+    # exhibition = Exhibition.objects.get(id=exhibition_id)
+    context = {
+        # 'exhibition': exhibition,
+    }
+    return render(request, 'app/exhibition.html', context)
 
-def heatmaps(request):
-    """Menu heatmap visualization showing click and engagement patterns"""
-    return render(request, 'app/heatmaps.html')
+def museum_listing(request):
+    """
+    Museum listing view
+    """
+    context = {
+    }
+    return render(request, 'app/museum_listing.html', context)
 
-def insights(request):
-    """AI-driven insights and recommendations"""
-    return render(request, 'app/insights.html')
-
-# Optimization Pages
-def experiments(request):
-    """A/B testing dashboard for menu experiments"""
-    return render(request, 'app/experiments.html')
-
-def menu_optimizer(request):
-    """AI menu layout optimizer with positioning recommendations"""
-    return render(request, 'app/menu_optimizer.html')
-
-def dynamic_pricing(request):
-    """Dynamic pricing engine with demand-based adjustments"""
-    return render(request, 'app/dynamic_pricing.html')
-
-def promotions(request):
-    """Automated promotion management with smart triggers"""
-    return render(request, 'app/promotions.html')
-
-# Configuration Pages
-def menu_settings(request):
-    """Menu item and category management"""
-    return render(request, 'app/menu_settings.html')
-
-def integrations(request):
-    """POS and third-party service integrations"""
-    return render(request, 'app/integrations.html')
-
-def menu_preview(request):
-    """Live menu preview and testing environment"""
-    return render(request, 'app/menu_preview.html')
+def museum_detail(request):
+    """
+    Museum detail view
+    """
+    context = {
+    }
+    return render(request, 'app/museum_detail.html', context)

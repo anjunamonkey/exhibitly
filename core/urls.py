@@ -5,27 +5,11 @@ app_name = 'core'
 
 urlpatterns = [
     path('', views.landing_page, name='landing_page'),  # Root URL goes to landing page
-    path('menu-analysis-results/', views.menu_analysis_results, name='menu_analysis_results'),
-    path('questionnaire/', views.questionnaire, name='questionnaire'),
+    path('kids/', views.landing_page_kids, name='landing_page_kids'),  # Kids landing page
+    path('museums/', views.landing_page_museums, name='landing_page_museums'),  # Museums landing page
+    path('app/', views.dashboard, name='dashboard'),  # Dashboard for museums
+    path('app/exhibition/', views.exhibition_detail, name='exhibition_detail'),  # Exhibition detail page
+    path('app/museums/', views.museum_listing, name='museum_listing'),  # Museum listing page
+    path('app/museum/1/', views.museum_detail, name='museum_detail'),  # Museum detail page
 
-    path('diners/', views.diners_page, name='diners_page'),  # Diners discount discovery page
-    path('pricing/', views.pricing, name='pricing'),  # Pricing page
-    path('dashboard/', views.dashboard, name='dashboard'),  # Dashboard page
-
-    path('app/menu/', views.menu_preview, name='menu_preview'),
-    
-    # Analytics Pages
-    path('app/performance/', views.performance, name='performance'),
-    path('app/heatmaps/', views.heatmaps, name='heatmaps'),
-    path('app/insights/', views.insights, name='insights'),
-    
-    # Optimization Pages
-    path('app/experiments/', views.experiments, name='experiments'),
-    path('app/menu-optimizer/', views.menu_optimizer, name='menu_optimizer'),
-    path('app/dynamic-pricing/', views.dynamic_pricing, name='dynamic_pricing'),
-    path('app/promotions/', views.promotions, name='promotions'),
-    
-    # Configuration Pages
-    path('app/menu-settings/', views.menu_settings, name='menu_settings'),
-    path('app/integrations/', views.integrations, name='integrations'),
 ]
